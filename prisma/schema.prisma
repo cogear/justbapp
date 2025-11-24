@@ -1,0 +1,83 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"] // Enable pgvector extension
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  extensions = [vector] // Enable pgvector extension
+}
+
+// User Profile
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Progressive Profiling
+  // Stored as JSON or separate tables, but for "Long-Term Memory", we use vectors.
+  // We can also store explicit traits.
+  psychographicProfile String? // e.g. "The Sponge", "The Fixer"
+  
+  // Long-Term Memory Vectors
+  // Stores the aggregated embedding of user's journal entries and preferences
+  // Used to tailor content and "News Refiner"
+  memoryVector Unsupported("vector(1536)")? 
+
+  // Relations
+  dailyPulses   DailyPulse[]
+  journalEntries JournalEntry[]
+}
+
+// The Daily Pulse: "Where is your energy right now?"
+model DailyPulse {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+
+  // Energy Scales (1-10 or -5 to +5)
+  anxiousCalm    Int // Anxious <-> Calm
+  scatteredFocused Int // Scattered <-> Focused
+  drainedEnergized Int // Drained <-> Energized
+
+  // Context
+  note String?
+}
+
+// The Insight Question: Reflective journaling
+model JournalEntry {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+
+  question String // e.g. "What is one thing you are dreading?"
+  answer   String
+
+  // Vector embedding of the answer for semantic search/memory
+  embedding Unsupported("vector(1536)")?
+}
+
+// b. Local Events
+model Event {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  location    String
+  date        DateTime
+  
+  // "Nourishing" keywords tags
+  tags String[] // e.g. "Garden", "Silent"
+
+  // Social Proof
+  attendeeCount Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
