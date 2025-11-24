@@ -1,4 +1,4 @@
-import { filterEvents, RawEvent } from './lib/eventFilter';
+import { filterEvents, RawEvent } from './src/lib/eventFilter';
 
 const testEvents: RawEvent[] = [
     {
