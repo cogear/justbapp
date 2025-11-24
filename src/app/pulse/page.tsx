@@ -1,13 +1,15 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
+import { useUser } from '@stackframe/stack';
 import PulseSlider from '@/components/PulseSlider';
 import BreathingIntro from '@/components/BreathingIntro';
 import { saveDailyPulse } from './actions';
 
-export default function PulsePage() {
+function PulseContent() {
     const router = useRouter();
+    const user = useUser();
     const [showIntro, setShowIntro] = useState(true);
     const [step, setStep] = useState(0);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -32,6 +34,22 @@ export default function PulsePage() {
             handleComplete();
         }
     };
+
+    // Redirect to sign-in if not authenticated
+    useEffect(() => {
+        if (user === null) {
+            router.push('/sign-in');
+        }
+    }, [user, router]);
+
+    // Show loading while checking auth
+    if (user === undefined) {
+        return (
+            <main className="min-h-screen bg-b-sand flex items-center justify-center">
+                <p className="text-b-charcoal/60">Loading...</p>
+            </main>
+        );
+    }
 
     if (showIntro) {
         return <BreathingIntro onComplete={() => setShowIntro(false)} />;
@@ -102,5 +120,17 @@ export default function PulsePage() {
 
             </div>
         </main>
+    );
+}
+
+export default function PulsePage() {
+    return (
+        <Suspense fallback={
+            <main className="min-h-screen bg-b-sand flex items-center justify-center">
+                <p className="text-b-charcoal/60">Loading...</p>
+            </main>
+        }>
+            <PulseContent />
+        </Suspense>
     );
 }

@@ -1,6 +1,7 @@
 'use server';
 
 import prisma from '@/lib/prisma';
+import { stackServerApp } from '@/lib/stack';
 import { revalidatePath } from 'next/cache';
 
 export interface DailyPulseInput {
@@ -10,18 +11,25 @@ export interface DailyPulseInput {
 }
 
 export async function saveDailyPulse(data: DailyPulseInput) {
-    // TODO: Get real user ID from auth session. 
-    // For now, we'll find the first user or create a dummy one if none exists.
-    let user = await prisma.user.findFirst();
+    // Get the authenticated user from Stack Auth
+    const stackUser = await stackServerApp.getUser();
+
+    if (!stackUser) {
+        throw new Error('User not authenticated');
+    }
+
+    // Find or create user in our database
+    let user = await prisma.user.findUnique({
+        where: { email: stackUser.primaryEmail || '' },
+    });
 
     if (!user) {
         user = await prisma.user.create({
             data: {
-                email: 'demo@justbe.app',
+                email: stackUser.primaryEmail || '',
             },
         });
     }
-
     await prisma.dailyPulse.create({
         data: {
             userId: user.id,
