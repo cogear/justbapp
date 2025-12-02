@@ -1,0 +1,502 @@
+[
+    {
+        "pair_id": "L1_Openness_01",
+        "layer": "Psychographic",
+        "concept_A": "Adventurous Exploration",
+        "concept_B": "Comfortable Routine",
+        "image_prompt_A": "A lone traveler hiking through a lush, mysterious rainforest path, vibrant greenery, dappled sunlight, sense of discovery, 8k",
+        "image_prompt_B": "A cozy living room with a person curled up under a blanket, warm lamplight, reading a familiar book, safe and comfortable, 8k",
+        "data_inference": "Trait: Openness (High)",
+        "branching_logic": "Next: L2_CreativePractical_01"
+    },
+    {
+        "pair_id": "L1_Openness_02",
+        "layer": "Psychographic",
+        "concept_A": "Imaginative (Abstract)",
+        "concept_B": "Conventional (Traditional)",
+        "image_prompt_A": "An art gallery displaying a large abstract painting with bold colors and unconventional shapes, creative chaos, moody lighting, ultra-detailed, 8k",
+        "image_prompt_B": "An art gallery displaying a classic landscape painting in realistic style, muted colors, symmetrical composition, soft museum lighting, 8k",
+        "data_inference": "Trait: Openness (High Imagination)",
+        "branching_logic": "Next: L2_OrderChaos_01"
+    },
+    {
+        "pair_id": "L1_Conscientiousness_01",
+        "layer": "Psychographic",
+        "concept_A": "Organized & Orderly",
+        "concept_B": "Casual & Carefree",
+        "image_prompt_A": "An impeccably organized, minimalist white desk with neatly arranged Apple computer, notebook and pens, clean lines, soft white lighting, ultra-high detail",
+        "image_prompt_B": "A cluttered artist's studio filled with vibrant paint splatters, canvases piled, messy stacks of paper, warm yellow lighting, creative chaos energy, 8k",
+        "data_inference": "Trait: Conscientiousness (High)",
+        "branching_logic": "Next: L2_DisciplineSpontaneity_01"
+    },
+    {
+        "pair_id": "L1_Conscientiousness_02",
+        "layer": "Psychographic",
+        "concept_A": "Planned & Structured",
+        "concept_B": "Spontaneous & Unplanned",
+        "image_prompt_A": "A neatly laid-out daily planner with color-coded schedules beside an early morning runner on a sunrise-lit road, crisp clear lighting, organized vibe, 8k",
+        "image_prompt_B": "A spontaneous road trip scene with a convertible car on an open road at sunset, a map flying out, golden hour lighting, carefree adventurous mood, 8k",
+        "data_inference": "Trait: Conscientiousness (High)",
+        "branching_logic": "Next: L2_AmbitionContentment_01"
+    },
+    {
+        "pair_id": "L1_Extraversion_01",
+        "layer": "Psychographic",
+        "concept_A": "Sociable & Outgoing",
+        "concept_B": "Solitary & Reserved",
+        "image_prompt_A": "A lively house party with people dancing and laughing under colorful string lights, packed room, energetic atmosphere, 8k",
+        "image_prompt_B": "A lone individual reading a book in a cozy armchair by a dimly lit window, a cat sleeping nearby, quiet and peaceful scene, 8k",
+        "data_inference": "Trait: Extraversion (High)",
+        "branching_logic": "Next: L2_ExcitementPeace_01"
+    },
+    {
+        "pair_id": "L1_Extraversion_02",
+        "layer": "Psychographic",
+        "concept_A": "Thrill-Seeking & Energetic",
+        "concept_B": "Calm & Low-Key",
+        "image_prompt_A": "A crowd of excited fans at an outdoor concert, hands in the air, bright stage lights and lasers, high energy, night festival atmosphere, 8k",
+        "image_prompt_B": "A solitary figure meditating by a calm lake at dawn, light fog on water, gentle sunrise colors, serene and tranquil ambiance, 8k",
+        "data_inference": "Trait: Extraversion (High)",
+        "branching_logic": "Next: L2_IndividualCommunity_01"
+    },
+    {
+        "pair_id": "L1_Agreeableness_01",
+        "layer": "Psychographic",
+        "concept_A": "Cooperative & Trusting",
+        "concept_B": "Competitive & Skeptical",
+        "image_prompt_A": "A diverse team of people huddled around a table, smiling and collaborating on a project, bright natural lighting, supportive atmosphere, 8k",
+        "image_prompt_B": "Two businesspeople in a tense face-to-face negotiation across a table, serious expressions, dramatic low-key lighting, competitive tension, 8k",
+        "data_inference": "Trait: Agreeableness (High)",
+        "branching_logic": "Next: L2_FamilyCareer_01"
+    },
+    {
+        "pair_id": "L1_Agreeableness_02",
+        "layer": "Psychographic",
+        "concept_A": "Compassionate & Altruistic",
+        "concept_B": "Critical & Uncompromising",
+        "image_prompt_A": "A volunteer warmly comforting a sad stranger at a charity drive, offering food and a blanket, soft golden light, compassionate mood, 8k",
+        "image_prompt_B": "A person standing apart with arms crossed during a group discussion, frowning skeptically while others agree, cooler lighting, tense atmosphere, 8k",
+        "data_inference": "Trait: Agreeableness (High)",
+        "branching_logic": "Next: L2_ConformityRebellion_01"
+    },
+    {
+        "pair_id": "L1_Neuroticism_01",
+        "layer": "Psychographic",
+        "concept_A": "Calm & Even-Tempered",
+        "concept_B": "Anxious & Stress-Prone",
+        "image_prompt_A": "A tranquil zen garden with a gentle waterfall, green bamboo and smooth stones, soft morning light, perfectly calm atmosphere, 8k",
+        "image_prompt_B": "An office desk scattered with crumpled papers and a spilled coffee, person gripping their head in frustration, harsh overhead lighting, stressful scene, 8k",
+        "data_inference": "Trait: Emotional Stability (Low Neuroticism)",
+        "branching_logic": "Next: L2_AdventureSecurity_01"
+    },
+    {
+        "pair_id": "L1_Neuroticism_02",
+        "layer": "Psychographic",
+        "concept_A": "Fearless & Unworried",
+        "concept_B": "Cautious & Security-Seeking",
+        "image_prompt_A": "A person skydiving from an airplane against a broad blue sky, exhilarating free fall, sunlit clouds, fearless thrill, 8k",
+        "image_prompt_B": "A person double-checking the multiple locks on their front door at night, porch light on, nervous posture, tense atmosphere, 8k",
+        "data_inference": "Trait: Emotional Stability (Low Neuroticism)",
+        "branching_logic": "Next: L2_LuxurySimple_01"
+    },
+    {
+        "pair_id": "L2_TradModern_01",
+        "layer": "Value",
+        "concept_A": "Traditional & Rustic",
+        "concept_B": "Modern & Futuristic",
+        "image_prompt_A": "A quaint rural farmhouse with a wrap-around porch and old pickup truck, golden sunset over fields, nostalgic Americana atmosphere, 8k",
+        "image_prompt_B": "A neon-lit futuristic city skyline with flying vehicles between glass skyscrapers, cyberpunk aesthetic, night scene, 8k",
+        "data_inference": "Values: Traditionalist (Conservative-leaning)",
+        "branching_logic": "Next: L3_HistoryVsSpace_01"
+    },
+    {
+        "pair_id": "L2_NatureIndustry_01",
+        "layer": "Value",
+        "concept_A": "Nature & Environment",
+        "concept_B": "Urban & Industrial",
+        "image_prompt_A": "A dense, green forest with sunbeams illuminating a clear stream, untouched wilderness, peaceful natural beauty, 8k",
+        "image_prompt_B": "A sprawling industrial complex with smokestacks releasing smoke into the sky, steel structures dominating the landscape, gritty atmosphere, 8k",
+        "data_inference": "Values: Environmentalist",
+        "branching_logic": "Next: L3_PlantsVsGadgets_01"
+    },
+    {
+        "pair_id": "L2_OrderChaos_01",
+        "layer": "Value",
+        "concept_A": "Order & Symmetry",
+        "concept_B": "Complexity & Chaos",
+        "image_prompt_A": "An impeccably symmetrical formal garden with geometric hedge patterns and a central fountain, midday sun, perfect order, 8k",
+        "image_prompt_B": "A provocative abstract art installation of tangled wires and broken mirrors, asymmetrical shapes and vibrant colors, dramatic shadow lighting, chaotic energy, 8k",
+        "data_inference": "Values: Orderly (Structure-seeking)",
+        "branching_logic": "Next: L3_PuzzlesVsWriting_01"
+    },
+    {
+        "pair_id": "L2_IndividualCommunity_01",
+        "layer": "Value",
+        "concept_A": "Independence & Individualism",
+        "concept_B": "Community & Belonging",
+        "image_prompt_A": "A lone hiker standing on a mountain summit with arms raised, vast landscape below, sunrise light, self-reliant triumph, 8k",
+        "image_prompt_B": "A lively community farmers' market with neighbors chatting and children playing, colorful stalls under daylight, strong communal vibe, 8k",
+        "data_inference": "Values: Individualist",
+        "branching_logic": "Next: L3_CatsVsDogs_01"
+    },
+    {
+        "pair_id": "L2_FamilyCareer_01",
+        "layer": "Value",
+        "concept_A": "Family-Oriented",
+        "concept_B": "Career-Focused",
+        "image_prompt_A": "A multi-generational family gathered around a dinner table, smiling and holding hands during a meal, warm interior lighting, feeling of togetherness, 8k",
+        "image_prompt_B": "A lone executive in a high-rise corner office at night, city skyline through the window, working late with papers and laptop, cool blue lighting, 8k",
+        "data_inference": "Values: Family-first",
+        "branching_logic": "Next: L3_CodingVsCooking_01"
+    },
+    {
+        "pair_id": "L2_LuxurySimple_01",
+        "layer": "Value",
+        "concept_A": "Extravagant & Materialistic",
+        "concept_B": "Humble & Frugal",
+        "image_prompt_A": "A wealthy scene: a sleek Lamborghini parked before a mansion's grand entrance, marble statues and fountains, sunset glow, opulence on display, 8k",
+        "image_prompt_B": "A simple off-grid tiny house cabin in the woods, a single old truck outside, solar panels on the roof, dusk light, modest and content atmosphere, 8k",
+        "data_inference": "Values: Materialistic",
+        "branching_logic": "Next: L3_FineDiningVsStreetFood_01"
+    },
+    {
+        "pair_id": "L2_SpiritualScience_01",
+        "layer": "Value",
+        "concept_A": "Spiritual & Mystical",
+        "concept_B": "Rational & Scientific",
+        "image_prompt_A": "A tranquil candlelit room with incense, crystals, and a person meditating beneath a wall of spiritual symbols, ethereal glow, mystic ambiance, 8k",
+        "image_prompt_B": "A modern laboratory with a scientist peering into a microscope, bright white lighting, clean equipment, atmosphere of precision and logic, 8k",
+        "data_inference": "Values: Spiritual (Faith-oriented)",
+        "branching_logic": "Next: L3_AstrologyVsAstronomy_01"
+    },
+    {
+        "pair_id": "L2_AdventureSecurity_01",
+        "layer": "Value",
+        "concept_A": "Risk-Taking Adventure",
+        "concept_B": "Safety & Security",
+        "image_prompt_A": "A person paragliding over a coastal cliff at sunset, bold colorful parachute, expansive ocean view, thrilling freedom, 8k",
+        "image_prompt_B": "A cozy suburban home at dusk with warm lights on, a tall fence and security cameras visible, safe and settled atmosphere, 8k",
+        "data_inference": "Values: Adventurous",
+        "branching_logic": "Next: L3_BeachVsMountain_01"
+    },
+    {
+        "pair_id": "L2_CreativePractical_01",
+        "layer": "Value",
+        "concept_A": "Creative Free-Spirit",
+        "concept_B": "Pragmatic & Conventional",
+        "image_prompt_A": "A bohemian artist loft with colorful wall murals, hanging plants and fabrics, sunlight flooding through big windows onto art in progress, whimsical atmosphere, 8k",
+        "image_prompt_B": "A neat suburban living room with beige walls, a comfortable sofa and a television, family photos on the mantle, bright even lighting, conventional feel, 8k",
+        "data_inference": "Values: Bohemian (Creative)",
+        "branching_logic": "Next: L3_PhotographyVsPainting_01"
+    },
+    {
+        "pair_id": "L2_ExcitementPeace_01",
+        "layer": "Value",
+        "concept_A": "High Energy Life",
+        "concept_B": "Calm & Peaceful Life",
+        "image_prompt_A": "A busy city street at night with bright marquee lights and people rushing, light trails from cars, vibrant and fast-paced atmosphere, 8k",
+        "image_prompt_B": "A quiet rural field at dusk with fireflies floating above grass, a small cottage in the distance, slow and peaceful ambiance, 8k",
+        "data_inference": "Values: Thrill-Seeking",
+        "branching_logic": "Next: L3_TheaterVsSports_01"
+    },
+    {
+        "pair_id": "L2_MinimalistMaximalist_01",
+        "layer": "Value",
+        "concept_A": "Minimalist Aesthetic",
+        "concept_B": "Collectible Enthusiast",
+        "image_prompt_A": "A modern sparsely furnished living room with clean white furniture and empty white walls, a single plant, large window with light, ultra-minimalist style, 8k",
+        "image_prompt_B": "A cozy living room absolutely filled with shelves of antiques, books, and memorabilia on every surface, warm lamp light, maximalist charm, 8k",
+        "data_inference": "Values: Minimalism",
+        "branching_logic": "Next: L3_ElectricVsClassicCars_01"
+    },
+    {
+        "pair_id": "L2_ConformityRebellion_01",
+        "layer": "Value",
+        "concept_A": "Conventional & Obedient",
+        "concept_B": "Rebellious & Nonconformist",
+        "image_prompt_A": "A line of uniformed school students saluting the flag in unison at morning assembly, perfectly in line, bright schoolyard light, disciplined mood, 8k",
+        "image_prompt_B": "A graffiti artist spray-painting a vibrant mural on an alley wall at night, wearing edgy streetwear, defying norms, 8k",
+        "data_inference": "Values: Conformist",
+        "branching_logic": "Next: L3_PopVsRock_01"
+    },
+    {
+        "pair_id": "L2_TechOffGrid_01",
+        "layer": "Value",
+        "concept_A": "Tech-Dependent",
+        "concept_B": "Off-Grid Simple Living",
+        "image_prompt_A": "A sleek smart home interior with interactive screens on walls and a person using a VR headset, cool blue lighting, ultra-modern ambiance, 8k",
+        "image_prompt_B": "A rustic wooden cabin in a remote forest with no electricity, lit by oil lamps at twilight, a person chopping wood outside, self-sufficient mood, 8k",
+        "data_inference": "Values: Technophile",
+        "branching_logic": "Next: L3_SpaceVsWildlife_01"
+    },
+    {
+        "pair_id": "L2_DisciplineSpontaneity_01",
+        "layer": "Value",
+        "concept_A": "Disciplined & Regimented",
+        "concept_B": "Spontaneous & Carefree",
+        "image_prompt_A": "At dawn, a group of cadets in a military boot camp performing synchronized exercises in uniform rows, crisp morning light, atmosphere of strict routine, 8k",
+        "image_prompt_B": "A couple suddenly dancing in a city fountain in their everyday clothes, water splashing, midday sun, carefree impulsive joy, 8k",
+        "data_inference": "Values: Disciplined",
+        "branching_logic": "Next: L3_StrategyVsFPS_01"
+    },
+    {
+        "pair_id": "L2_AmbitionContentment_01",
+        "layer": "Value",
+        "concept_A": "Driven & Ambitious",
+        "concept_B": "Content & Easygoing",
+        "image_prompt_A": "A young professional in a suit sprinting to catch a metro train during rush hour, holding a briefcase, motion blur, determined expression, 8k",
+        "image_prompt_B": "A person relaxing in a hammock strung between palm trees on a beach, wearing sunglasses, holding a drink, lazy afternoon sunlight, carefree vibe, 8k",
+        "data_inference": "Values: Ambitious",
+        "branching_logic": "Next: L3_StartupVsAcademia_01"
+    },
+    {
+        "pair_id": "L3_GolfVsBasketball_01",
+        "layer": "Interest",
+        "concept_A": "Golf",
+        "concept_B": "Basketball",
+        "image_prompt_A": "A serene golf course green at sunrise with a golfer lining up a putt, neat flag in the hole, dew on the grass, calm focused atmosphere, 8k",
+        "image_prompt_B": "An outdoor basketball court in the city with players leaping for a dunk, urban graffiti backdrop, sunset lighting, dynamic action, 8k",
+        "data_inference": "Interest: Golf",
+        "branching_logic": "Next: L3_TheaterVsSports_01"
+    },
+    {
+        "pair_id": "L3_StrategyVsFPS_01",
+        "layer": "Interest",
+        "concept_A": "Strategy Games",
+        "concept_B": "FPS Games",
+        "image_prompt_A": "An intense top-down view of a player planning moves on a detailed strategy board game or RTS video game map on screen, cool focused lighting, 8k",
+        "image_prompt_B": "A first-person view of a video game character in a fast-paced shooter battle, gun in hand, explosions in a war-torn arena, high-adrenaline energy, 8k",
+        "data_inference": "Interest: Strategy Gaming",
+        "branching_logic": "Next: L3_PCGamingVsConsole_01"
+    },
+    {
+        "pair_id": "L3_ClassicalVsEDM_01",
+        "layer": "Interest",
+        "concept_A": "Classical Music",
+        "concept_B": "EDM (Electronic Dance Music)",
+        "image_prompt_A": "A grand orchestra performing on stage, violinists and cellists in focus, elegant concert hall with warm lighting, sheet music on stands, 8k",
+        "image_prompt_B": "A packed EDM festival at night, DJ on a futuristic neon-lit stage, crowd dancing with glow sticks, laser lights and bass drop energy, 8k",
+        "data_inference": "Interest: Classical Music",
+        "branching_logic": "Next: L3_PopVsRock_01"
+    },
+    {
+        "pair_id": "L3_SciFiVsHistorical_01",
+        "layer": "Interest",
+        "concept_A": "Sci-Fi Movies",
+        "concept_B": "Historical Drama",
+        "image_prompt_A": "A futuristic space battle scene with starships firing lasers against a planet backdrop, intense cosmic colors, epic scale, 8k",
+        "image_prompt_B": "A lavish historical drama scene in a Victorian ballroom with aristocrats dancing, ornate chandeliers, period costumes, cinematic warm lighting, 8k",
+        "data_inference": "Interest: Science Fiction Films",
+        "branching_logic": "Next: L3_AstrologyVsAstronomy_01"
+    },
+    {
+        "pair_id": "L3_FineDiningVsStreetFood_01",
+        "layer": "Interest",
+        "concept_A": "Fine Dining",
+        "concept_B": "Street Food",
+        "image_prompt_A": "A Michelin-star gourmet dish plated artfully on a white plate in a fancy restaurant, garnish tweezed perfectly, soft romantic lighting, 8k",
+        "image_prompt_B": "A vibrant street market stall serving tacos, with a hand holding a rustic paper-wrapped taco, colorful street scene, bright natural light, 8k",
+        "data_inference": "Interest: Gourmet Cuisine",
+        "branching_logic": "Next: L3_ResortVsHostel_01"
+    },
+    {
+        "pair_id": "L3_BeachVsMountain_01",
+        "layer": "Interest",
+        "concept_A": "Beach Vacation",
+        "concept_B": "Mountain Trekking",
+        "image_prompt_A": "A tranquil tropical beach with turquoise water and palm trees, an empty hammock swaying between two palms, golden hour light, relaxing paradise, 8k",
+        "image_prompt_B": "A hiker reaching the peak of a rugged mountain trail above the clouds, backpack on, cool morning light, exhilarating achievement, 8k",
+        "data_inference": "Interest: Beach Holidays",
+        "branching_logic": "Next: L3_ResortVsHostel_01"
+    },
+    {
+        "pair_id": "L3_YogaVsWeightlifting_01",
+        "layer": "Interest",
+        "concept_A": "Yoga",
+        "concept_B": "Weightlifting",
+        "image_prompt_A": "A woman practicing yoga alone on a cliffside at sunrise, in tree pose, overlooking the ocean, serene and balanced energy, 8k",
+        "image_prompt_B": "A man doing a heavy barbell deadlift in a gym, muscles strained, dramatic side lighting, intense focus and power, 8k",
+        "data_inference": "Interest: Yoga",
+        "branching_logic": "Next: L3_PlantsVsGadgets_01"
+    },
+    {
+        "pair_id": "L3_AnimeVsDocumentary_01",
+        "layer": "Interest",
+        "concept_A": "Anime",
+        "concept_B": "Documentary Films",
+        "image_prompt_A": "A collage of vibrant anime scenes with stylized characters, big expressive eyes, dynamic action lines, neon colors, fantastical elements, 8k",
+        "image_prompt_B": "A nature documentary frame of a majestic lion on the savannah at sunset, realistic detail, calm narration vibe, cinematic 8k clarity",
+        "data_inference": "Interest: Anime",
+        "branching_logic": "Next: L3_HorrorVsComedy_01"
+    },
+    {
+        "pair_id": "L3_PhotographyVsPainting_01",
+        "layer": "Interest",
+        "concept_A": "Photography",
+        "concept_B": "Painting",
+        "image_prompt_A": "A professional photographer crouching to frame a shot of a city skyline at golden hour with a DSLR camera, tripod setup, golden glow, 8k",
+        "image_prompt_B": "An artist in a studio painting a colorful canvas with oil paints, palette in hand, paint splatters around, warm indoor light, 8k",
+        "data_inference": "Interest: Photography",
+        "branching_logic": "Next: L3_CoutureVsStreetwear_01"
+    },
+    {
+        "pair_id": "L3_ElectricVsClassicCars_01",
+        "layer": "Interest",
+        "concept_A": "Electric Cars",
+        "concept_B": "Classic Vintage Cars",
+        "image_prompt_A": "A shiny new Tesla electric car charging at a modern station, futuristic design, LED lights on, twilight sky, tech-forward vibe, 8k",
+        "image_prompt_B": "A restored red 1960s Mustang driving on an open road, motion blur, sunset behind, nostalgic vintage charm, 8k",
+        "data_inference": "Interest: Electric Vehicles",
+        "branching_logic": "Next: L3_SpaceVsWildlife_01"
+    },
+    {
+        "pair_id": "L3_CodingVsCooking_01",
+        "layer": "Interest",
+        "concept_A": "Computer Programming",
+        "concept_B": "Cooking/Baking",
+        "image_prompt_A": "A software developer's workspace with multiple screens filled with code, late-night blue glow, coffee mug beside keyboard, focus and logic, 8k",
+        "image_prompt_B": "A home kitchen with someone frosting a cake or stirring a pot, ingredients and spices spread out, warm homey lighting, creative culinary mess, 8k",
+        "data_inference": "Interest: Programming",
+        "branching_logic": "Next: L3_ElectricVsClassicCars_01"
+    },
+    {
+        "pair_id": "L3_CatsVsDogs_01",
+        "layer": "Interest",
+        "concept_A": "Cats",
+        "concept_B": "Dogs",
+        "image_prompt_A": "A close-up of a cozy living room scene with a contented cat curled up on a plush armchair by the window, soft afternoon light, 8k",
+        "image_prompt_B": "A happy dog with a leash in its mouth at a park, ready for a walk, green grass and trees, bright daytime, joyful energy, 8k",
+        "data_inference": "Interest: Cats (Pet Preference)",
+        "branching_logic": "Next: L3_AnimeVsDocumentary_01"
+    },
+    {
+        "pair_id": "L3_HistoryVsSpace_01",
+        "layer": "Interest",
+        "concept_A": "History/Medieval",
+        "concept_B": "Space Science",
+        "image_prompt_A": "A medieval castle on a hill with knights in armor patrolling the walls, flags fluttering, misty morning, rich historical detail, 8k",
+        "image_prompt_B": "A high-tech NASA rocket launching into space from the pad, billowing smoke and bright flames, clear sky, scientific marvel, 8k",
+        "data_inference": "Interest: History",
+        "branching_logic": "Next: L3_SciFiVsHistorical_01"
+    },
+    {
+        "pair_id": "L3_AstrologyVsAstronomy_01",
+        "layer": "Interest",
+        "concept_A": "Astrology",
+        "concept_B": "Astronomy",
+        "image_prompt_A": "An ornate zodiac constellation chart laid out on a table with crystals and candles, mystical purple glow, celestial mysticism, 8k",
+        "image_prompt_B": "An astronomer peering through a large telescope in an observatory dome under a clear night sky filled with stars, faint red lighting, scientific wonder, 8k",
+        "data_inference": "Interest: Astrology",
+        "branching_logic": "Next: L3_AnimeVsDocumentary_01"
+    },
+    {
+        "pair_id": "L3_HorrorVsComedy_01",
+        "layer": "Interest",
+        "concept_A": "Horror Movies",
+        "concept_B": "Comedy Movies",
+        "image_prompt_A": "A creepy old haunted house at night with a full moon behind it, silhouettes of gnarled trees, dim lights in windows, suspenseful atmosphere, 8k",
+        "image_prompt_B": "A vibrant comedy club stage with a comedian mid-joke, audience laughing with drinks in hand, warm spotlight on brick wall backdrop, 8k",
+        "data_inference": "Interest: Horror Films",
+        "branching_logic": "Next: L3_PopVsRock_01"
+    },
+    {
+        "pair_id": "L3_PuzzlesVsWriting_01",
+        "layer": "Interest",
+        "concept_A": "Logic Puzzles",
+        "concept_B": "Creative Writing",
+        "image_prompt_A": "A close-up of a person intently assembling a complex jigsaw puzzle on a table or writing Sudoku solutions, bright focused lamp light, analytical mood, 8k",
+        "image_prompt_B": "A writer in a cafe with a notebook and pen, multiple crumpled pages aside, imagining a story with a distant gaze, warm ambient light, creative atmosphere, 8k",
+        "data_inference": "Interest: Logic Puzzles",
+        "branching_logic": "Next: L3_StrategyVsFPS_01"
+    },
+    {
+        "pair_id": "L3_GossipVsNews_01",
+        "layer": "Interest",
+        "concept_A": "Celebrity Gossip",
+        "concept_B": "Politics/World News",
+        "image_prompt_A": "Paparazzi photographers crowding around a glamorous celebrity stepping out of a car on a red carpet, camera flashes, high drama, 8k",
+        "image_prompt_B": "A serious news anchor in a studio with global maps on screens behind, delivering breaking world news, professional lighting, 8k",
+        "data_inference": "Interest: Celebrity Gossip",
+        "branching_logic": "Next: L3_CoutureVsStreetwear_01"
+    },
+    {
+        "pair_id": "L3_CoutureVsStreetwear_01",
+        "layer": "Interest",
+        "concept_A": "High Fashion Couture",
+        "concept_B": "Urban Streetwear",
+        "image_prompt_A": "An elegant runway model wearing an avant-garde haute couture gown, dramatic lighting, fashion week catwalk setting, photographers in background, 8k",
+        "image_prompt_B": "A stylish youth in a graffiti-lined alleyway wearing trendy streetwear: sneakers, hoodie, cap, casual pose, gritty urban lighting, 8k",
+        "data_inference": "Interest: High Fashion",
+        "branching_logic": "Next: L3_FineDiningVsStreetFood_01"
+    },
+    {
+        "pair_id": "L3_SpaceVsWildlife_01",
+        "layer": "Interest",
+        "concept_A": "Space Exploration",
+        "concept_B": "Wildlife Conservation",
+        "image_prompt_A": "An astronaut floating outside the International Space Station above Earth, vast cosmos in background, aspirational science, 8k",
+        "image_prompt_B": "A wildlife conservationist feeding a baby elephant at a sanctuary, lush greenery around, compassionate connection with nature, 8k",
+        "data_inference": "Interest: Space Exploration",
+        "branching_logic": "Next: L3_SciFiVsHistorical_01"
+    },
+    {
+        "pair_id": "L3_StartupVsAcademia_01",
+        "layer": "Interest",
+        "concept_A": "Startups & Entrepreneurship",
+        "concept_B": "Academic Research",
+        "image_prompt_A": "A small team in a garage startup setting, coding on laptops amid coffee cups and whiteboards with app ideas, late-night innovation energy, 8k",
+        "image_prompt_B": "A scholarly professor in a university library surrounded by tall stacks of books and research papers, soft lamp light, studious calm, 8k",
+        "data_inference": "Interest: Entrepreneurship",
+        "branching_logic": "Next: L3_CodingVsCooking_01"
+    },
+    {
+        "pair_id": "L3_TheaterVsSports_01",
+        "layer": "Interest",
+        "concept_A": "Live Theater",
+        "concept_B": "Live Sports Event",
+        "image_prompt_A": "Actors performing a dramatic scene on a theater stage with ornate set design, spotlight highlighting emotional moment, captivated audience in darkness, 8k",
+        "image_prompt_B": "A packed football stadium with fans waving flags and cheering, players in action under bright floodlights, high excitement and energy, 8k",
+        "data_inference": "Interest: Live Theater",
+        "branching_logic": "Next: L3_PhotographyVsPainting_01"
+    },
+    {
+        "pair_id": "L3_PCGamingVsConsole_01",
+        "layer": "Interest",
+        "concept_A": "PC Gaming",
+        "concept_B": "Console Gaming",
+        "image_prompt_A": "A high-end gaming PC setup with multicolor RGB lights in a dark room, ultra-wide monitor displaying a game, mechanical keyboard glowing, immersive atmosphere, 8k",
+        "image_prompt_B": "A gamer sitting on a couch playing on a large TV with a console controller, snacks on the table, cozy living room setting, 8k",
+        "data_inference": "Interest: PC Gaming",
+        "branching_logic": "Next: L3_StrategyVsFPS_01"
+    },
+    {
+        "pair_id": "L3_PopVsRock_01",
+        "layer": "Interest",
+        "concept_A": "Pop Music",
+        "concept_B": "Rock Music",
+        "image_prompt_A": "A bright pop concert with a famous singer on stage, confetti in the air, young crowd singing along, colorful lights, upbeat energy, 8k",
+        "image_prompt_B": "A gritty rock band performing in a small venue, electric guitarist in leather jacket under red stage lights, passionate fans headbanging, 8k",
+        "data_inference": "Interest: Pop Music",
+        "branching_logic": "Next: L3_GossipVsNews_01"
+    },
+    {
+        "pair_id": "L3_ResortVsHostel_01",
+        "layer": "Interest",
+        "concept_A": "Luxury Resort Travel",
+        "concept_B": "Backpacker Hostel Travel",
+        "image_prompt_A": "An infinity pool at a tropical luxury resort overlooking the ocean at sunset, plush lounge chairs and cocktails, serene and pampered atmosphere, 8k",
+        "image_prompt_B": "A group of young backpackers socializing in a cozy hostel common room plastered with world maps, worn couches, guitar in corner, budget adventure vibe, 8k",
+        "data_inference": "Interest: Luxury Travel",
+        "branching_logic": "Next: L3_FineDiningVsStreetFood_01"
+    },
+    {
+        "pair_id": "L3_PlantsVsGadgets_01",
+        "layer": "Interest",
+        "concept_A": "Indoor Gardening",
+        "concept_B": "Smart Home Tech",
+        "image_prompt_A": "A sunlit apartment living room filled with lush potted houseplants of various sizes, hanging planters in the window, green and natural oasis vibe, 8k",
+        "image_prompt_B": "A sleek modern living room with smart home gadgets: robot vacuum, voice assistant speaker, smart lights, big smart fridge visible, cool techy atmosphere, 8k",
+        "data_inference": "Interest: Indoor Plants",
+        "branching_logic": "Next: L3_CatsVsDogs_01"
+    }
+]

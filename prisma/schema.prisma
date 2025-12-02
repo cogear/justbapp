@@ -33,6 +33,84 @@ model User {
   // Relations
   dailyPulses   DailyPulse[]
   journalEntries JournalEntry[]
+  visualProfiles VisualProfile[]
+}
+
+// Visual Personality Profile
+model VisualProfile {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+
+  // OCEAN Traits (0-100)
+  openness          Int
+  conscientiousness Int
+  extraversion      Int
+  agreeableness     Int
+  neuroticism       Int
+
+  // Top Interests (Stored as JSON or array of strings)
+  interests String[] // e.g. ["IAB1", "IAB17"]
+
+  // Personality Cluster (e.g. "Role Model", "Explorer")
+  cluster String?
+
+  // Relations
+  interactions UserInteraction[]
+}
+
+// News 2.0 Models
+
+model NewsArticle {
+  id          String   @id @default(uuid())
+  originalUrl String   @unique
+  title       String
+  description String?
+  content     String   // Full scraped content
+  imageUrl    String?
+  source      String?
+  publishedAt DateTime
+  
+  // Metadata
+  tags        String[] // e.g. ["Tech", "Politics", "Health"]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  reframedArticles ReframedArticle[]
+  interactions     UserInteraction[]
+}
+
+model ReframedArticle {
+  id            String   @id @default(uuid())
+  newsArticleId String
+  newsArticle   NewsArticle @relation(fields: [newsArticleId], references: [id])
+  
+  cluster       String   // The personality cluster this is targeted for (e.g. "Explorer")
+  
+  headline      String
+  summary       String   // Teaser summary
+  content       String   // Full reframed content
+  tone          String?  // e.g. "Optimistic", "Analytical"
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([newsArticleId, cluster]) // One reframe per cluster per article
+}
+
+model UserInteraction {
+  id            String   @id @default(uuid())
+  userId        String
+  user          VisualProfile @relation(fields: [userId], references: [id]) // Linking to VisualProfile for cluster context
+  
+  newsArticleId String
+  newsArticle   NewsArticle @relation(fields: [newsArticleId], references: [id])
+  
+  type          String   // "CLICK", "VIEW", "LIKE", "DISMISS"
+  createdAt     DateTime @default(now())
 }
 
 // The Daily Pulse: "Where is your energy right now?"
@@ -59,6 +137,7 @@ model JournalEntry {
   createdAt DateTime @default(now())
 
   question String // e.g. "What is one thing you are dreading?"
+  questionId String? // ID from the predefined question list
   answer   String
 
   // Vector embedding of the answer for semantic search/memory
@@ -75,6 +154,14 @@ model Event {
   
   // "Nourishing" keywords tags
   tags String[] // e.g. "Garden", "Silent"
+
+  // Discovery Pipeline Fields
+  sourceUrl   String?
+  latitude    Float?
+  longitude   Float?
+  zipCode     String?
+  category    String? // e.g. "Low Key", "Social", "Class", "Nature"
+  rawText     String? // For provenance/debugging
 
   // Social Proof
   attendeeCount Int @default(0)

@@ -33,10 +33,10 @@ export default function BreathingIntro({ onComplete }: BreathingIntroProps) {
     if (!visible) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-b-sand transition-opacity duration-500">
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background transition-opacity duration-500">
             <div
                 className={`
-          w-32 h-32 rounded-full bg-b-sage/20 backdrop-blur-sm
+          w-32 h-32 rounded-full bg-primary/20 backdrop-blur-sm
           transition-all duration-[1500ms] ease-in-out
           ${phase === 'inhale' ? 'scale-150 opacity-100' : ''}
           ${phase === 'hold' ? 'scale-150 opacity-100' : ''}
@@ -44,7 +44,7 @@ export default function BreathingIntro({ onComplete }: BreathingIntroProps) {
         `}
             />
             <p className={`
-        mt-8 text-b-charcoal/60 font-medium tracking-widest uppercase text-sm
+        mt-8 text-foreground/60 font-medium tracking-widest uppercase text-sm
         transition-opacity duration-1000
         ${phase === 'exhale' ? 'opacity-0' : 'opacity-100'}
       `}>

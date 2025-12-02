@@ -1,22 +1,83 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #F5F2EB;
+  /* Warm Sand */
+  --foreground: #2D2D2D;
+  /* Soft Charcoal */
+  --primary: #8DA399;
+  /* Sage Green */
+  --primary-foreground: #ffffff;
+  --secondary: #E0E6E6;
+  /* Morning Mist */
+  --secondary-foreground: #2D2D2D;
+  --muted: #E0E6E6;
+  --muted-foreground: #2D2D2D;
+  --accent: #D4A59A;
+  /* Dusty Clay */
+  --accent-foreground: #ffffff;
+  --destructive: #D4A59A;
+  /* Using Clay for destructive/attention */
+  --destructive-foreground: #ffffff;
+  --border: #E0E6E6;
+  --input: #E0E6E6;
+  --ring: #8DA399;
+  --radius: 0.5rem;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-dynapuff: var(--font-dynapuff);
+
+  --color-b-sand: #F5F2EB;
+  --color-b-charcoal: #2D2D2D;
+  --color-b-sage: #8DA399;
+  --color-b-clay: #D4A59A;
+  --color-b-mist: #E0E6E6;
+  --color-b-night: #1A1A1A;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.dark {
+  --background: #1A1A1A;
+  /* Deep Night */
+  --foreground: #F5F2EB;
+  /* Sand Text */
+  --primary: #8DA399;
+  /* Sage Green */
+  --primary-foreground: #ffffff;
+  --secondary: #2D2D2D;
+  /* Soft Charcoal */
+  --secondary-foreground: #F5F2EB;
+  --muted: #2D2D2D;
+  --muted-foreground: #F5F2EB;
+  --accent: #D4A59A;
+  /* Dusty Clay */
+  --accent-foreground: #ffffff;
+  --destructive: #D4A59A;
+  --destructive-foreground: #ffffff;
+  --border: #2D2D2D;
+  --input: #2D2D2D;
+  --ring: #8DA399;
 }
 
 body {
