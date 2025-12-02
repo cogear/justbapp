@@ -11,9 +11,14 @@ export interface ExtractedEvent {
     sourceUrl: string;
 }
 
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-});
+// Lazy init OpenAI
+function getOpenAI() {
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) {
+        throw new Error('OPENAI_API_KEY is not set');
+    }
+    return new OpenAI({ apiKey });
+}
 
 export async function extractEventsFromUrl(url: string): Promise<ExtractedEvent[]> {
     console.log(`Extracting events from ${url}...`);
@@ -41,6 +46,7 @@ export async function extractEventsFromUrl(url: string): Promise<ExtractedEvent[
             return [];
         }
 
+        const openai = getOpenAI();
         const completion = await openai.chat.completions.create({
             model: "gpt-4o-mini",
             messages: [

@@ -2,9 +2,14 @@ import OpenAI from 'openai';
 import { VisualProfile } from '@prisma/client';
 import * as cheerio from 'cheerio';
 
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-});
+// Lazy init OpenAI
+function getOpenAI() {
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) {
+        throw new Error('OPENAI_API_KEY is not set');
+    }
+    return new OpenAI({ apiKey });
+}
 
 export interface NewsStory {
     id: string;
@@ -200,6 +205,7 @@ export async function reframeStory(story: NewsStory, profile: VisualProfile): Pr
     }
 
     try {
+        const openai = getOpenAI();
         const completion = await openai.chat.completions.create({
             model: "gpt-4o-mini",
             messages: [
