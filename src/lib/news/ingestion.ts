@@ -4,9 +4,14 @@ import OpenAI from 'openai';
 import { scrapeContent } from './service';
 import { CLUSTERS } from '@/lib/personality/clustering';
 
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-});
+// Lazy init OpenAI to prevent build failures if env var is missing
+function getOpenAI() {
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) {
+        throw new Error('OPENAI_API_KEY is not set');
+    }
+    return new OpenAI({ apiKey });
+}
 
 export async function ingestLatestNews() {
     console.log('Starting news ingestion...');
@@ -92,6 +97,7 @@ export async function ingestLatestNews() {
 
 async function generateTags(title: string, content: string): Promise<string[]> {
     try {
+        const openai = getOpenAI();
         const completion = await openai.chat.completions.create({
             model: "gpt-4o-mini",
             messages: [
@@ -117,6 +123,7 @@ async function generateReframes(title: string, content: string) {
         const prompt = getPromptForCluster(cluster.name);
 
         try {
+            const openai = getOpenAI();
             const completion = await openai.chat.completions.create({
                 model: "gpt-4o-mini",
                 messages: [
