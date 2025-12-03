@@ -8,8 +8,9 @@ interface EventDisplay {
     id: string;
     title: string;
     description: string;
-    location: string;
-    date: Date;
+    locationName: string | null;
+    address: string | null;
+    startTime: Date;
     category: string | null;
     tags: string[];
     sourceUrl: string | null;
@@ -126,7 +127,7 @@ function GetOutContent() {
                                     {event.category || 'Event'}
                                 </span>
                                 <span className="text-sm text-muted-foreground">
-                                    {new Date(event.date).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}
+                                    {new Date(event.startTime).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}
                                 </span>
                             </div>
 
@@ -141,7 +142,7 @@ function GetOutContent() {
                             <div className="flex items-center justify-between mt-auto pt-4 border-t border-border/30">
                                 <div className="text-xs text-muted-foreground flex items-center gap-1">
                                     <span className="w-2 h-2 rounded-full bg-primary/50"></span>
-                                    {event.location.split(',')[0]}
+                                    {event.locationName || event.address || 'Unknown Location'}
                                 </div>
                                 {event.sourceUrl && (
                                     <a

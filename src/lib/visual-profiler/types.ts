@@ -20,6 +20,7 @@ export interface ImageConfig {
     src: string;
     alt: string;
     prompt?: string;
+    variants?: string[]; // Array of 3 variant URLs
     inference: Inference;
 }
 

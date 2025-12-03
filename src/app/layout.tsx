@@ -37,6 +37,18 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${dynapuff.variable} antialiased bg-background text-foreground`}
       >
+        {/* Google Tag Manager (gtag.js) */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-0DW5BR7WLY"></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-0DW5BR7WLY');
+            `,
+          }}
+        />
         <StackProvider app={stackServerApp}>
           <StackTheme>
             <ThemeProvider

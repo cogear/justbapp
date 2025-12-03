@@ -1,44 +1,50 @@
-export interface Coordinates {
-    lat: number;
-    lng: number;
+// Haversine formula to calculate distance in miles
+export function getDistanceInMiles(lat1: number, lon1: number, lat2: number, lon2: number): number {
+    const R = 3958.8; // Radius of Earth in miles
+    const dLat = (lat2 - lat1) * (Math.PI / 180);
+    const dLon = (lon2 - lon1) * (Math.PI / 180);
+    const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
 }
 
-interface GoogleGeocodeResult {
-    results: Array<{
-        geometry: {
-            location: {
-                lat: number;
-                lng: number;
-            }
-        }
-    }>;
-    status: string;
-}
-
-export async function geocodeAddress(address: string): Promise<Coordinates | null> {
-    const apiKey = process.env.GOOGLE_MAPS_API_KEY;
-    if (!apiKey) {
-        console.warn('GOOGLE_MAPS_API_KEY not found, returning null coordinates');
-        return null;
-    }
-
+export async function geocodeAddress(address: string): Promise<{ latitude: number; longitude: number; formattedAddress?: string } | null> {
     try {
-        const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`;
-        const response = await fetch(url);
+        const params = new URLSearchParams({
+            q: address,
+            format: 'json',
+            limit: '1',
+        });
+
+        const response = await fetch(`https://nominatim.openstreetmap.org/search?${params.toString()}`, {
+            headers: {
+                'User-Agent': 'JustBeApp/1.0 (david@justbe.app)', // Must provide valid contact info
+                'Referer': 'https://justbe.app'
+            }
+        });
 
         if (!response.ok) {
-            throw new Error(`Google Maps API error: ${response.statusText}`);
+            console.error('Geocoding fetch failed:', response.statusText);
+            return null;
         }
 
-        const data = (await response.json()) as GoogleGeocodeResult;
+        const data = await response.json();
 
-        if (data.status === 'OK' && data.results.length > 0) {
-            return data.results[0].geometry.location;
+        if (Array.isArray(data) && data.length > 0) {
+            const result = data[0];
+            return {
+                latitude: parseFloat(result.lat),
+                longitude: parseFloat(result.lon),
+                formattedAddress: result.display_name,
+            };
         }
 
+        return null;
     } catch (error) {
-        console.error('Error geocoding address:', error);
+        console.error('Geocoding error:', error);
+        return null;
     }
-
-    return null;
 }

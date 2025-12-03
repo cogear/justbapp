@@ -149,23 +149,44 @@ model Event {
   id          String   @id @default(uuid())
   title       String
   description String
-  location    String
-  date        DateTime
   
-  // "Nourishing" keywords tags
-  tags String[] // e.g. "Garden", "Silent"
-
-  // Discovery Pipeline Fields
+  // Time
+  startTime   DateTime
+  endTime     DateTime?
+  
+  // Location
+  locationName String?
+  address      String?
+  latitude     Float?
+  longitude    Float?
+  zipCode      String?
+  
+  // Metadata
+  category    String // e.g. "Social", "Creative", "Active"
+  tags        String[] // e.g. "Garden", "Silent"
+  
+  // Source Info
+  source      String   @default("USER") // "USER", "SCRAPER", "API"
   sourceUrl   String?
-  latitude    Float?
-  longitude   Float?
-  zipCode     String?
-  category    String? // e.g. "Low Key", "Social", "Class", "Nature"
-  rawText     String? // For provenance/debugging
+  rawText     String?  // For provenance/debugging
 
   // Social Proof
   attendeeCount Int @default(0)
+  
+  // Vector embedding for "Vibe Match"
+  embedding   Unsupported("vector(1536)")?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model EventSource {
+  id            String   @id @default(uuid())
+  url           String   @unique
+  name          String
+  parserType    String   // "HTML_LLM", "RSS", "JSON"
+  lastScrapedAt DateTime?
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }

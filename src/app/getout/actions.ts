@@ -21,12 +21,27 @@ export async function findEvents(zipCode: string) {
 
         // 2. Extraction Phase (Parallel processing)
         const extractionPromises = sources.map(async (source) => {
-            const extractedEvents = await extractEventsFromUrl(source.url);
+            // Pass source name as default location context
+            const extractedEvents = await extractEventsFromUrl(source.url, source.name);
 
             // 3. Processing & Storage Phase
             for (const eventData of extractedEvents) {
+                // Determine if online
+                const isOnline = eventData.locationName?.toLowerCase().includes('online') ||
+                    eventData.address?.toLowerCase().includes('zoom') ||
+                    eventData.address?.toLowerCase().includes('virtual');
+
                 // Geocode
-                const coords = await geocodeAddress(eventData.location);
+                let coords = null;
+                if (!isOnline) {
+                    coords = await geocodeAddress(eventData.address || eventData.locationName);
+                }
+
+                // Enforce Address/Geocoding Requirement
+                if (!isOnline && (!coords || !coords.latitude)) {
+                    console.warn(`Skipping event "${eventData.title}" - No valid address/coordinates found.`);
+                    continue;
+                }
 
                 // Save to DB (Upsert based on title + date + location to avoid dupes)
                 // For simplicity in this demo, we'll just create or ignore if exists
@@ -35,7 +50,7 @@ export async function findEvents(zipCode: string) {
                 const existing = await prisma.event.findFirst({
                     where: {
                         title: eventData.title,
-                        date: eventData.date
+                        startTime: eventData.startTime
                     }
                 });
 
@@ -44,12 +59,14 @@ export async function findEvents(zipCode: string) {
                         data: {
                             title: eventData.title,
                             description: eventData.description,
-                            location: eventData.location,
-                            date: eventData.date,
+                            locationName: eventData.locationName,
+                            address: eventData.address,
+                            startTime: eventData.startTime,
+                            endTime: eventData.endTime,
                             tags: eventData.tags,
                             sourceUrl: eventData.sourceUrl,
-                            latitude: coords?.lat,
-                            longitude: coords?.lng,
+                            latitude: coords?.latitude,
+                            longitude: coords?.longitude,
                             zipCode: zipCode,
                             category: eventData.category,
                             rawText: JSON.stringify(eventData) // Storing full object for debug
@@ -71,7 +88,9 @@ export async function findEvents(zipCode: string) {
     }
 }
 
-export async function getEvents(zipCode?: string) {
+import { Event } from '@prisma/client';
+
+export async function getEvents(zipCode?: string): Promise<Event[]> {
     // If zip provided, filter by it. Otherwise return all (or nearest).
     // For this demo, we'll just return all if no zip, or filter if zip.
 
@@ -79,7 +98,7 @@ export async function getEvents(zipCode?: string) {
 
     const events = await prisma.event.findMany({
         where,
-        orderBy: { date: 'asc' }
+        orderBy: { startTime: 'asc' }
     });
 
     return events;

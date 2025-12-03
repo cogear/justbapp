@@ -11,14 +11,23 @@ interface VisualPairCardProps {
 }
 
 export function VisualPairCard({ pair, onSelect }: VisualPairCardProps) {
-    const [imgA, setImgA] = React.useState(pair.imageA.src);
-    const [imgB, setImgB] = React.useState(pair.imageB.src);
+    // Helper to pick random variant
+    const pickVariant = React.useCallback((config: typeof pair.imageA) => {
+        if (config.variants && config.variants.length > 0) {
+            return config.variants[Math.floor(Math.random() * config.variants.length)];
+        }
+        return config.src;
+    }, []);
 
-    // Reset images when pair changes
+    // Initialize with the first variant (deterministic for SSR)
+    const [imgA, setImgA] = React.useState(pair.imageA.variants?.[0] || pair.imageA.src);
+    const [imgB, setImgB] = React.useState(pair.imageB.variants?.[0] || pair.imageB.src);
+
+    // Randomize on mount (client-only)
     React.useEffect(() => {
-        setImgA(pair.imageA.src);
-        setImgB(pair.imageB.src);
-    }, [pair]);
+        setImgA(pickVariant(pair.imageA));
+        setImgB(pickVariant(pair.imageB));
+    }, [pair, pickVariant]);
 
     return (
         <div className="flex flex-col h-full w-full max-w-4xl mx-auto justify-center">
@@ -32,6 +41,7 @@ export function VisualPairCard({ pair, onSelect }: VisualPairCardProps) {
                         src={imgA}
                         alt={pair.imageA.alt}
                         fill
+                        unoptimized
                         className="object-cover transition-transform duration-700 group-hover:scale-105"
                         onError={() => setImgA('/images/visual-profiler/p01a.png')}
                     />
@@ -48,6 +58,7 @@ export function VisualPairCard({ pair, onSelect }: VisualPairCardProps) {
                         src={imgB}
                         alt={pair.imageB.alt}
                         fill
+                        unoptimized
                         className="object-cover transition-transform duration-700 group-hover:scale-105"
                         onError={() => setImgB('/images/visual-profiler/p01b.png')}
                     />

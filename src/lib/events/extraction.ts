@@ -4,8 +4,10 @@ import * as cheerio from 'cheerio';
 export interface ExtractedEvent {
     title: string;
     description: string;
-    location: string;
-    date: Date;
+    locationName: string;
+    address: string;
+    startTime: Date;
+    endTime?: Date;
     category: string;
     tags: string[];
     sourceUrl: string;
@@ -20,7 +22,7 @@ function getOpenAI() {
     return new OpenAI({ apiKey });
 }
 
-export async function extractEventsFromUrl(url: string): Promise<ExtractedEvent[]> {
+export async function extractEventsFromUrl(url: string, defaultLocation?: string): Promise<ExtractedEvent[]> {
     console.log(`Extracting events from ${url}...`);
 
     try {
@@ -54,13 +56,27 @@ export async function extractEventsFromUrl(url: string): Promise<ExtractedEvent[
                     role: "system",
                     content: `You are an event extraction agent. Extract local events from the provided text. 
                     Return a JSON object with a key "events" containing an array of events. 
-                    Each event must have: title, description, location (full address if possible), date (ISO string), category (one of: "Low Key", "Social", "Class", "Nature"), and tags (array of strings).
+                    Each event must have: 
+                    - title
+                    - description
+                    - locationName (e.g. "Central Park")
+                    - address (full address if possible)
+                    - startTime (ISO string)
+                    - endTime (ISO string, optional)
+                    - category (one of: "Low Key", "Social", "Class", "Nature")
+                    - tags (array of strings).
+                    
+                    CRITICAL: All events MUST have an address. 
+                    - If the address is explicitly listed, use it.
+                    - If the address is NOT listed, try to infer it from the page context (e.g. if the page is for "Brevard Library", use that address).
+                    - If you absolutely cannot find an address, leave it empty string.
+                    
                     If a specific year is not mentioned, assume the next occurrence of that date.
                     Only extract future events.`
                 },
                 {
                     role: "user",
-                    content: `Source URL: ${url}\n\nText Content:\n${textContent}`
+                    content: `Source URL: ${url}\nDefault Location Context: ${defaultLocation || 'None'}\n\nText Content:\n${textContent}`
                 }
             ],
             response_format: { type: "json_object" }
@@ -71,7 +87,10 @@ export async function extractEventsFromUrl(url: string): Promise<ExtractedEvent[
 
         return events.map((e: any) => ({
             ...e,
-            date: new Date(e.date),
+            startTime: new Date(e.startTime || e.date),
+            endTime: e.endTime ? new Date(e.endTime) : undefined,
+            locationName: e.locationName || e.location || defaultLocation || '',
+            address: e.address || defaultLocation || '',
             sourceUrl: url
         }));
 

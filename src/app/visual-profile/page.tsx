@@ -4,20 +4,25 @@ import { redirect } from 'next/navigation';
 import { VisualProfiler } from '@/components/visual-profiler/VisualProfiler';
 import { CLUSTERS } from '@/lib/personality/clustering';
 
-export default async function VisualProfilePage() {
+import Link from 'next/link';
+
+export default async function VisualProfilePage({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
     const stackUser = await stackServerApp.getUser();
 
     if (!stackUser) {
         redirect('/sign-in');
     }
 
+    const { retest } = await searchParams;
+    const isRetest = retest === 'true';
+
     const user = await prisma.user.findUnique({
         where: { email: stackUser.primaryEmail || '' },
         include: { visualProfiles: { orderBy: { createdAt: 'desc' }, take: 1 } }
     });
 
-    // If no profile exists, show the profiler
-    if (!user || user.visualProfiles.length === 0) {
+    // If no profile exists OR retest is requested, show the profiler
+    if (!user || user.visualProfiles.length === 0 || isRetest) {
         return (
             <main>
                 <VisualProfiler />
@@ -56,17 +61,16 @@ export default async function VisualProfilePage() {
                     <ScoreCard label="Neuroticism" score={profile.neuroticism} description="Emotional Sensitivity" />
                 </div>
 
-                <div className="text-center">
-                    <form action={async () => {
-                        'use server';
-                        // Reset logic would go here, for now just redirect to clear state if we had a reset mechanism
-                        // But since we just show the latest, maybe we need a "Retake" button that creates a new one?
-                        // For MVP, let's just show a message.
-                    }}>
-                        <p className="text-sm text-muted-foreground">
-                            Want to retake the test? <span className="text-xs">(Feature coming soon)</span>
-                        </p>
-                    </form>
+                <div className="text-center pt-8">
+                    <p className="text-sm text-muted-foreground mb-4">
+                        Want to update your profile?
+                    </p>
+                    <Link
+                        href="/visual-profile?retest=true"
+                        className="inline-flex items-center justify-center px-6 py-2 rounded-full bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors text-sm font-medium"
+                    >
+                        Retake Visual Test
+                    </Link>
                 </div>
             </div>
         </main>

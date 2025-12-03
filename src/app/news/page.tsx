@@ -5,22 +5,25 @@ import { NewsFeed } from '@/components/news/NewsFeed';
 import { ClusterSelector } from '@/components/news/ClusterSelector';
 import { redirect } from 'next/navigation';
 
-export default async function NewsPage(props: { searchParams: Promise<{ cluster?: string }> }) {
-    const searchParams = await props.searchParams;
+export default async function NewsPage({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
     const stackUser = await stackServerApp.getUser();
+    const { cluster } = await searchParams;
 
     if (!stackUser) {
         redirect('/sign-in');
     }
 
-    // Fetch user profile to get default cluster
+    // Fetch user profile from DB
     const user = await prisma.user.findUnique({
         where: { email: stackUser.primaryEmail || '' },
         include: { visualProfiles: { orderBy: { createdAt: 'desc' }, take: 1 } }
     });
 
-    const defaultCluster = user?.visualProfiles[0]?.cluster || 'Average';
-    const activeCluster = searchParams.cluster || defaultCluster;
+    // Get user's profile to determine default cluster
+    // In a real app, we'd fetch the user's profile from our DB
+    // For now, we'll just default to 'Average' if no param
+    const defaultCluster = user?.visualProfiles?.[0]?.cluster || 'Average';
+    const activeCluster = (typeof cluster === 'string' ? cluster : undefined) || defaultCluster;
 
     // Fetch personalized news
     let stories = [];

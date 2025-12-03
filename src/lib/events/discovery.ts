@@ -1,5 +1,6 @@
 export interface EventSource {
     url: string;
+    name: string;
     type: 'calendar' | 'social' | 'news';
     confidence: number;
 }
@@ -66,6 +67,7 @@ export async function discoverEventSources(zipCode: string): Promise<EventSource
                     seenUrls.add(result.link);
                     sources.push({
                         url: result.link,
+                        name: result.title,
                         type: 'calendar', // Defaulting for now
                         confidence: 0.8
                     });
