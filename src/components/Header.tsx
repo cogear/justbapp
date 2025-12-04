@@ -19,6 +19,9 @@ export function Header() {
                         <Link href="/events" className="transition-colors hover:text-foreground">
                             Events
                         </Link>
+                        <Link href="/principles" className="transition-colors hover:text-foreground">
+                            Principles
+                        </Link>
                     </nav>
                 </div>
                 <div className="flex items-center gap-2">

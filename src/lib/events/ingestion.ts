@@ -144,7 +144,7 @@ async function extractEventsFromHtml(html: string, sourceName: string, additiona
     const openai = getOpenAI();
 
     const completion = await openai.chat.completions.create({
-        model: "gpt-4o",
+        model: "gpt-4o-mini",
         messages: [
             {
                 role: "system",

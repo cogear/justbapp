@@ -2,7 +2,7 @@ import prisma from '@/lib/prisma';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { Play, Trash2, Plus, ExternalLink, Search, Pencil } from 'lucide-react';
-import { deleteSource, triggerScrape } from './actions';
+import { deleteSource, triggerScrape, runBatchScrape, runBatchDiscovery } from './actions';
 
 export default async function AdminSourcesPage() {
     const sources = await prisma.eventSource.findMany({
@@ -27,6 +27,16 @@ export default async function AdminSourcesPage() {
                         <Link href="/admin/sources/discover" className="px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm font-medium hover:opacity-90 flex items-center gap-2">
                             <Search size={16} /> Discover New
                         </Link>
+                        <form action={runBatchDiscovery}>
+                            <button type="submit" className="px-4 py-2 bg-purple-600 text-white rounded-md text-sm font-medium hover:bg-purple-700 flex items-center gap-2">
+                                <Search size={16} /> Run Discovery
+                            </button>
+                        </form>
+                        <form action={runBatchScrape}>
+                            <button type="submit" className="px-4 py-2 bg-green-600 text-white rounded-md text-sm font-medium hover:bg-green-700 flex items-center gap-2">
+                                <Play size={16} /> Run Bot
+                            </button>
+                        </form>
                     </div>
                 </div>
 
@@ -35,7 +45,8 @@ export default async function AdminSourcesPage() {
                         <thead className="bg-muted/50 border-b border-border">
                             <tr>
                                 <th className="p-4 font-medium text-muted-foreground">Name</th>
-                                <th className="p-4 font-medium text-muted-foreground">URL</th>
+                                <th className="p-4 font-medium text-muted-foreground">Status</th>
+                                <th className="p-4 font-medium text-muted-foreground">Last Result</th>
                                 <th className="p-4 font-medium text-muted-foreground">Last Scraped</th>
                                 <th className="p-4 font-medium text-muted-foreground text-right">Actions</th>
                             </tr>
@@ -43,11 +54,35 @@ export default async function AdminSourcesPage() {
                         <tbody className="divide-y divide-border">
                             {sources.map((source) => (
                                 <tr key={source.id} className="hover:bg-muted/30 transition-colors">
-                                    <td className="p-4 font-medium">{source.name}</td>
-                                    <td className="p-4">
-                                        <a href={source.url} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground hover:underline flex items-center gap-1 truncate max-w-[300px]">
-                                            {source.url} <ExternalLink size={12} />
+                                    <td className="p-4 font-medium">
+                                        <div>{source.name}</div>
+                                        <a href={source.url} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground hover:underline flex items-center gap-1 mt-1">
+                                            {source.url} <ExternalLink size={10} />
                                         </a>
+                                    </td>
+                                    <td className="p-4">
+                                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${source.status === 'ACTIVE' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
+                                            source.status === 'PENDING' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' :
+                                                'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                                            }`}>
+                                            {source.status}
+                                        </span>
+                                    </td>
+                                    <td className="p-4">
+                                        {source.lastScrapeStatus && (
+                                            <div className="flex flex-col">
+                                                <span className={`text-xs font-medium ${source.lastScrapeStatus === 'SUCCESS' ? 'text-green-600 dark:text-green-400' :
+                                                    'text-red-600 dark:text-red-400'
+                                                    }`}>
+                                                    {source.lastScrapeStatus}
+                                                </span>
+                                                {source.lastScrapeLog && (
+                                                    <span className="text-[10px] text-muted-foreground max-w-[150px] truncate" title={source.lastScrapeLog}>
+                                                        {source.lastScrapeLog}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        )}
                                     </td>
                                     <td className="p-4 text-muted-foreground">
                                         {source.lastScrapedAt ? format(source.lastScrapedAt, 'MMM d, h:mm a') : 'Never'}
@@ -75,7 +110,7 @@ export default async function AdminSourcesPage() {
                             ))}
                             {sources.length === 0 && (
                                 <tr>
-                                    <td colSpan={4} className="p-8 text-center text-muted-foreground">
+                                    <td colSpan={5} className="p-8 text-center text-muted-foreground">
                                         No sources found. Use "Discover New" to find some!
                                     </td>
                                 </tr>

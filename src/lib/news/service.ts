@@ -58,6 +58,9 @@ export async function scrapeContent(url: string): Promise<string> {
         const html = stdout;
         const $ = cheerio.load(html);
 
+        // Remove scripts, styles, and other non-content elements
+        $('script, style, noscript, iframe, svg').remove();
+
         // Yahoo News specific selectors (and generic fallbacks)
         // Yahoo often uses 'div.caas-body' for content
         const content = $('div.caas-body').text() || $('article').text() || $('main').text() || 'Could not extract content.';

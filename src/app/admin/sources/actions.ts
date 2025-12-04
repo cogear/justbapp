@@ -20,16 +20,12 @@ export interface DiscoveredSource {
     type: 'Library' | 'Government' | 'Community' | 'Other';
 }
 
-export async function discoverSources(formData: FormData): Promise<DiscoveredSource[]> {
-    const location = formData.get('location') as string;
-
-    if (!location) return [];
-
+async function fetchSourcesFromLLM(location: string): Promise<DiscoveredSource[]> {
     const openai = getOpenAI();
 
     try {
         const completion = await openai.chat.completions.create({
-            model: "gpt-4o",
+            model: "gpt-4o-mini",
             messages: [
                 {
                     role: "system",
@@ -63,6 +59,67 @@ export async function discoverSources(formData: FormData): Promise<DiscoveredSou
     } catch (error) {
         console.error('Discovery error:', error);
         return [];
+    }
+}
+
+export async function discoverSources(formData: FormData): Promise<DiscoveredSource[]> {
+    const location = formData.get('location') as string;
+    if (!location) return [];
+    return await fetchSourcesFromLLM(location);
+}
+
+export async function runBatchDiscovery() {
+    const locations = ["Melbourne, FL", "Palm Bay, FL", "Cocoa Beach, FL", "Viera, FL", "Brevard County, FL"];
+    console.log(`[Bot] Starting discovery for ${locations.length} locations...`);
+
+    // Fetch all existing URLs to check for duplicates efficiently
+    const allSources = await prisma.eventSource.findMany({ select: { url: true } });
+    const existingUrls = new Set(allSources.map(s => normalizeUrl(s.url)));
+
+    let newCount = 0;
+
+    for (const location of locations) {
+        console.log(`[Bot] Searching for sources in ${location}...`);
+        const sources = await fetchSourcesFromLLM(location);
+
+        for (const src of sources) {
+            const normalized = normalizeUrl(src.url);
+
+            if (!existingUrls.has(normalized)) {
+                await prisma.eventSource.create({
+                    data: {
+                        name: src.name,
+                        url: src.url,
+                        parserType: 'HTML_LLM',
+                        status: 'ACTIVE',
+                        lastScrapeLog: `Discovered via Bot for ${location}`
+                    }
+                });
+                existingUrls.add(normalized); // Add to set to prevent duplicates within the same run
+                newCount++;
+                console.log(`[Bot] Found NEW source: ${src.name}`);
+            } else {
+                console.log(`[Bot] Skipping duplicate: ${src.name} (${src.url})`);
+            }
+        }
+    }
+
+    revalidatePath('/admin/sources');
+}
+
+function normalizeUrl(url: string): string {
+    try {
+        // Remove protocol
+        let normalized = url.toLowerCase().replace(/^https?:\/\//, '');
+        // Remove www.
+        normalized = normalized.replace(/^www\./, '');
+        // Remove trailing slash
+        if (normalized.endsWith('/')) {
+            normalized = normalized.slice(0, -1);
+        }
+        return normalized;
+    } catch (e) {
+        return url.toLowerCase();
     }
 }
 
@@ -102,7 +159,6 @@ export async function updateSource(formData: FormData) {
             }
         });
         revalidatePath('/admin/sources');
-        redirect('/admin/sources');
     } catch (error) {
         console.error('Failed to update source:', error);
         throw error;
@@ -128,11 +184,70 @@ export async function triggerScrape(formData: FormData) {
     if (!id) return;
 
     try {
-        // Note: In a real app, this should be a background job
-        await scrapeHub(id);
+        const source = await prisma.eventSource.findUnique({ where: { id } });
+        if (!source) throw new Error("Source not found");
+
+        // Call the ingestion logic
+        // We need to dynamically import to avoid circular deps if any, but standard import is fine here usually
+        // However, ingestion might need to be server-side only
+        const { scrapeHub } = await import('@/lib/events/ingestion');
+        await scrapeHub(source.id);
+
+        await prisma.eventSource.update({
+            where: { id },
+            data: {
+                lastScrapedAt: new Date(),
+                lastScrapeStatus: "SUCCESS",
+                lastScrapeLog: "Manual trigger successful"
+            }
+        });
+
         revalidatePath('/admin/sources');
         revalidatePath('/admin/events');
-    } catch (error) {
+    } catch (error: any) {
         console.error('Failed to trigger scrape:', error);
+        await prisma.eventSource.update({
+            where: { id },
+            data: {
+                lastScrapeStatus: "FAILED",
+                lastScrapeLog: error.message || "Unknown error"
+            }
+        });
     }
+}
+
+export async function runBatchScrape() {
+    const sources = await prisma.eventSource.findMany({
+        where: { status: "ACTIVE" }
+    });
+
+    console.log(`[Bot] Starting batch scrape for ${sources.length} sources...`);
+
+    for (const source of sources) {
+        try {
+            console.log(`[Bot] Scraping ${source.name}...`);
+            const { scrapeHub } = await import('@/lib/events/ingestion');
+            await scrapeHub(source.id);
+
+            await prisma.eventSource.update({
+                where: { id: source.id },
+                data: {
+                    lastScrapedAt: new Date(),
+                    lastScrapeStatus: "SUCCESS",
+                    lastScrapeLog: "Batch scrape successful"
+                }
+            });
+        } catch (error: any) {
+            console.error(`[Bot] Failed to scrape ${source.name}:`, error);
+            await prisma.eventSource.update({
+                where: { id: source.id },
+                data: {
+                    lastScrapeStatus: "FAILED",
+                    lastScrapeLog: error.message || "Unknown error"
+                }
+            });
+        }
+    }
+
+    revalidatePath('/admin/sources');
 }
