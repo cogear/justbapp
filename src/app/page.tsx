@@ -11,7 +11,7 @@ export default function Home() {
 
         <div className="pt-8">
           <Link
-            href="/pulse"
+            href="/handler/onboarding"
             className="
               inline-block px-8 py-3 bg-b-charcoal text-white rounded-full 
               font-medium tracking-wide shadow-sm hover:shadow-md 

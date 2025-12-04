@@ -131,6 +131,7 @@ async function generateReframes(title: string, content: string) {
                     { role: "user", content: `Title: ${title}\nContent: ${content.slice(0, 2000)}` } // Limit context
                 ],
                 temperature: 0.7,
+                response_format: { type: "json_object" }
             });
 
             const responseText = completion.choices[0].message.content || '';

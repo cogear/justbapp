@@ -80,20 +80,8 @@ import { CLUSTERS } from '@/lib/personality/clustering';
 export async function getTopStories(userCluster?: string): Promise<any[]> {
     console.log('Fetching news...');
 
-    // 1. Check for recent news in DB
-    const recentCount = await prisma.newsArticle.count({
-        where: {
-            createdAt: {
-                gt: new Date(Date.now() - 1000 * 60 * 60) // Last 1 hour
-            }
-        }
-    });
-
-    // 2. Ingest if stale
-    if (recentCount === 0) {
-        console.log('News is stale or empty. Triggering ingestion...');
-        await ingestLatestNews();
-    }
+    // 1. Check for recent news in DB (Removed lazy trigger)
+    // We now rely on Cron jobs or manual triggers.
 
     // 3. Fetch from DB
     const articles = await prisma.newsArticle.findMany({
