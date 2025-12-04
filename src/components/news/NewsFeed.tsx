@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { trackInteraction } from '@/app/news/actions';
 import { motion, AnimatePresence } from 'framer-motion';
+import ReactMarkdown from 'react-markdown';
 
 interface Article {
     id: string;
@@ -87,9 +88,7 @@ export function NewsFeed({ articles }: { articles: Article[] }) {
                             >
                                 <div className="p-6 space-y-6">
                                     <div className="prose prose-sm md:prose-base dark:prose-invert max-w-none">
-                                        {article.content.split('\n').map((para, i) => (
-                                            <p key={i}>{para}</p>
-                                        ))}
+                                        <ReactMarkdown>{article.content}</ReactMarkdown>
                                     </div>
 
                                     <div className="flex items-center justify-between pt-4 border-t border-border/50">
