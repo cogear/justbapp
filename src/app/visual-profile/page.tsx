@@ -39,6 +39,9 @@ export default async function VisualProfilePage({ searchParams }: { searchParams
                 <header className="space-y-4 text-center">
                     <h1 className="text-4xl font-serif tracking-tight">Your Visual Profile</h1>
                     <p className="text-muted-foreground">Based on your visual preferences.</p>
+                    <p className="text-sm text-muted-foreground/80 max-w-lg mx-auto pt-2">
+                        We use these insights solely to curate content that resonates with you. Your privacy is paramount—we never share or sell your data.
+                    </p>
                 </header>
 
                 {/* Personality Cluster */}
