@@ -41,9 +41,10 @@ import { promisify } from 'util';
 
 const execAsync = promisify(exec);
 
-import { JSDOM } from 'jsdom';
-import { Readability } from '@mozilla/readability';
-import TurndownService from 'turndown';
+// Removed top-level imports to fix ESM/CJS issues
+// import { JSDOM } from 'jsdom';
+// import { Readability } from '@mozilla/readability';
+// import TurndownService from 'turndown';
 
 export async function scrapeContent(url: string): Promise<string> {
     try {
@@ -53,6 +54,11 @@ export async function scrapeContent(url: string): Promise<string> {
         }
 
         console.log(`Scraping content from: ${url}`);
+
+        // Dynamic imports to handle ESM packages in Next.js server runtime
+        const { JSDOM } = await import('jsdom');
+        const { Readability } = await import('@mozilla/readability');
+        const TurndownService = (await import('turndown')).default;
 
         // Use curl to bypass Node's header size limits (Yahoo Finance sends >16KB headers)
         const { stdout } = await execAsync(`curl -s -L -A "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" "${url}"`, {
