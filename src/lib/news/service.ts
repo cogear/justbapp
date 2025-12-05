@@ -108,14 +108,10 @@ import prisma from '@/lib/prisma';
 import { CLUSTERS } from '@/lib/personality/clustering';
 
 export async function getTopStories(userCluster?: string): Promise<any[]> {
-    console.log('[getTopStories] Fetching news for cluster:', userCluster);
-
     // 1. Check for recent news in DB (Removed lazy trigger)
     // We now rely on Cron jobs or manual triggers.
 
     // 3. Fetch from DB
-    console.log('[getTopStories] Executing Prisma query...');
-    const start = Date.now();
     const articles = await prisma.newsArticle.findMany({
         orderBy: { publishedAt: 'desc' },
         take: 20,
@@ -123,7 +119,6 @@ export async function getTopStories(userCluster?: string): Promise<any[]> {
             reframedArticles: true
         }
     });
-    console.log(`[getTopStories] Prisma query took ${Date.now() - start}ms. Found ${articles.length} articles.`);
 
     // 4. Map to UI format
     return articles.map(article => {
