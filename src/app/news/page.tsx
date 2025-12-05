@@ -6,18 +6,23 @@ import { ClusterSelector } from '@/components/news/ClusterSelector';
 import { redirect } from 'next/navigation';
 
 export default async function NewsPage({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+    console.log('[NewsPage] Starting render...');
     const stackUser = await stackServerApp.getUser();
+    console.log('[NewsPage] Stack user fetched:', stackUser?.id);
     const { cluster } = await searchParams;
 
     if (!stackUser) {
+        console.log('[NewsPage] No user, redirecting...');
         redirect('/sign-in');
     }
 
     // Fetch user profile from DB
+    console.log('[NewsPage] Fetching DB user...');
     const user = await prisma.user.findUnique({
         where: { email: stackUser.primaryEmail || '' },
         include: { visualProfiles: { orderBy: { createdAt: 'desc' }, take: 1 } }
     });
+    console.log('[NewsPage] DB user fetched:', user?.id);
 
     // Get user's profile to determine default cluster
     // In a real app, we'd fetch the user's profile from our DB
@@ -30,7 +35,9 @@ export default async function NewsPage({ searchParams }: { searchParams: Promise
     let error = null;
 
     try {
+        console.log('[NewsPage] Calling getTopStories...');
         stories = await getTopStories(activeCluster);
+        console.log('[NewsPage] getTopStories returned:', stories.length);
     } catch (e) {
         console.error('Error loading news:', e);
         error = 'Failed to load news. Please try again later.';
