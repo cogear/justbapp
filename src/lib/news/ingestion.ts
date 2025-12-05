@@ -178,7 +178,7 @@ function getPromptForCluster(clusterName: string): string {
     `;
 
     switch (clusterName) {
-        case 'Average':
+        case 'Balanced':
             return base + `Target: Everyday adults. Tone: Balanced, relatable, slightly simplified. Focus on practical impact.`;
         case 'Reserved':
             return base + `Target: Quiet, cautious, dependable. Tone: Calm, objective, low-drama. Remove sensationalism. Focus on stability.`;

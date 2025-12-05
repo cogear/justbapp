@@ -122,8 +122,8 @@ export async function getTopStories(userCluster?: string): Promise<any[]> {
 
     // 4. Map to UI format
     return articles.map(article => {
-        // Find the reframe for the user's cluster, or default to 'Average' or the first one
-        const targetCluster = userCluster || 'Average';
+        // Find the reframe for the user's cluster, or default to 'Balanced' or the first one
+        const targetCluster = userCluster || 'Balanced';
         const reframe = article.reframedArticles.find(r => r.cluster === targetCluster)
             || article.reframedArticles[0];
 

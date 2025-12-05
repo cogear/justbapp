@@ -18,7 +18,7 @@ export interface PersonalityCluster {
 export const CLUSTERS: PersonalityCluster[] = [
     {
         id: 'average',
-        name: 'Average',
+        name: 'Balanced',
         description: 'Socially typical, a bit stress-sensitive, and pragmatic. The most common profile.',
         centroid: { openness: 40, conscientiousness: 50, extraversion: 50, agreeableness: 50, neuroticism: 70 }
     },

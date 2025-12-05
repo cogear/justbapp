@@ -22,7 +22,7 @@ export default async function NewsPage({ searchParams }: { searchParams: Promise
     });
 
     // Get user's profile to determine default cluster
-    const defaultCluster = user?.visualProfiles?.[0]?.cluster || 'Average';
+    const defaultCluster = user?.visualProfiles?.[0]?.cluster || 'Balanced';
     const activeCluster = (typeof cluster === 'string' ? cluster : undefined) || defaultCluster;
 
     // Fetch personalized news
