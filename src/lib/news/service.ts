@@ -41,10 +41,7 @@ import { promisify } from 'util';
 
 const execAsync = promisify(exec);
 
-// Removed top-level imports to fix ESM/CJS issues
-// import { JSDOM } from 'jsdom';
-// import { Readability } from '@mozilla/readability';
-// import TurndownService from 'turndown';
+import * as cheerio from 'cheerio';
 
 export async function scrapeContent(url: string): Promise<string> {
     try {
@@ -55,41 +52,50 @@ export async function scrapeContent(url: string): Promise<string> {
 
         console.log(`Scraping content from: ${url}`);
 
-        // Dynamic imports to handle ESM packages in Next.js server runtime
-        const { JSDOM } = await import('jsdom');
-        const { Readability } = await import('@mozilla/readability');
-        const TurndownService = (await import('turndown')).default;
-
         // Use curl to bypass Node's header size limits (Yahoo Finance sends >16KB headers)
         const { stdout } = await execAsync(`curl -s -L -A "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" "${url}"`, {
             maxBuffer: 1024 * 1024 * 10 // 10MB buffer
         });
 
         const html = stdout;
-        const dom = new JSDOM(html, { url });
-        const reader = new Readability(dom.window.document);
-        const article = reader.parse();
+        const $ = cheerio.load(html);
 
-        if (!article || !article.content) {
-            console.warn('Readability failed to parse content.');
-            return 'Could not extract content.';
-        }
+        // Remove junk
+        $('script, style, noscript, iframe, svg, nav, footer, header, .ad, .advertisement').remove();
 
-        // Convert HTML to Markdown
-        const turndownService = new TurndownService({
-            headingStyle: 'atx',
-            codeBlockStyle: 'fenced'
+        // Try to find the main article body
+        // Yahoo specific + generic fallbacks
+        let $content = $('div.caas-body');
+        if ($content.length === 0) $content = $('article');
+        if ($content.length === 0) $content = $('main');
+        if ($content.length === 0) $content = $('body');
+
+        let markdown = '';
+
+        // Iterate over relevant elements to preserve structure
+        $content.find('p, h1, h2, h3, h4, h5, h6, ul, ol, blockquote').each((_, el) => {
+            const $el = $(el);
+            const tag = el.tagName.toLowerCase();
+            const text = $el.text().trim();
+
+            if (!text) return;
+
+            if (tag === 'p') {
+                markdown += `${text}\n\n`;
+            } else if (tag.match(/^h[1-6]$/)) {
+                const level = tag.charAt(1);
+                markdown += `${'#'.repeat(parseInt(level))} ${text}\n\n`;
+            } else if (tag === 'ul' || tag === 'ol') {
+                $el.find('li').each((_, li) => {
+                    markdown += `- ${$(li).text().trim()}\n`;
+                });
+                markdown += '\n';
+            } else if (tag === 'blockquote') {
+                markdown += `> ${text}\n\n`;
+            }
         });
 
-        // Remove images for now to keep it text-focused for LLM
-        turndownService.remove('img');
-        turndownService.remove('script');
-        turndownService.remove('style');
-
-        const markdown = turndownService.turndown(article.content);
-
-        // Clean up excessive newlines
-        return markdown.replace(/\n{3,}/g, '\n\n').trim();
+        return markdown.trim();
 
     } catch (error) {
         console.error(`Error scraping ${url}:`, error);
