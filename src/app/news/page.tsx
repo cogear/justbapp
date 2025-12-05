@@ -5,6 +5,10 @@ import { NewsFeed } from '@/components/news/NewsFeed';
 import { ClusterSelector } from '@/components/news/ClusterSelector';
 import { redirect } from 'next/navigation';
 
+export const dynamic = 'force-dynamic';
+
+console.log('[NewsPage Module] Loaded.');
+
 export default async function NewsPage({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
     console.log('[NewsPage] Starting render...');
     const stackUser = await stackServerApp.getUser();
@@ -25,8 +29,6 @@ export default async function NewsPage({ searchParams }: { searchParams: Promise
     console.log('[NewsPage] DB user fetched:', user?.id);
 
     // Get user's profile to determine default cluster
-    // In a real app, we'd fetch the user's profile from our DB
-    // For now, we'll just default to 'Average' if no param
     const defaultCluster = user?.visualProfiles?.[0]?.cluster || 'Average';
     const activeCluster = (typeof cluster === 'string' ? cluster : undefined) || defaultCluster;
 
