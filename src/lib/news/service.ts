@@ -1,6 +1,6 @@
 import OpenAI from 'openai';
 import { VisualProfile } from '@prisma/client';
-import * as cheerio from 'cheerio';
+
 
 // Lazy init OpenAI
 function getOpenAI() {
@@ -41,6 +41,10 @@ import { promisify } from 'util';
 
 const execAsync = promisify(exec);
 
+import { JSDOM } from 'jsdom';
+import { Readability } from '@mozilla/readability';
+import TurndownService from 'turndown';
+
 export async function scrapeContent(url: string): Promise<string> {
     try {
         if (!url || !url.startsWith('http')) {
@@ -51,22 +55,36 @@ export async function scrapeContent(url: string): Promise<string> {
         console.log(`Scraping content from: ${url}`);
 
         // Use curl to bypass Node's header size limits (Yahoo Finance sends >16KB headers)
-        const { stdout } = await execAsync(`curl -s -A "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" "${url}"`, {
+        const { stdout } = await execAsync(`curl -s -L -A "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" "${url}"`, {
             maxBuffer: 1024 * 1024 * 10 // 10MB buffer
         });
 
         const html = stdout;
-        const $ = cheerio.load(html);
+        const dom = new JSDOM(html, { url });
+        const reader = new Readability(dom.window.document);
+        const article = reader.parse();
 
-        // Remove scripts, styles, and other non-content elements
-        $('script, style, noscript, iframe, svg').remove();
+        if (!article || !article.content) {
+            console.warn('Readability failed to parse content.');
+            return 'Could not extract content.';
+        }
 
-        // Yahoo News specific selectors (and generic fallbacks)
-        // Yahoo often uses 'div.caas-body' for content
-        const content = $('div.caas-body').text() || $('article').text() || $('main').text() || 'Could not extract content.';
+        // Convert HTML to Markdown
+        const turndownService = new TurndownService({
+            headingStyle: 'atx',
+            codeBlockStyle: 'fenced'
+        });
 
-        // Clean up whitespace
-        return content.replace(/\s+/g, ' ').trim();
+        // Remove images for now to keep it text-focused for LLM
+        turndownService.remove('img');
+        turndownService.remove('script');
+        turndownService.remove('style');
+
+        const markdown = turndownService.turndown(article.content);
+
+        // Clean up excessive newlines
+        return markdown.replace(/\n{3,}/g, '\n\n').trim();
+
     } catch (error) {
         console.error(`Error scraping ${url}:`, error);
         return 'Error scraping content.';

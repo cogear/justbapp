@@ -159,10 +159,11 @@ async function generateReframes(title: string, content: string) {
 
 function getPromptForCluster(clusterName: string): string {
     const base = `You are an expert editor. Rewrite the following news article for a specific audience persona.
+    The input article is in Markdown format.
     Return a JSON object with the following fields:
     - "headline": A new headline appealing to this persona.
     - "summary": A 2-sentence teaser summary.
-    - "content": The full rewritten article (approx 300-500 words).
+    - "content": The full rewritten article (approx 300-500 words). Use Markdown for formatting (headers, bold, lists).
     - "tone": The tone used (e.g. "Optimistic", "Analytical").
     
     Persona: ${clusterName}

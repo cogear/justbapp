@@ -1,34 +1,31 @@
-import prisma from '../src/lib/prisma';
-import { scrapeHub } from '../src/lib/events/ingestion';
-import dotenv from 'dotenv';
-
-dotenv.config();
+import { scrapeContent } from '../src/lib/news/service';
+import Parser from 'rss-parser';
 
 async function main() {
-    // 1. Create a test source (using a real library URL if possible, or a mock one)
-    // Using Boston Public Library events page as a test case, or a generic one.
-    // Let's use a specific library branch page which is usually simpler.
-    const testUrl = "https://bpl.bibliocommons.com/v2/events";
+    console.log('Fetching RSS feed to find a valid URL...');
+    const parser = new Parser();
+    let url = '';
 
-    console.log("Creating test source...");
-    const source = await prisma.eventSource.upsert({
-        where: { url: testUrl },
-        update: {},
-        create: {
-            url: testUrl,
-            name: "Boston Public Library",
-            parserType: "HTML_LLM"
+    try {
+        const feed = await parser.parseURL('https://news.yahoo.com/rss');
+        if (feed.items.length > 0 && feed.items[0].link) {
+            url = feed.items[0].link;
+            console.log(`Found article: ${feed.items[0].title}`);
+        } else {
+            console.error('No items found in RSS feed.');
+            return;
         }
-    });
+    } catch (e) {
+        console.error('Failed to parse RSS:', e);
+        return;
+    }
 
-    console.log(`Source ID: ${source.id}`);
+    console.log(`Testing scraper on: ${url}`);
+    const content = await scrapeContent(url);
 
-    // 2. Run scraper
-    await scrapeHub(source.id);
+    console.log('--- SCRAPED CONTENT START ---');
+    console.log(content);
+    console.log('--- SCRAPED CONTENT END ---');
 }
 
-main()
-    .catch(e => console.error(e))
-    .finally(async () => {
-        await prisma.$disconnect();
-    });
+main();
