@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { ThemeToggle } from './ThemeToggle';
+import { AuthButtons } from './AuthButtons';
 
 export function Header() {
     return (
@@ -24,7 +25,8 @@ export function Header() {
                         </Link>
                     </nav>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-4">
+                    <AuthButtons />
                     <ThemeToggle />
                 </div>
             </div>
