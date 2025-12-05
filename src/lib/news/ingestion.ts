@@ -33,36 +33,45 @@ export async function ingestLatestNews() {
 
     // 2. Filter New Items
     const items = feed.items.slice(0, 30); // Check top 30
+
+    // Find candidates first (exclude existing)
+    const candidates = [];
+    for (const item of items) {
+        if (!item.link) continue;
+        const existing = await prisma.newsArticle.findUnique({
+            where: { originalUrl: item.link }
+        });
+        if (!existing) {
+            candidates.push(item);
+        }
+    }
+
+    console.log(`Found ${candidates.length} new articles to process.`);
+
+    // 3. Process in Parallel Batches
+    // Vercel 30s timeout means we need to be fast. Parallelize!
+    const BATCH_SIZE = 5; // Try 5 at a time
+    const batch = candidates.slice(0, BATCH_SIZE);
+
     let newArticlesCount = 0;
 
-    for (const item of items) {
-        const url = item.link;
-        if (!url) continue;
-
-        // Check if exists
-        const existing = await prisma.newsArticle.findUnique({
-            where: { originalUrl: url }
-        });
-
-        if (existing) {
-            console.log(`Skipping existing article: ${item.title}`);
-            continue;
-        }
-
-        // 3. Process New Article
-        console.log(`Processing new article: ${item.title}`);
-
+    const results = await Promise.all(batch.map(async (item) => {
         try {
+            const url = item.link!;
+            console.log(`Processing: ${item.title}`);
+
             // Scrape
             const content = await scrapeContent(url);
             if (!content || content.length < 100) {
-                console.warn('Content too short, skipping.');
-                continue;
+                console.warn(`Skipping ${item.title}: Content too short.`);
+                return null;
             }
 
-            // Generate Tags & Reframes
-            const tags = await generateTags(item.title || '', content);
-            const reframes = await generateReframes(item.title || '', content);
+            // Generate Tags & Reframes (Parallel internal)
+            const [tags, reframes] = await Promise.all([
+                generateTags(item.title || '', content),
+                generateReframes(item.title || '', content)
+            ]);
 
             // Save to DB
             await prisma.newsArticle.create({
@@ -71,7 +80,7 @@ export async function ingestLatestNews() {
                     title: item.title || 'Untitled',
                     description: item.contentSnippet || item.summary || '',
                     content: content,
-                    imageUrl: undefined, // RSS doesn't always give good images, maybe scrape later
+                    imageUrl: undefined,
                     source: 'Yahoo News',
                     publishedAt: item.pubDate ? new Date(item.pubDate) : new Date(),
                     tags: tags,
@@ -81,15 +90,14 @@ export async function ingestLatestNews() {
                 }
             });
 
-            newArticlesCount++;
-
-            // Limit to 10 new articles per run
-            if (newArticlesCount >= 10) break;
-
+            return true;
         } catch (e) {
-            console.error(`Failed to process article ${url}:`, e);
+            console.error(`Failed to process ${item.title}:`, e);
+            return false;
         }
-    }
+    }));
+
+    newArticlesCount = results.filter(r => r === true).length;
 
     console.log(`Ingestion complete. Added ${newArticlesCount} new articles.`);
     return { success: true, count: newArticlesCount };
