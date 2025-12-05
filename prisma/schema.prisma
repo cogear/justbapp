@@ -19,6 +19,7 @@ model User {
   email     String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  zipCode   String? // For local events discovery
 
   // Progressive Profiling
   // Stored as JSON or separate tables, but for "Long-Term Memory", we use vectors.

@@ -5,6 +5,24 @@ import { discoverEventSources } from '@/lib/events/discovery';
 import { extractEventsFromUrl } from '@/lib/events/extraction';
 import { geocodeAddress } from '@/lib/events/geocoding';
 import { revalidatePath } from 'next/cache';
+import { stackServerApp } from '@/lib/stack';
+
+export async function updateUserZip(zipCode: string) {
+    const user = await stackServerApp.getUser();
+    if (!user?.primaryEmail) return { success: false, error: 'User not found' };
+
+    try {
+        await prisma.user.update({
+            where: { email: user.primaryEmail },
+            data: { zipCode }
+        });
+        revalidatePath('/getout');
+        return { success: true };
+    } catch (error) {
+        console.error('Failed to update zip:', error);
+        return { success: false, error: 'Failed to update zip code' };
+    }
+}
 
 export async function findEvents(zipCode: string) {
     if (!zipCode) return { success: false, error: 'Zip code is required' };
