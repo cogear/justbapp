@@ -17,7 +17,7 @@ export async function GET(request: Request) {
     });
 
     if (prismaUser && prismaUser.visualProfiles.length > 0) {
-        return NextResponse.redirect(new URL('/news', request.url));
+        return NextResponse.redirect(new URL('/brief', request.url));
     } else {
         return NextResponse.redirect(new URL('/visual-profile', request.url));
     }

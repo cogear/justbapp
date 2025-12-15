@@ -1,35 +1,25 @@
 'use client';
 
 import { useState } from 'react';
-import { discoverSources, addSource, DiscoveredSource } from '../actions';
-import { Loader2, Plus, Check, Search, MapPin } from 'lucide-react';
+import { discoverAndAddSources, DiscoveredSource } from '../actions';
+import { Loader2, Check, Search, MapPin } from 'lucide-react';
 import Link from 'next/link';
 
 export default function DiscoverSourcesPage() {
     const [loading, setLoading] = useState(false);
-    const [results, setResults] = useState<DiscoveredSource[]>([]);
-    const [addedUrls, setAddedUrls] = useState<Set<string>>(new Set());
+    const [results, setResults] = useState<{ source: DiscoveredSource, isNew: boolean }[]>([]);
 
     async function handleSearch(formData: FormData) {
         setLoading(true);
         setResults([]);
         try {
-            const sources = await discoverSources(formData);
+            const sources = await discoverAndAddSources(formData);
             setResults(sources);
         } catch (error) {
             console.error(error);
         } finally {
             setLoading(false);
         }
-    }
-
-    async function handleAdd(source: DiscoveredSource) {
-        const formData = new FormData();
-        formData.append('name', source.name);
-        formData.append('url', source.url);
-
-        await addSource(formData);
-        setAddedUrls(prev => new Set(prev).add(source.url));
     }
 
     return (
@@ -71,29 +61,33 @@ export default function DiscoverSourcesPage() {
                     <div className="space-y-4">
                         <h2 className="text-xl font-medium mb-4">Found {results.length} Potential Sources</h2>
                         <div className="grid gap-4">
-                            {results.map((source, i) => (
+                            {results.map((item, i) => (
                                 <div key={i} className="bg-card border border-border rounded-lg p-4 flex items-center justify-between group hover:border-primary/50 transition-colors">
                                     <div className="flex-1 min-w-0 mr-4">
                                         <div className="flex items-center gap-2 mb-1">
-                                            <h3 className="font-medium truncate">{source.name}</h3>
+                                            <h3 className="font-medium truncate">{item.source.name}</h3>
                                             <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 bg-secondary text-secondary-foreground rounded-full">
-                                                {source.type}
+                                                {item.source.type}
                                             </span>
                                         </div>
-                                        <a href={source.url} target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:underline truncate block">
-                                            {source.url}
+                                        <a href={item.source.url} target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:underline truncate block">
+                                            {item.source.url}
                                         </a>
                                     </div>
-                                    <button
-                                        onClick={() => handleAdd(source)}
-                                        disabled={addedUrls.has(source.url)}
-                                        className={`p-2 rounded-full transition-colors ${addedUrls.has(source.url)
-                                                ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
-                                                : 'bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground'
-                                            }`}
-                                    >
-                                        {addedUrls.has(source.url) ? <Check size={20} /> : <Plus size={20} />}
-                                    </button>
+                                    <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${item.isNew
+                                        ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
+                                        : 'bg-secondary text-secondary-foreground'
+                                        }`}>
+                                        {item.isNew ? (
+                                            <>
+                                                <Check size={14} /> Added
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Check size={14} /> Existing
+                                            </>
+                                        )}
+                                    </div>
                                 </div>
                             ))}
                         </div>

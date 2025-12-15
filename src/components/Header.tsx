@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import React from 'react';
 import { ThemeToggle } from './ThemeToggle';
 import { AuthButtons } from './AuthButtons';
 
@@ -23,10 +24,15 @@ export function Header() {
                         <Link href="/principles" className="transition-colors hover:text-foreground">
                             Principles
                         </Link>
+                        <Link href="/book" className="transition-colors hover:text-foreground">
+                            Book
+                        </Link>
                     </nav>
                 </div>
                 <div className="flex items-center gap-4">
-                    <AuthButtons />
+                    <React.Suspense fallback={<div className="w-20" />}>
+                        <AuthButtons />
+                    </React.Suspense>
                     <ThemeToggle />
                 </div>
             </div>

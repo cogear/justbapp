@@ -196,3 +196,14 @@ model EventSource {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
+
+model DailySummary {
+  id        String   @id @default(uuid())
+  date      DateTime @db.Date
+  cluster   String   @default("Global") // e.g. "Explorer", "Global"
+  content   String   // The abstract summary
+  mood      String?  // e.g. "Hopeful", "Chaotic"
+  createdAt DateTime @default(now())
+
+  @@unique([date, cluster]) // One summary per cluster per day
+}

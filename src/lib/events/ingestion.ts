@@ -188,7 +188,7 @@ async function extractEventsFromHtml(html: string, sourceName: string, additiona
     }));
 }
 
-export async function scrapeHub(sourceId: string) {
+export async function scrapeHub(sourceId: string): Promise<{ found: number, added: number }> {
     const source = await prisma.eventSource.findUnique({
         where: { id: sourceId },
     });
@@ -326,7 +326,7 @@ export async function scrapeHub(sourceId: string) {
             console.log(`Headless Browser Found ${events.length} total events (after error).`);
         } catch (puppeteerError) {
             console.error('Puppeteer also failed:', puppeteerError);
-            return;
+            return { found: events.length, added: 0 };
         }
     }
 
@@ -385,4 +385,5 @@ export async function scrapeHub(sourceId: string) {
         where: { id: sourceId },
         data: { lastScrapedAt: new Date() }
     });
+    return { found: events.length, added: addedCount };
 }

@@ -72,7 +72,8 @@ export default async function AdminSourcesPage() {
                                         {source.lastScrapeStatus && (
                                             <div className="flex flex-col">
                                                 <span className={`text-xs font-medium ${source.lastScrapeStatus === 'SUCCESS' ? 'text-green-600 dark:text-green-400' :
-                                                    'text-red-600 dark:text-red-400'
+                                                    source.lastScrapeStatus === 'WARNING' ? 'text-yellow-600 dark:text-yellow-400' :
+                                                        'text-red-600 dark:text-red-400'
                                                     }`}>
                                                     {source.lastScrapeStatus}
                                                 </span>

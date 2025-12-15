@@ -20,6 +20,44 @@ export interface DiscoveredSource {
     type: 'Library' | 'Government' | 'Community' | 'Other';
 }
 
+async function verifyUrl(url: string): Promise<boolean> {
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+        const response = await fetch(url, {
+            method: 'HEAD',
+            signal: controller.signal,
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (compatible; Bot/1.0)'
+            }
+        });
+        clearTimeout(timeoutId);
+
+        if (response.ok) return true;
+
+        // If HEAD fails (some servers block it), try GET
+        if (response.status === 405 || response.status === 403) {
+            const controllerGet = new AbortController();
+            const timeoutIdGet = setTimeout(() => controllerGet.abort(), 5000);
+
+            const responseGet = await fetch(url, {
+                method: 'GET',
+                signal: controllerGet.signal,
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (compatible; Bot/1.0)'
+                }
+            });
+            clearTimeout(timeoutIdGet);
+            return responseGet.ok;
+        }
+
+        return false;
+    } catch (error) {
+        return false;
+    }
+}
+
 async function fetchSourcesFromLLM(location: string): Promise<DiscoveredSource[]> {
     const openai = getOpenAI();
 
@@ -55,10 +93,52 @@ async function fetchSourcesFromLLM(location: string): Promise<DiscoveredSource[]
         });
 
         const result = JSON.parse(completion.choices[0].message.content || '{}');
-        return result.sources || [];
+        const sources: DiscoveredSource[] = result.sources || [];
+
+        // Verify URLs in parallel
+        const verifiedSources: DiscoveredSource[] = [];
+        await Promise.all(sources.map(async (source) => {
+            const isValid = await verifyUrl(source.url);
+            if (isValid) {
+                verifiedSources.push(source);
+            } else {
+                console.log(`[Discovery] Dropped invalid URL: ${source.url}`);
+            }
+        }));
+
+        return verifiedSources;
     } catch (error) {
         console.error('Discovery error:', error);
         return [];
+    }
+}
+
+async function performScrape(sourceId: string) {
+    try {
+        const { scrapeHub } = await import('@/lib/events/ingestion');
+        const result = await scrapeHub(sourceId);
+
+        const status = result.added > 0 ? "SUCCESS" : "WARNING";
+
+        await prisma.eventSource.update({
+            where: { id: sourceId },
+            data: {
+                lastScrapedAt: new Date(),
+                lastScrapeStatus: status,
+                lastScrapeLog: `Success: Found ${result.found}, Added ${result.added}`
+            }
+        });
+        return true;
+    } catch (error: any) {
+        console.error(`Failed to scrape source ${sourceId}:`, error);
+        await prisma.eventSource.update({
+            where: { id: sourceId },
+            data: {
+                lastScrapeStatus: "FAILED",
+                lastScrapeLog: error.message || "Unknown error"
+            }
+        });
+        return false;
     }
 }
 
@@ -66,6 +146,44 @@ export async function discoverSources(formData: FormData): Promise<DiscoveredSou
     const location = formData.get('location') as string;
     if (!location) return [];
     return await fetchSourcesFromLLM(location);
+}
+
+export async function discoverAndAddSources(formData: FormData): Promise<{ source: DiscoveredSource, isNew: boolean }[]> {
+    const location = formData.get('location') as string;
+    if (!location) return [];
+
+    const discovered = await fetchSourcesFromLLM(location);
+    const results: { source: DiscoveredSource, isNew: boolean }[] = [];
+
+    // Fetch existing URLs to check for duplicates
+    const allSources = await prisma.eventSource.findMany({ select: { url: true } });
+    const existingUrls = new Set(allSources.map(s => normalizeUrl(s.url)));
+
+    for (const src of discovered) {
+        const normalized = normalizeUrl(src.url);
+        if (!existingUrls.has(normalized)) {
+            const newSource = await prisma.eventSource.create({
+                data: {
+                    name: src.name,
+                    url: src.url,
+                    parserType: 'HTML_LLM',
+                    status: 'ACTIVE',
+                    lastScrapeLog: `Discovered for ${location}`
+                }
+            });
+            existingUrls.add(normalized);
+
+            // Auto-scrape the new source
+            await performScrape(newSource.id);
+
+            results.push({ source: src, isNew: true });
+        } else {
+            results.push({ source: src, isNew: false });
+        }
+    }
+
+    revalidatePath('/admin/sources');
+    return results;
 }
 
 export async function runBatchDiscovery() {
@@ -86,7 +204,7 @@ export async function runBatchDiscovery() {
             const normalized = normalizeUrl(src.url);
 
             if (!existingUrls.has(normalized)) {
-                await prisma.eventSource.create({
+                const newSource = await prisma.eventSource.create({
                     data: {
                         name: src.name,
                         url: src.url,
@@ -98,6 +216,9 @@ export async function runBatchDiscovery() {
                 existingUrls.add(normalized); // Add to set to prevent duplicates within the same run
                 newCount++;
                 console.log(`[Bot] Found NEW source: ${src.name}`);
+
+                // Auto-scrape the new source
+                await performScrape(newSource.id);
             } else {
                 console.log(`[Bot] Skipping duplicate: ${src.name} (${src.url})`);
             }
@@ -187,32 +308,12 @@ export async function triggerScrape(formData: FormData) {
         const source = await prisma.eventSource.findUnique({ where: { id } });
         if (!source) throw new Error("Source not found");
 
-        // Call the ingestion logic
-        // We need to dynamically import to avoid circular deps if any, but standard import is fine here usually
-        // However, ingestion might need to be server-side only
-        const { scrapeHub } = await import('@/lib/events/ingestion');
-        await scrapeHub(source.id);
-
-        await prisma.eventSource.update({
-            where: { id },
-            data: {
-                lastScrapedAt: new Date(),
-                lastScrapeStatus: "SUCCESS",
-                lastScrapeLog: "Manual trigger successful"
-            }
-        });
+        await performScrape(id);
 
         revalidatePath('/admin/sources');
         revalidatePath('/admin/events');
     } catch (error: any) {
         console.error('Failed to trigger scrape:', error);
-        await prisma.eventSource.update({
-            where: { id },
-            data: {
-                lastScrapeStatus: "FAILED",
-                lastScrapeLog: error.message || "Unknown error"
-            }
-        });
     }
 }
 
@@ -224,29 +325,8 @@ export async function runBatchScrape() {
     console.log(`[Bot] Starting batch scrape for ${sources.length} sources...`);
 
     for (const source of sources) {
-        try {
-            console.log(`[Bot] Scraping ${source.name}...`);
-            const { scrapeHub } = await import('@/lib/events/ingestion');
-            await scrapeHub(source.id);
-
-            await prisma.eventSource.update({
-                where: { id: source.id },
-                data: {
-                    lastScrapedAt: new Date(),
-                    lastScrapeStatus: "SUCCESS",
-                    lastScrapeLog: "Batch scrape successful"
-                }
-            });
-        } catch (error: any) {
-            console.error(`[Bot] Failed to scrape ${source.name}:`, error);
-            await prisma.eventSource.update({
-                where: { id: source.id },
-                data: {
-                    lastScrapeStatus: "FAILED",
-                    lastScrapeLog: error.message || "Unknown error"
-                }
-            });
-        }
+        console.log(`[Bot] Scraping ${source.name}...`);
+        await performScrape(source.id);
     }
 
     revalidatePath('/admin/sources');
