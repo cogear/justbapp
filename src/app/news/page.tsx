@@ -40,10 +40,15 @@ export default async function NewsPage({ searchParams }: { searchParams: Promise
         <main className="min-h-screen bg-background p-6 md:p-12">
             <div className="max-w-4xl mx-auto space-y-8">
                 <header className="space-y-6 text-center">
-                    <div className="space-y-2">
-                        <h1 className="text-4xl font-serif tracking-tight">Your Daily Briefing</h1>
-                        <p className="text-muted-foreground">
-                            Curated for your <span className="font-medium text-foreground">{activeCluster}</span> lens.
+                    <div className="space-y-4">
+                        <div className="flex justify-center">
+                            <span className="px-4 py-1.5 bg-primary/5 text-primary text-[11px] uppercase tracking-[0.2em] font-bold rounded-full border border-primary/10 shadow-sm">
+                                {activeCluster} Lens
+                            </span>
+                        </div>
+                        <h1 className="text-4xl md:text-5xl font-serif tracking-tight font-bold">Your Daily Briefing</h1>
+                        <p className="text-muted-foreground max-w-lg mx-auto leading-relaxed">
+                            A curated perspective on the world, refined for your specific personality and values.
                         </p>
                     </div>
 

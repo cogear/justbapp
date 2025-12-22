@@ -144,6 +144,36 @@ export async function getTopStories(userCluster?: string): Promise<any[]> {
     });
 }
 
+export async function getReframedArticle(articleId: string, cluster: string) {
+    const article = await prisma.newsArticle.findUnique({
+        where: { id: articleId },
+        include: {
+            reframedArticles: {
+                where: { cluster }
+            }
+        }
+    });
+
+    if (!article) return null;
+
+    const reframe = article.reframedArticles[0];
+
+    return {
+        id: article.id,
+        title: reframe?.headline || article.title,
+        summary: reframe?.summary || article.description,
+        content: reframe?.content || article.content,
+        originalContent: article.content,
+        source: article.source,
+        url: article.originalUrl,
+        imageUrl: article.imageUrl,
+        publishedAt: article.publishedAt.toISOString(),
+        tags: article.tags,
+        cluster: reframe?.cluster,
+        tone: reframe?.tone
+    };
+}
+
 export async function reframeStory(story: NewsStory, profile: VisualProfile): Promise<ReframedStory> {
     if (!process.env.OPENAI_API_KEY) {
         console.warn('OPENAI_API_KEY not found, returning original story');

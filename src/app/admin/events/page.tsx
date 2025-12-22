@@ -82,6 +82,12 @@ export default async function AdminEventsPage({ searchParams }: { searchParams: 
                         <p className="text-muted-foreground text-sm mt-1">{totalCount} events found</p>
                     </div>
                     <div className="flex gap-4">
+                        <Link href="/admin/news" className="px-4 py-2 bg-secondary text-secondary-foreground rounded-md text-sm font-medium hover:opacity-90">
+                            News
+                        </Link>
+                        <Link href="/admin/subscribers" className="px-4 py-2 bg-secondary text-secondary-foreground rounded-md text-sm font-medium hover:opacity-90">
+                            Subscribers
+                        </Link>
                         <Link href="/events/submit" className="px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm font-medium hover:opacity-90">
                             + Add Event
                         </Link>
@@ -90,101 +96,101 @@ export default async function AdminEventsPage({ searchParams }: { searchParams: 
                         </Link>
                     </div>
                 </div>
+            </div>
 
-                <EventFilters />
+            <EventFilters />
 
-                <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden flex flex-col min-h-[600px]" suppressHydrationWarning>
-                    <div className="flex-1 overflow-auto" suppressHydrationWarning>
-                        <table className="w-full text-left text-sm">
-                            <thead className="bg-muted/50 border-b border-border sticky top-0 z-10 backdrop-blur-sm">
-                                <tr>
-                                    <th className="p-4 font-medium text-muted-foreground"><SortHeader column="title" label="Title" /></th>
-                                    <th className="p-4 font-medium text-muted-foreground"><SortHeader column="startTime" label="Date & Time" /></th>
-                                    <th className="p-4 font-medium text-muted-foreground"><SortHeader column="locationName" label="Location" /></th>
-                                    <th className="p-4 font-medium text-muted-foreground"><SortHeader column="category" label="Category" /></th>
-                                    <th className="p-4 font-medium text-muted-foreground text-right">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-border">
-                                {events.map((event) => (
-                                    <tr key={event.id} className="hover:bg-muted/30 transition-colors">
-                                        <td className="p-4">
-                                            <div className="font-medium">{event.title}</div>
-                                            <div className="text-xs text-muted-foreground line-clamp-1">{event.description}</div>
-                                        </td>
-                                        <td className="p-4 whitespace-nowrap">
-                                            <div className="flex items-center gap-2">
-                                                <Calendar size={14} className="text-muted-foreground" />
-                                                {format(event.startTime, 'MMM d, yyyy')}
-                                            </div>
-                                            <div className="text-xs text-muted-foreground pl-6">
-                                                {format(event.startTime, 'h:mm a')}
-                                            </div>
-                                        </td>
-                                        <td className="p-4">
-                                            <div className="flex items-center gap-2">
-                                                <MapPin size={14} className="text-muted-foreground" />
-                                                {event.locationName}
-                                            </div>
-                                        </td>
-                                        <td className="p-4">
-                                            <div className="flex items-center gap-2">
-                                                <Tag size={14} className="text-muted-foreground" />
-                                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium 
+            <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden flex flex-col min-h-[600px]" suppressHydrationWarning>
+                <div className="flex-1 overflow-auto" suppressHydrationWarning>
+                    <table className="w-full text-left text-sm">
+                        <thead className="bg-muted/50 border-b border-border sticky top-0 z-10 backdrop-blur-sm">
+                            <tr>
+                                <th className="p-4 font-medium text-muted-foreground"><SortHeader column="title" label="Title" /></th>
+                                <th className="p-4 font-medium text-muted-foreground"><SortHeader column="startTime" label="Date & Time" /></th>
+                                <th className="p-4 font-medium text-muted-foreground"><SortHeader column="locationName" label="Location" /></th>
+                                <th className="p-4 font-medium text-muted-foreground"><SortHeader column="category" label="Category" /></th>
+                                <th className="p-4 font-medium text-muted-foreground text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-border">
+                            {events.map((event) => (
+                                <tr key={event.id} className="hover:bg-muted/30 transition-colors">
+                                    <td className="p-4">
+                                        <div className="font-medium">{event.title}</div>
+                                        <div className="text-xs text-muted-foreground line-clamp-1">{event.description}</div>
+                                    </td>
+                                    <td className="p-4 whitespace-nowrap">
+                                        <div className="flex items-center gap-2">
+                                            <Calendar size={14} className="text-muted-foreground" />
+                                            {format(event.startTime, 'MMM d, yyyy')}
+                                        </div>
+                                        <div className="text-xs text-muted-foreground pl-6">
+                                            {format(event.startTime, 'h:mm a')}
+                                        </div>
+                                    </td>
+                                    <td className="p-4">
+                                        <div className="flex items-center gap-2">
+                                            <MapPin size={14} className="text-muted-foreground" />
+                                            {event.locationName}
+                                        </div>
+                                    </td>
+                                    <td className="p-4">
+                                        <div className="flex items-center gap-2">
+                                            <Tag size={14} className="text-muted-foreground" />
+                                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium 
                                                     ${event.category === 'Social' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300' :
-                                                        event.category === 'Creative' ? 'bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300' :
-                                                            event.category === 'Active' ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300' :
-                                                                event.category === 'Intellectual' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' :
-                                                                    'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'
-                                                    }`}>
-                                                    {event.category}
-                                                </span>
-                                            </div>
-                                        </td>
-                                        <td className="p-4 text-right">
-                                            <div className="flex items-center justify-end gap-2">
-                                                {event.sourceUrl && (
-                                                    <a href={event.sourceUrl} target="_blank" rel="noopener noreferrer" className="p-2 text-muted-foreground hover:text-foreground transition-colors" title="View Source">
-                                                        <ExternalLink size={16} />
-                                                    </a>
-                                                )}
-                                                <Link href={`/admin/events/${event.id}`} className="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md transition-colors" title="Edit">
-                                                    <Pencil size={16} />
-                                                </Link>
-                                                <form action={deleteEvent}>
-                                                    <input type="hidden" name="id" value={event.id} />
-                                                    <button type="submit" className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors" title="Delete">
-                                                        <Trash2 size={16} />
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
-                                {events.length === 0 && (
-                                    <tr>
-                                        <td colSpan={5} className="p-8 text-center text-muted-foreground">
-                                            No events found.
-                                        </td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
+                                                    event.category === 'Creative' ? 'bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300' :
+                                                        event.category === 'Active' ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300' :
+                                                            event.category === 'Intellectual' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' :
+                                                                'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'
+                                                }`}>
+                                                {event.category}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td className="p-4 text-right">
+                                        <div className="flex items-center justify-end gap-2">
+                                            {event.sourceUrl && (
+                                                <a href={event.sourceUrl} target="_blank" rel="noopener noreferrer" className="p-2 text-muted-foreground hover:text-foreground transition-colors" title="View Source">
+                                                    <ExternalLink size={16} />
+                                                </a>
+                                            )}
+                                            <Link href={`/admin/events/${event.id}`} className="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md transition-colors" title="Edit">
+                                                <Pencil size={16} />
+                                            </Link>
+                                            <form action={deleteEvent}>
+                                                <input type="hidden" name="id" value={event.id} />
+                                                <button type="submit" className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors" title="Delete">
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                            {events.length === 0 && (
+                                <tr>
+                                    <td colSpan={5} className="p-8 text-center text-muted-foreground">
+                                        No events found.
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
 
-                    {/* Pagination Footer */}
-                    <div className="p-4 border-t border-border bg-muted/20 flex justify-between items-center">
-                        <div className="text-sm text-muted-foreground">
-                            Page {currentPage} of {totalPages || 1}
-                        </div>
-                        <div className="flex gap-2">
-                            <PaginationLink p={currentPage - 1} disabled={currentPage <= 1}>
-                                <div className="flex items-center gap-1"><ChevronLeft size={14} /> Previous</div>
-                            </PaginationLink>
-                            <PaginationLink p={currentPage + 1} disabled={currentPage >= totalPages}>
-                                <div className="flex items-center gap-1">Next <ChevronRight size={14} /></div>
-                            </PaginationLink>
-                        </div>
+                {/* Pagination Footer */}
+                <div className="p-4 border-t border-border bg-muted/20 flex justify-between items-center">
+                    <div className="text-sm text-muted-foreground">
+                        Page {currentPage} of {totalPages || 1}
+                    </div>
+                    <div className="flex gap-2">
+                        <PaginationLink p={currentPage - 1} disabled={currentPage <= 1}>
+                            <div className="flex items-center gap-1"><ChevronLeft size={14} /> Previous</div>
+                        </PaginationLink>
+                        <PaginationLink p={currentPage + 1} disabled={currentPage >= totalPages}>
+                            <div className="flex items-center gap-1">Next <ChevronRight size={14} /></div>
+                        </PaginationLink>
                     </div>
                 </div>
             </div>

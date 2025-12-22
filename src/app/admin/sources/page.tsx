@@ -21,6 +21,12 @@ export default async function AdminSourcesPage() {
                         <Link href="/admin/events" className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground">
                             &larr; Back to Events
                         </Link>
+                        <Link href="/admin/news" className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground">
+                            News
+                        </Link>
+                        <Link href="/admin/subscribers" className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground">
+                            Subscribers
+                        </Link>
                         <Link href="/admin/sources/new" className="px-4 py-2 bg-secondary text-secondary-foreground rounded-md text-sm font-medium hover:opacity-90 flex items-center gap-2">
                             <Plus size={16} /> Add Manually
                         </Link>

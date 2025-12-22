@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { NewsletterSignup } from '@/components/NewsletterSignup';
 
 
 export default function BookPage() {
@@ -127,6 +128,8 @@ export default function BookPage() {
                             Just be.
                         </p>
                     </div>
+
+                    <NewsletterSignup />
 
                 </div>
             </section>
