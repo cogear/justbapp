@@ -11,7 +11,12 @@ export default function BookPage() {
 
                 {/* Book Cover Visualization */}
                 <div className="md:w-1/2 flex justify-center items-center my-10 md:my-0">
-                    <div className="relative w-72 h-[450px] rounded-r-2xl rounded-l-sm shadow-2xl flex flex-col justify-between border-l-4 border-l-black/10 bg-white overflow-hidden">
+                    <a
+                        href="https://amzn.to/3YdE345"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="relative w-72 h-[450px] rounded-r-2xl rounded-l-sm shadow-2xl flex flex-col justify-between border-l-4 border-l-black/10 bg-white overflow-hidden transform hover:scale-[1.02] transition-transform duration-300 group"
+                    >
                         <div className="absolute inset-0 p-8 flex items-center justify-center bg-white">
                             <img
                                 src="/images/b-book-cover-new.jpg"
@@ -21,7 +26,9 @@ export default function BookPage() {
                         </div>
                         {/* Texture overlay for realism */}
                         <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none rounded-r-2xl rounded-l-sm z-10"></div>
-                    </div>
+                        {/* Subtle link indicator on hover */}
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300 pointer-events-none z-20"></div>
+                    </a>
                 </div>
 
                 {/* Hero Text */}
