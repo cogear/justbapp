@@ -14,9 +14,9 @@ export default function BookPage() {
                     <div className="relative w-72 h-[450px] rounded-r-2xl rounded-l-sm shadow-2xl flex flex-col justify-between border-l-4 border-l-black/10 bg-white overflow-hidden">
                         <div className="absolute inset-0">
                             <img
-                                src="/images/b-book-jacket.jpg"
+                                src="/images/b-book-cover-new.jpg"
                                 alt="b. The b Life Book Cover"
-                                className="w-full h-full object-cover object-right"
+                                className="w-full h-full object-cover"
                             />
                         </div>
                         {/* Texture overlay for realism */}
@@ -33,9 +33,14 @@ export default function BookPage() {
                         Robots can do. Humans can be. In the age of the algorithm, discovering your sustainable self is the ultimate act of rebellion.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                        <button className="px-8 py-4 bg-primary text-white text-lg rounded-full shadow-lg hover:bg-primary/90 hover:shadow-xl transition-all font-medium">
+                        <a
+                            href="https://amzn.to/3YdE345"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-8 py-4 bg-primary text-white text-lg rounded-full shadow-lg hover:bg-primary/90 hover:shadow-xl transition-all font-medium text-center"
+                        >
                             Get the Book
-                        </button>
+                        </a>
                         <button className="px-8 py-4 border border-foreground/20 text-foreground text-lg rounded-full hover:bg-foreground/5 transition-all font-medium">
                             Read a Chapter
                         </button>
@@ -140,9 +145,14 @@ export default function BookPage() {
                 <p className="text-lg md:text-xl text-white/90 max-w-2xl mb-10">
                     The world is spinning faster. Algorithms are getting smarter. But your humanity is your superpower.
                 </p>
-                <button className="px-10 py-5 bg-white text-primary text-xl rounded-full font-bold shadow-xl hover:bg-gray-100 transform hover:-translate-y-1 transition-all">
+                <a
+                    href="https://amzn.to/3YdE345"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-10 py-5 bg-white text-primary text-xl rounded-full font-bold shadow-xl hover:bg-gray-100 transform hover:-translate-y-1 transition-all text-center"
+                >
                     Start the Revolution
-                </button>
+                </a>
             </section>
 
         </main>
