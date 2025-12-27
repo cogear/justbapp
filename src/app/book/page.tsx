@@ -49,6 +49,9 @@ export default function BookPage() {
                             Get the Book
                         </a>
                     </div>
+                    <p className="text-[10px] text-muted-foreground italic">
+                        As an Amazon Associate I earn from qualifying purchases.
+                    </p>
                 </div>
             </section>
 
@@ -157,6 +160,9 @@ export default function BookPage() {
                 >
                     Start the Revolution
                 </a>
+                <p className="mt-6 text-[10px] text-white/70 italic">
+                    As an Amazon Associate I earn from qualifying purchases.
+                </p>
             </section>
 
         </main>
