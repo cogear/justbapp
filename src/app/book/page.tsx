@@ -12,11 +12,11 @@ export default function BookPage() {
                 {/* Book Cover Visualization */}
                 <div className="md:w-1/2 flex justify-center items-center my-10 md:my-0">
                     <div className="relative w-72 h-[450px] rounded-r-2xl rounded-l-sm shadow-2xl flex flex-col justify-between border-l-4 border-l-black/10 bg-white overflow-hidden">
-                        <div className="absolute inset-0">
+                        <div className="absolute inset-0 p-8 flex items-center justify-center bg-white">
                             <img
                                 src="/images/b-book-cover-new.jpg"
                                 alt="b. The b Life Book Cover"
-                                className="w-full h-full object-cover"
+                                className="w-full h-full object-contain"
                             />
                         </div>
                         {/* Texture overlay for realism */}
