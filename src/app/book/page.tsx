@@ -41,9 +41,6 @@ export default function BookPage() {
                         >
                             Get the Book
                         </a>
-                        <button className="px-8 py-4 border border-foreground/20 text-foreground text-lg rounded-full hover:bg-foreground/5 transition-all font-medium">
-                            Read a Chapter
-                        </button>
                     </div>
                 </div>
             </section>
