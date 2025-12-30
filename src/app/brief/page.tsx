@@ -66,9 +66,9 @@ function BriefContent() {
                     <ClusterSelector currentCluster={currentCluster} />
 
                     {dailySummary ? (
-                        <div className="bg-secondary/30 p-6 rounded-2xl border border-border/50 backdrop-blur-sm animate-in fade-in zoom-in-95 duration-1000">
-                            <p className="font-serif italic text-lg text-foreground/80 leading-relaxed">
-                                "{dailySummary}"
+                        <div className="bg-secondary/20 p-8 md:p-10 rounded-3xl border border-border/40 backdrop-blur-md animate-in fade-in zoom-in-95 duration-1000 shadow-sm">
+                            <p className="text-xl md:text-2xl font-serif text-foreground/90 leading-relaxed text-center">
+                                {dailySummary}
                             </p>
                         </div>
                     ) : (

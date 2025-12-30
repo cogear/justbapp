@@ -80,7 +80,7 @@ export async function generateDailyEssence(date: Date = new Date(), cluster: str
         messages: [
             {
                 role: "system",
-                content: "You are an insightful Sociological Analyst who summarizes the thematic and emotional zeitgeist of the day."
+                content: "You are an insightful Sociological Analyst. Provide summaries in plain, clean prose. Do NOT use markdown formatting like bolding (**) or italics (*). Avoid lists. Focus on a fluid, narrative paragraph that is easy to read."
             },
             {
                 role: "user",
