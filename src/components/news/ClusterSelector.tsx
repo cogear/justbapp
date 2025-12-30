@@ -3,14 +3,18 @@
 import { CLUSTERS } from '@/lib/personality/clustering';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-export function ClusterSelector({ currentCluster }: { currentCluster: string }) {
+export function ClusterSelector({ currentCluster, onClusterChange }: { currentCluster: string, onClusterChange?: (cluster: string) => void }) {
     const router = useRouter();
     const searchParams = useSearchParams();
 
     const handleSelect = (clusterName: string) => {
-        const params = new URLSearchParams(searchParams.toString());
-        params.set('cluster', clusterName);
-        router.push(`?${params.toString()}`);
+        if (onClusterChange) {
+            onClusterChange(clusterName);
+        } else {
+            const params = new URLSearchParams(searchParams.toString());
+            params.set('cluster', clusterName);
+            router.push(`?${params.toString()}`);
+        }
     };
 
     return (
@@ -23,8 +27,8 @@ export function ClusterSelector({ currentCluster }: { currentCluster: string }) 
                     key={cluster.name}
                     onClick={() => handleSelect(cluster.name)}
                     className={`px-3 py-1.5 text-xs font-medium rounded-full transition-all ${currentCluster === cluster.name
-                            ? 'bg-primary text-primary-foreground shadow-sm'
-                            : 'bg-background hover:bg-muted text-muted-foreground hover:text-foreground border border-border/50'
+                        ? 'bg-primary text-primary-foreground shadow-sm'
+                        : 'bg-background hover:bg-muted text-muted-foreground hover:text-foreground border border-border/50'
                         }`}
                 >
                     {cluster.name}

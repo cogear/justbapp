@@ -41,19 +41,13 @@ export async function generateDailyEssence(date: Date = new Date(), cluster: str
 
     let clusterInstruction = "";
     if (cluster !== "Global") {
-        clusterInstruction = `Tailor the summary for a "${cluster}" personality type. 
+        clusterInstruction = `Tailor the summary for a "${cluster}" personality type:
         - If "Explorer": Focus on curiosity, discovery, and new horizons.
-        - If "Caregiver": Focus on empathy, community, and human connection.
-        - If "Creator": Focus on innovation, expression, and cultural shifts.
-        - If "Sage": Focus on wisdom, analysis, and deeper meaning.
-        - If "Jester": Focus on the absurdity, lightness, or playfulness of the day.
-        - If "Ruler": Focus on order, structure, and leadership.
-        - If "Lover": Focus on passion, beauty, and relationships.
-        - If "Hero": Focus on courage, overcoming challenges, and action.
-        - If "Magician": Focus on transformation and vision.
-        - If "Outlaw": Focus on disruption and challenging the status quo.
-        - If "Everyman": Focus on relatability and the common experience.
-        - If "Innocent": Focus on optimism and simplicity.
+        - If "Balanced": Focus on the common ground, stability, and pragmatic updates.
+        - If "Reserved": Focus on steady progress, dependability, and calm observations.
+        - If "Ego-Resilient": Focus on bold moves, personal impact, and social dynamics.
+        - If "Role Model": Focus on leadership, prosocial trends, and constructive shifts.
+        - If "Methodical Introvert": Focus on structure, efficiency, and quiet progress.
         `;
     }
 
@@ -117,8 +111,7 @@ export async function generateDailyEssence(date: Date = new Date(), cluster: str
 export async function generateAllDailySummaries(date: Date = new Date()) {
     const clusters = [
         "Global",
-        "Explorer", "Caregiver", "Creator", "Sage", "Jester",
-        "Ruler", "Lover", "Hero", "Magician", "Outlaw", "Everyman", "Innocent"
+        "Balanced", "Reserved", "Ego-Resilient", "Role Model", "Methodical Introvert", "Explorer"
     ];
 
     const results = [];
