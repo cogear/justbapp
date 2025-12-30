@@ -7,6 +7,7 @@ import * as cheerio from 'cheerio';
 import { format } from 'date-fns';
 import { NewsletterEmail } from '@/emails/NewsletterEmail';
 import { render } from '@react-email/render';
+import React from 'react';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -91,22 +92,28 @@ export async function sendNewsletter(dateString: string) {
 
         const deliveryResults = await Promise.allSettled(allRecipientEmails.map(async (email) => {
             try {
+                // Use React.createElement since this is a .ts file (not .tsx)
+                const emailHtml = await render(React.createElement(NewsletterEmail, {
+                    ...content,
+                    previewMode: false
+                }));
+
                 const response = await resend.emails.send({
-                    from: 'b. | The Daily Essence <onboarding@resend.dev>',
+                    from: 'onboarding@resend.dev', // Strict sender for sandbox
                     to: email,
                     subject: `Today's b.brief: ${content.anchorQuote.substring(0, 50)}...`,
-                    react: NewsletterEmail({ ...content, previewMode: false }),
+                    html: emailHtml,
                 });
 
                 if (response.error) {
-                    console.error(`Resend error for ${email}:`, response.error);
+                    console.error(`Resend API error for ${email}:`, response.error);
                     throw response.error;
                 }
 
-                console.log(`Successfully queued email to ${email}`);
-                return { email: email, success: true };
+                console.log(`Successfully sent email ID ${response.data?.id} to ${email}`);
+                return { email: email, success: true, id: response.data?.id };
             } catch (err) {
-                console.error(`Failed to send email to ${email}:`, err);
+                console.error(`Failed to execute send for ${email}:`, err);
                 throw err;
             }
         }));
