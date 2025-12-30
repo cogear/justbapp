@@ -26,14 +26,14 @@ export async function generateMetadata({ params, searchParams }: ArticlePageProp
         const stackUser = await stackServerApp.getUser();
         if (stackUser?.primaryEmail) {
             const user = await prisma.user.findUnique({
-                where: { email: stackUser.primaryEmail },
+                where: { email: stackUser.primaryEmail || '' },
                 include: { visualProfiles: { orderBy: { createdAt: 'desc' }, take: 1 } }
             });
             activeCluster = user?.visualProfiles?.[0]?.cluster || 'Balanced';
         }
     }
 
-    const article = await getReframedArticle(id, activeCluster);
+    const article = await getReframedArticle(id, activeCluster as string);
 
     return {
         title: article?.title || 'Article | b.',
@@ -48,7 +48,7 @@ export default async function IndividualArticlePage({ params, searchParams }: Ar
     const stackUser = await stackServerApp.getUser();
 
     // Determine the cluster to show
-    let activeCluster = cluster;
+    let activeCluster = (typeof cluster === 'string' ? cluster : undefined);
     if (!activeCluster && stackUser?.primaryEmail) {
         const user = await prisma.user.findUnique({
             where: { email: stackUser.primaryEmail },
@@ -59,7 +59,7 @@ export default async function IndividualArticlePage({ params, searchParams }: Ar
 
     activeCluster = activeCluster || 'Balanced';
 
-    const article = await getReframedArticle(id, activeCluster as string);
+    const article = await getReframedArticle(id, activeCluster);
 
     if (!article) {
         notFound();
