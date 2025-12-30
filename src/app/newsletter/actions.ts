@@ -59,7 +59,9 @@ export async function sendNewsletter(dateString: string) {
     if (!user) return { success: false, error: 'Unauthorized' };
 
     // Email-based admin check
-    const isAdmin = user.primaryEmail === 'david@cogear.com' || user.primaryEmail === 'davidcrowell@gmail.com';
+    const isAdmin = user.primaryEmail === 'david@cogear.com' ||
+        user.primaryEmail === 'davidcrowell@gmail.com' ||
+        user.primaryEmail === 'cogear@gmail.com';
     if (!isAdmin) return { success: false, error: 'Unauthorized' };
 
     const date = new Date(dateString);
@@ -67,30 +69,67 @@ export async function sendNewsletter(dateString: string) {
     if (!content) return { success: false, error: 'Newsletter content not found' };
 
     // Fetch subscribers
-    // Assuming subscribers are just users for now, or we can filter by a subscription flag if added
-    const users = await prisma.user.findMany({
-        where: { email: { not: '' } }
+    const dbUsers = await prisma.user.findMany({
+        where: { email: { not: '' } },
+        select: { email: true }
     });
 
-    if (users.length === 0) return { success: false, error: 'No subscribers found' };
+    // Ensure the current sender is always included for verification
+    const allRecipientEmails = Array.from(new Set([
+        ...dbUsers.map(u => u.email),
+        user.primaryEmail
+    ])).filter(Boolean) as string[];
+
+    console.log(`Targeting ${allRecipientEmails.length} recipients: ${allRecipientEmails.join(', ')}`);
+
+    if (allRecipientEmails.length === 0) {
+        return { success: false, error: 'No recipients found' };
+    }
 
     try {
-        // In a real app, you might want to batch these or use a loop with rate limiting
-        // For now, we'll send to all found users
-        const results = await Promise.all(users.map(async (u) => {
-            return resend.emails.send({
-                from: 'b. | The Daily Essence <newsletter@justbblog.com>',
-                to: u.email,
-                subject: `Today's b.brief: ${content.anchorQuote.substring(0, 50)}...`,
-                react: NewsletterEmail(content),
-            });
+        console.log(`Starting newsletter delivery for ${dateString}...`);
+
+        const deliveryResults = await Promise.allSettled(allRecipientEmails.map(async (email) => {
+            try {
+                const response = await resend.emails.send({
+                    from: 'b. | The Daily Essence <onboarding@resend.dev>',
+                    to: email,
+                    subject: `Today's b.brief: ${content.anchorQuote.substring(0, 50)}...`,
+                    react: NewsletterEmail({ ...content, previewMode: false }),
+                });
+
+                if (response.error) {
+                    console.error(`Resend error for ${email}:`, response.error);
+                    throw response.error;
+                }
+
+                console.log(`Successfully queued email to ${email}`);
+                return { email: email, success: true };
+            } catch (err) {
+                console.error(`Failed to send email to ${email}:`, err);
+                throw err;
+            }
         }));
 
-        console.log(`Newsletter sent to ${results.length} users.`);
-        return { success: true, count: results.length };
+        const succeeded = deliveryResults.filter(r => r.status === 'fulfilled').length;
+        const failed = deliveryResults.filter(r => r.status === 'rejected').length;
+        const recipientList = allRecipientEmails.join(', ');
+
+        console.log(`Newsletter delivery complete. Succeeded: ${succeeded}, Failed: ${failed}`);
+
+        if (succeeded === 0 && failed > 0) {
+            return { success: false, error: `All deliveries failed. Targeted: ${recipientList}` };
+        }
+
+        return {
+            success: true,
+            count: succeeded,
+            failed,
+            recipients: recipientList
+        };
     } catch (error) {
-        console.error('Failed to send newsletter:', error);
-        return { success: false, error: 'Email delivery failed' };
+        console.error('Critical failure in sendNewsletter:', error);
+        return { success: false, error: 'Email delivery process crashed.' };
     }
 }
 

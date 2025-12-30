@@ -1,218 +1,157 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
-  provider = "prisma-client-js"
-  previewFeatures = ["postgresqlExtensions"] // Enable pgvector extension
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
-  extensions = [vector] // Enable pgvector extension
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  directUrl  = env("DIRECT_URL")
+  extensions = [vector]
 }
 
-// User Profile
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  zipCode   String? // For local events discovery
-
-  // Progressive Profiling
-  // Stored as JSON or separate tables, but for "Long-Term Memory", we use vectors.
-  // We can also store explicit traits.
-  psychographicProfile String? // e.g. "The Sponge", "The Fixer"
-  
-  // Long-Term Memory Vectors
-  // Stores the aggregated embedding of user's journal entries and preferences
-  // Used to tailor content and "News Refiner"
-  memoryVector Unsupported("vector(1536)")? 
-
-  // Relations
-  dailyPulses   DailyPulse[]
-  journalEntries JournalEntry[]
-  visualProfiles VisualProfile[]
+  id                   String                 @id @default(uuid())
+  email                String                 @unique
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  psychographicProfile String?
+  memoryVector         Unsupported("vector")?
+  zipCode              String?
+  dailyPulses          DailyPulse[]
+  journalEntries       JournalEntry[]
+  visualProfiles       VisualProfile[]
 }
 
-// Visual Personality Profile
 model VisualProfile {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-
-  // OCEAN Traits (0-100)
+  id                String            @id @default(uuid())
+  userId            String
+  createdAt         DateTime          @default(now())
   openness          Int
   conscientiousness Int
   extraversion      Int
   agreeableness     Int
   neuroticism       Int
-
-  // Top Interests (Stored as JSON or array of strings)
-  interests String[] // e.g. ["IAB1", "IAB17"]
-
-  // Personality Cluster (e.g. "Role Model", "Explorer")
-  cluster String?
-
-  // Relations
-  interactions UserInteraction[]
+  interests         String[]
+  cluster           String?
+  interactions      UserInteraction[]
+  user              User              @relation(fields: [userId], references: [id])
 }
 
-// News 2.0 Models
-
 model NewsArticle {
-  id          String   @id @default(uuid())
-  originalUrl String   @unique
-  title       String
-  description String?
-  content     String   // Full scraped content
-  imageUrl    String?
-  source      String?
-  publishedAt DateTime
-  
-  // Metadata
-  tags        String[] // e.g. ["Tech", "Politics", "Health"]
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Relations
+  id               String            @id @default(uuid())
+  originalUrl      String            @unique
+  title            String
+  description      String?
+  content          String
+  imageUrl         String?
+  source           String?
+  publishedAt      DateTime
+  tags             String[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
   reframedArticles ReframedArticle[]
   interactions     UserInteraction[]
 }
 
 model ReframedArticle {
-  id            String   @id @default(uuid())
+  id            String      @id @default(uuid())
   newsArticleId String
-  newsArticle   NewsArticle @relation(fields: [newsArticleId], references: [id])
-  
-  cluster       String   // The personality cluster this is targeted for (e.g. "Explorer")
-  
+  cluster       String
   headline      String
-  summary       String   // Teaser summary
-  content       String   // Full reframed content
-  tone          String?  // e.g. "Optimistic", "Analytical"
-  
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  summary       String
+  content       String
+  tone          String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  newsArticle   NewsArticle @relation(fields: [newsArticleId], references: [id])
 
-  @@unique([newsArticleId, cluster]) // One reframe per cluster per article
+  @@unique([newsArticleId, cluster])
 }
 
 model UserInteraction {
-  id            String   @id @default(uuid())
+  id            String        @id @default(uuid())
   userId        String
-  user          VisualProfile @relation(fields: [userId], references: [id]) // Linking to VisualProfile for cluster context
-  
   newsArticleId String
-  newsArticle   NewsArticle @relation(fields: [newsArticleId], references: [id])
-  
-  type          String   // "CLICK", "VIEW", "LIKE", "DISMISS"
-  createdAt     DateTime @default(now())
+  type          String
+  createdAt     DateTime      @default(now())
+  newsArticle   NewsArticle   @relation(fields: [newsArticleId], references: [id])
+  user          VisualProfile @relation(fields: [userId], references: [id])
 }
 
-// The Daily Pulse: "Where is your energy right now?"
 model DailyPulse {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-
-  // Energy Scales (1-10 or -5 to +5)
-  anxiousCalm    Int // Anxious <-> Calm
-  scatteredFocused Int // Scattered <-> Focused
-  drainedEnergized Int // Drained <-> Energized
-
-  // Context
-  note String?
+  id               String   @id @default(uuid())
+  userId           String
+  createdAt        DateTime @default(now())
+  anxiousCalm      Int
+  scatteredFocused Int
+  drainedEnergized Int
+  note             String?
+  user             User     @relation(fields: [userId], references: [id])
 }
 
-// The Insight Question: Reflective journaling
 model JournalEntry {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-
-  question String // e.g. "What is one thing you are dreading?"
-  questionId String? // ID from the predefined question list
-  answer   String
-
-  // Vector embedding of the answer for semantic search/memory
-  embedding Unsupported("vector(1536)")?
+  id         String                 @id @default(uuid())
+  userId     String
+  createdAt  DateTime               @default(now())
+  question   String
+  answer     String
+  embedding  Unsupported("vector")?
+  questionId String?
+  user       User                   @relation(fields: [userId], references: [id])
 }
 
-// b. Local Events
 model Event {
-  id          String   @id @default(uuid())
-  title       String
-  description String
-  
-  // Time
-  startTime   DateTime
-  endTime     DateTime?
-  
-  // Location
-  locationName String?
-  address      String?
-  latitude     Float?
-  longitude    Float?
-  zipCode      String?
-  
-  // Metadata
-  category    String // e.g. "Social", "Creative", "Active"
-  tags        String[] // e.g. "Garden", "Silent"
-  
-  // Source Info
-  source      String   @default("USER") // "USER", "SCRAPER", "API"
-  sourceUrl   String?
-  rawText     String?  // For provenance/debugging
-
-  // Social Proof
-  attendeeCount Int @default(0)
-  
-  // Vector embedding for "Vibe Match"
-  embedding   Unsupported("vector(1536)")?
-
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String                 @id @default(uuid())
+  title         String
+  description   String
+  tags          String[]
+  attendeeCount Int                    @default(0)
+  createdAt     DateTime               @default(now())
+  updatedAt     DateTime               @updatedAt
+  category      String
+  latitude      Float?
+  longitude     Float?
+  rawText       String?
+  sourceUrl     String?
+  zipCode       String?
+  address       String?
+  embedding     Unsupported("vector")?
+  endTime       DateTime?
+  locationName  String?
+  source        String                 @default("USER")
+  startTime     DateTime
 }
 
 model EventSource {
-  id            String   @id @default(uuid())
-  url           String   @unique
-  name          String
-  parserType    String   // "HTML_LLM", "RSS", "JSON"
-  lastScrapedAt DateTime?
-  
-  // Bot Status
-  status           String   @default("ACTIVE") // "ACTIVE", "PENDING", "REJECTED", "ERROR"
-  lastScrapeStatus String?  // "SUCCESS", "FAILED", "PARTIAL"
-  lastScrapeLog    String?  // Error message or stats
-  
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id               String    @id @default(uuid())
+  url              String    @unique
+  name             String
+  parserType       String
+  lastScrapedAt    DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  lastScrapeLog    String?
+  lastScrapeStatus String?
+  status           String    @default("ACTIVE")
 }
 
 model DailySummary {
   id        String   @id @default(uuid())
   date      DateTime @db.Date
-  cluster   String   @default("Global") // e.g. "Explorer", "Global"
-  content   String   // The abstract summary
-  mood      String?  // e.g. "Hopeful", "Chaotic"
+  content   String
+  mood      String?
   createdAt DateTime @default(now())
+  cluster   String   @default("Global")
 
-  @@unique([date, cluster]) // One summary per cluster per day
+  @@unique([date, cluster])
 }
 
 model Newsletter {
   id          String   @id @default(uuid())
   date        DateTime @unique @db.Date
   blogS3Url   String?
-  htmlContent String?  @db.Text
+  htmlContent String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }

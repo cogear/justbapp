@@ -24,7 +24,8 @@ export default async function NewsletterPage({
 
     const user = await stackServerApp.getUser();
     const isAdmin = user?.primaryEmail === 'david@cogear.com' ||
-        user?.primaryEmail === 'davidcrowell@gmail.com';
+        user?.primaryEmail === 'davidcrowell@gmail.com' ||
+        user?.primaryEmail === 'cogear@gmail.com';
 
     const content = await getNewsletterPreview(dateString);
 
