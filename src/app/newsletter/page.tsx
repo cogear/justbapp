@@ -1,67 +1,17 @@
 import React from 'react';
 import { Metadata } from 'next';
 import { format } from 'date-fns';
-import prisma from '@/lib/prisma';
+import { stackServerApp } from '@/lib/stack';
+import { getNewsletterPreview } from './actions';
+import { SendNewsletterButton } from './SendNewsletterButton';
+import { NewsletterEmail } from '@/emails/NewsletterEmail';
+import { Mail, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
-import { Play, Headset, Image as ImageIcon, Video, BookOpen } from 'lucide-react';
 
 export const metadata: Metadata = {
     title: 'b. | Newsletter',
-    description: 'Daily insights, audio briefings, and guided reflections.',
+    description: 'A multisensory briefing on the daily essence.',
 };
-
-function getS3Url(path: string) {
-    return `https://justbblog.s3.amazonaws.com/${path}`;
-}
-
-async function getNewsletterData(date: Date) {
-    const formattedDate = new Date(date);
-    formattedDate.setHours(0, 0, 0, 0);
-
-    return await prisma.newsletter.findUnique({
-        where: { date: formattedDate }
-    });
-}
-
-function AssetCard({
-    title,
-    description,
-    type,
-    src
-}: {
-    title: string;
-    description: string;
-    type: 'audio' | 'image' | 'video';
-    src: string;
-}) {
-    return (
-        <div className="bg-secondary/10 p-6 rounded-3xl border border-border/40 backdrop-blur-sm space-y-4">
-            <div className="flex items-center gap-3 text-primary mb-2">
-                {type === 'audio' && <Play size={20} />}
-                {type === 'image' && <ImageIcon size={20} />}
-                {type === 'video' && <Video size={20} />}
-                <h3 className="font-dynapuff text-lg">{title}</h3>
-            </div>
-            <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
-
-            {type === 'audio' && (
-                <audio controls className="w-full h-10 mt-4 opacity-80 hover:opacity-100 transition-opacity">
-                    <source src={src} type="audio/mpeg" />
-                </audio>
-            )}
-
-            {type === 'image' && (
-                <img src={src} alt={title} className="w-full rounded-2xl border border-border/20 shadow-sm" />
-            )}
-
-            {type === 'video' && (
-                <video controls className="w-full rounded-2xl border border-border/20 shadow-sm">
-                    <source src={src} type="video/mp4" />
-                </video>
-            )}
-        </div>
-    );
-}
 
 export default async function NewsletterPage({
     searchParams,
@@ -70,69 +20,86 @@ export default async function NewsletterPage({
 }) {
     const params = await searchParams;
     const requestedDate = params.date ? new Date(params.date) : new Date();
-    const year = format(requestedDate, 'yyyy');
-    const month = format(requestedDate, 'MM');
-    const day = format(requestedDate, 'dd');
-    const basePath = `newsletter/${year}/${month}/${day}`;
+    const dateString = requestedDate.toISOString().split('T')[0];
 
-    const dbRecord = await getNewsletterData(requestedDate);
+    const user = await stackServerApp.getUser();
+    const isAdmin = user?.primaryEmail === 'david@cogear.com' ||
+        user?.primaryEmail === 'davidcrowell@gmail.com';
 
-    // List of assets from the S3 structure
-    const assets = [
-        { id: '01', title: 'The Anchor', desc: 'Hero image of the day.', type: 'image' as const, file: '01-anchor-image.png' },
-        { id: '02', title: 'The Quote', desc: 'Audio recording of the daily quote.', type: 'audio' as const, file: '02-anchor-quote.mp3' },
-        { id: '03', title: 'Deep Elaboration', desc: 'Deeper context on the daily focus.', type: 'audio' as const, file: '03-anchor-elaboration.mp3' },
-        { id: '05', title: 'The Guide', desc: 'A short visual guidance session.', type: 'video' as const, file: '05-anchor-avatar.mp4' },
-        { id: '06', title: 'Daily Headline', desc: 'The defining headline of today.', type: 'audio' as const, file: '06-headline.mp3' },
-        { id: '07', title: 'The Gist', desc: 'Brief overview of world events.', type: 'audio' as const, file: '07-gist.mp3' },
-    ];
+    const content = await getNewsletterPreview(dateString);
 
     return (
-        <main className="min-h-screen bg-background py-12 px-6">
-            <div className="max-w-6xl mx-auto space-y-12">
-                <header className="text-center space-y-6">
-                    <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary/10 text-primary rounded-full text-sm font-medium">
-                        <Headset size={16} />
-                        The Daily Audio Experience
-                    </div>
+        <main className="min-h-screen bg-[#FDFCFB] dark:bg-[#0A0A0A] py-16 px-6 transition-colors duration-500">
+            <div className="max-w-4xl mx-auto flex flex-col items-center">
+                <header className="mb-16 text-center space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-1000">
                     <h1 className="text-5xl font-dynapuff text-primary">b.newsletter</h1>
-                    <p className="text-muted-foreground text-lg tracking-wide max-w-2xl mx-auto">
-                        A curated multisensory journey through the day's essence, delivered with clarity and calm.
+                    <p className="text-muted-foreground font-light tracking-[0.2em] uppercase text-sm">
+                        {format(requestedDate, 'EEEE, MMMM do, yyyy')}
                     </p>
-                    <div className="text-muted-foreground font-light tracking-widest uppercase">
-                        {format(requestedDate, 'MMMM do, yyyy')}
-                    </div>
                 </header>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {assets.map((asset) => (
-                        <AssetCard
-                            key={asset.id}
-                            title={asset.title}
-                            description={asset.desc}
-                            type={asset.type}
-                            src={getS3Url(`${basePath}/${asset.file}`)}
-                        />
-                    ))}
-                </div>
-
-                {dbRecord?.blogS3Url && (
-                    <div className="pt-12 text-center">
-                        <Link
-                            href={`/blog?date=${format(requestedDate, 'yyyy-MM-dd')}`}
-                            className="inline-flex items-center gap-3 px-10 py-4 bg-primary text-primary-foreground 
-                            rounded-full font-medium tracking-wide shadow-md hover:shadow-xl 
-                            transition-all duration-300 hover:-translate-y-1"
-                        >
-                            <BookOpen size={20} />
-                            Read the Full Blog Post
-                        </Link>
+                {isAdmin && (
+                    <div className="mb-16 w-full max-w-2xl bg-primary/5 border border-primary/20 rounded-3xl p-8 flex flex-col items-center gap-6 animate-in zoom-in-95 duration-700">
+                        <div className="text-center">
+                            <h2 className="text-xl font-dynapuff text-primary mb-2">Admin Dashboard</h2>
+                            <p className="text-sm text-muted-foreground">Preview the daily essence and distribute it to your community.</p>
+                        </div>
+                        <SendNewsletterButton dateString={dateString} />
                     </div>
                 )}
 
-                {/* Footer simple content */}
-                <footer className="text-center pt-20 text-muted-foreground/40 text-sm">
-                    <p>Designed for a focused mind. Just be.</p>
+                {!content ? (
+                    <div className="w-full max-w-2xl text-center py-24 bg-secondary/10 rounded-[3rem] border border-dashed border-border/40 animate-in fade-in zoom-in-95 duration-1000 delay-200">
+                        <p className="text-muted-foreground text-lg italic">
+                            The daily brief is being prepared.
+                            <br />
+                            <span className="text-sm not-italic opacity-60 mt-2 block">Check back shortly for the latest essence.</span>
+                        </p>
+                    </div>
+                ) : (
+                    <div className="w-full flex flex-col items-center gap-12">
+                        {/* Email Preview Header */}
+                        <div className="flex items-center gap-2 text-muted-foreground uppercase tracking-widest text-xs font-bold">
+                            <Mail size={14} />
+                            Email Preview
+                        </div>
+
+                        {/* High Fidelity Email Preview Container */}
+                        <div className="w-full max-w-[600px] bg-white text-charcoal border border-border/40 rounded-[32px] overflow-hidden shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
+                            {/* Inner Email Content - Scoped Style */}
+                            <div className="pointer-events-none select-none">
+                                <NewsletterEmail
+                                    date={content.date}
+                                    heroImage={content.heroImage}
+                                    anchorQuote={content.anchorQuote}
+                                    anchorElaboration={content.anchorElaboration}
+                                    signalTitle={content.signalTitle}
+                                    signalGist={content.signalGist}
+                                    bridgeContent={content.bridgeContent}
+                                    applicationInternal={content.applicationInternal}
+                                    applicationExternal={content.applicationExternal}
+                                    closingSummary={content.closingSummary}
+                                    permissionStatement={content.permissionStatement}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col items-center gap-6">
+                            <p className="text-muted-foreground italic text-sm">
+                                Prefer the full experience?
+                            </p>
+                            <Link
+                                href={`/blog?date=${dateString}`}
+                                className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-medium transition-colors"
+                            >
+                                Read the full blog post <ArrowRight size={18} />
+                            </Link>
+                        </div>
+                    </div>
+                )}
+
+                <footer className="mt-24 text-center opacity-30 text-xs tracking-widest uppercase">
+                    just be.
                 </footer>
             </div>
         </main>
