@@ -48,13 +48,13 @@ export default async function IndividualArticlePage({ params, searchParams }: Ar
     const stackUser = await stackServerApp.getUser();
 
     // Determine the cluster to show
-    let activeCluster = (typeof cluster === 'string' ? cluster : undefined);
+    let activeCluster: string | undefined = (typeof cluster === 'string' ? cluster : undefined);
     if (!activeCluster && stackUser?.primaryEmail) {
         const user = await prisma.user.findUnique({
             where: { email: stackUser.primaryEmail },
             include: { visualProfiles: { orderBy: { createdAt: 'desc' }, take: 1 } }
         });
-        activeCluster = user?.visualProfiles?.[0]?.cluster;
+        activeCluster = user?.visualProfiles?.[0]?.cluster || undefined;
     }
 
     activeCluster = activeCluster || 'Balanced';
