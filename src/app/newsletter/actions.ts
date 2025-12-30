@@ -99,7 +99,7 @@ export async function sendNewsletter(dateString: string) {
                 }));
 
                 const response = await resend.emails.send({
-                    from: 'onboarding@resend.dev', // Strict sender for sandbox
+                    from: 'b. | The Daily Essence <newsletter@theblife.com>',
                     to: email,
                     subject: `Today's b.brief: ${content.anchorQuote.substring(0, 50)}...`,
                     html: emailHtml,
