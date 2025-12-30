@@ -61,12 +61,10 @@ export async function generateDailyEssence(date: Date = new Date(), cluster: str
     Analyze the following news headlines and descriptions from today.
     Summarize the **thematic drivers** and **collective mood** of the day.
     
-    Instead of just abstract feelings, identify the *types* of events shaping the day (e.g., "Economic uncertainty," "Technological breakthroughs," "Political gridlock").
-    You MAY allude to major event categories or sectors (e.g., "The tech sector," "Global markets," "Local governance").
-    Do NOT explicitly reference specific proper nouns (names of people, specific companies, or specific city names) unless they are broadly thematic (e.g. "Wall Street").
+    While synthesizing the day's events into a cohesive narrative, you MUST include specific details, proper nouns (countries, major companies, or individuals), and concrete events. Avoid being overly abstract or vague. 
     
-    Goal: Create a "meaty" summary that tells the user *what kind of day* it is, not just how it feels.
-    Keep it under 100 words.
+    Goal: Create a "meaty" and grounded summary that provides clear context on what is actually happening in the world today. The reader should feel informed, not just conceptually briefed.
+    Keep it under 150 words.
     
     ${clusterInstruction}
     
