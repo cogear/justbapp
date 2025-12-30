@@ -26,7 +26,7 @@ interface NewsletterEmailProps {
     applicationExternal?: string;
     closingSummary?: string;
     permissionStatement?: string;
-    newsRecap?: { title: string; source: string }[];
+    newsRecap?: { id: string; title: string }[];
     previewMode?: boolean;
 }
 
@@ -45,6 +45,7 @@ export const NewsletterEmail = ({
     newsRecap = [],
     previewMode = false,
 }: NewsletterEmailProps) => {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://theblife.com";
     const content = (
         <Tailwind
             config={{
@@ -157,12 +158,12 @@ export const NewsletterEmail = ({
                             <Section className="bg-[#FDFCFB] p-[24px] rounded-[16px] border border-[#E0E6E6]">
                                 {newsRecap.map((article, idx) => (
                                     <Section key={idx} className={idx < newsRecap.length - 1 ? 'mb-[16px]' : ''}>
-                                        <Text className="text-[14px] leading-[22px] m-0 font-semibold text-charcoal">
+                                        <Link
+                                            href={`${baseUrl}/news/${article.id}`}
+                                            className="text-[14px] leading-[22px] m-0 font-semibold text-charcoal underline"
+                                        >
                                             {article.title}
-                                        </Text>
-                                        <Text className="text-[11px] uppercase font-medium text-[#888888] m-0 mt-[2px]">
-                                            {article.source}
-                                        </Text>
+                                        </Link>
                                         {idx < newsRecap.length - 1 && <Hr className="border-[#E0E6E6]/50 my-[12px]" />}
                                     </Section>
                                 ))}

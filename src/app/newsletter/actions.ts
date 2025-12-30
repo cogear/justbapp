@@ -111,8 +111,8 @@ export async function sendNewsletter(dateString: string) {
                 const newsRecap = recentArticles.map(article => {
                     const reframed = article.reframedArticles.find(r => r.cluster === cluster);
                     return {
+                        id: article.id,
                         title: reframed?.headline || article.title,
-                        source: article.source || 'The Daily Essence'
                     };
                 });
 
@@ -191,8 +191,8 @@ export async function getNewsletterPreview(dateString: string) {
     const newsRecap = recentArticles.map(article => {
         const reframed = article.reframedArticles.find(r => r.cluster === cluster);
         return {
+            id: article.id,
             title: reframed?.headline || article.title,
-            source: article.source || 'The Daily Essence'
         };
     });
 

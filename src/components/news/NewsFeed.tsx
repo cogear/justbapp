@@ -38,6 +38,7 @@ export function NewsFeed({ articles }: { articles: Article[] }) {
             {articles.map((article) => (
                 <motion.article
                     key={article.id}
+                    id={article.id}
                     layout
                     className={`group relative overflow-hidden rounded-2xl border border-border/50 bg-card transition-all ${expandedId === article.id ? 'ring-2 ring-primary/20 shadow-lg' : 'hover:shadow-md'}`}
                 >
