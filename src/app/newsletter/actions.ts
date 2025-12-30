@@ -87,14 +87,39 @@ export async function sendNewsletter(dateString: string) {
         return { success: false, error: 'No recipients found' };
     }
 
+    // Fetch 7 most recent news articles with their cluster-specific headlines
+    const recentArticles = await prisma.newsArticle.findMany({
+        take: 7,
+        orderBy: { publishedAt: 'desc' },
+        include: { reframedArticles: true }
+    });
+
     try {
         console.log(`Starting newsletter delivery for ${dateString}...`);
 
         const deliveryResults = await Promise.allSettled(allRecipientEmails.map(async (email) => {
             try {
+                // Find the user's cluster for personalization
+                const dbUser = await prisma.user.findUnique({
+                    where: { email },
+                    include: { visualProfiles: { take: 1, orderBy: { createdAt: 'desc' } } }
+                });
+
+                const cluster = dbUser?.visualProfiles?.[0]?.cluster || 'Global';
+
+                // Map the headlines for this specific user's cluster
+                const newsRecap = recentArticles.map(article => {
+                    const reframed = article.reframedArticles.find(r => r.cluster === cluster);
+                    return {
+                        title: reframed?.headline || article.title,
+                        source: article.source || 'The Daily Essence'
+                    };
+                });
+
                 // Use React.createElement since this is a .ts file (not .tsx)
                 const emailHtml = await render(React.createElement(NewsletterEmail, {
                     ...content,
+                    newsRecap,
                     previewMode: false
                 }));
 
@@ -141,7 +166,38 @@ export async function sendNewsletter(dateString: string) {
 }
 
 export async function getNewsletterPreview(dateString: string) {
+    const user = await stackServerApp.getUser();
     const date = new Date(dateString);
     const content = await getNewsletterContent(date);
-    return content;
+    if (!content) return null;
+
+    // Fetch the user's cluster for preview personalization
+    let cluster = 'Global';
+    if (user?.primaryEmail) {
+        const dbUser = await prisma.user.findUnique({
+            where: { email: user.primaryEmail },
+            include: { visualProfiles: { take: 1, orderBy: { createdAt: 'desc' } } }
+        });
+        cluster = dbUser?.visualProfiles?.[0]?.cluster || 'Global';
+    }
+
+    // Fetch recent articles for the preview
+    const recentArticles = await prisma.newsArticle.findMany({
+        take: 7,
+        orderBy: { publishedAt: 'desc' },
+        include: { reframedArticles: true }
+    });
+
+    const newsRecap = recentArticles.map(article => {
+        const reframed = article.reframedArticles.find(r => r.cluster === cluster);
+        return {
+            title: reframed?.headline || article.title,
+            source: article.source || 'The Daily Essence'
+        };
+    });
+
+    return {
+        ...content,
+        newsRecap
+    };
 }

@@ -26,6 +26,7 @@ interface NewsletterEmailProps {
     applicationExternal?: string;
     closingSummary?: string;
     permissionStatement?: string;
+    newsRecap?: { title: string; source: string }[];
     previewMode?: boolean;
 }
 
@@ -41,6 +42,7 @@ export const NewsletterEmail = ({
     applicationExternal = "",
     closingSummary = "Today we explored how the push for faster, louder progress can quietly cost us our own rhythm.",
     permissionStatement = "You are allowed to choose sustainability over burnout.",
+    newsRecap = [],
     previewMode = false,
 }: NewsletterEmailProps) => {
     const content = (
@@ -144,6 +146,26 @@ export const NewsletterEmail = ({
                                         </Text>
                                     </Section>
                                 )}
+                            </Section>
+                        </Section>
+                    )}
+
+                    {/* News Recap */}
+                    {newsRecap && newsRecap.length > 0 && (
+                        <Section className="mb-[32px]">
+                            <Text className="text-[12px] text-primary uppercase font-bold tracking-widest mb-[16px]">Today's Headlines</Text>
+                            <Section className="bg-[#FDFCFB] p-[24px] rounded-[16px] border border-[#E0E6E6]">
+                                {newsRecap.map((article, idx) => (
+                                    <Section key={idx} className={idx < newsRecap.length - 1 ? 'mb-[16px]' : ''}>
+                                        <Text className="text-[14px] leading-[22px] m-0 font-semibold text-charcoal">
+                                            {article.title}
+                                        </Text>
+                                        <Text className="text-[11px] uppercase font-medium text-[#888888] m-0 mt-[2px]">
+                                            {article.source}
+                                        </Text>
+                                        {idx < newsRecap.length - 1 && <Hr className="border-[#E0E6E6]/50 my-[12px]" />}
+                                    </Section>
+                                ))}
                             </Section>
                         </Section>
                     )}

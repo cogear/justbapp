@@ -81,6 +81,7 @@ export default async function NewsletterPage({
                                     applicationExternal={content.applicationExternal}
                                     closingSummary={content.closingSummary}
                                     permissionStatement={content.permissionStatement}
+                                    newsRecap={content.newsRecap}
                                     previewMode={true}
                                 />
                             </div>
