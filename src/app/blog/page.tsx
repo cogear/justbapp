@@ -22,22 +22,9 @@ async function getBlogContent(date: Date) {
         const rawHtml = await response.text();
         const $ = cheerio.load(rawHtml);
 
-        // Extract the main article content (most of the styling is here)
-        const content = $('article.container').html();
-        if (!content) return null;
-
-        // Extract and refine styles
-        let styles = $('style').html() || '';
-
-        // Transform hardcoded colors to CSS variables for theme support
-        // We'll replace the blog's internal variables with our app's variables
-        styles = styles.replace(/--background-color:\s*[^;]+;/g, '--background-color: transparent;');
-        styles = styles.replace(/--text-color:\s*[^;]+;/g, '--text-color: var(--foreground);');
-        styles = styles.replace(/--subtext-color:\s*[^;]+;/g, '--subtext-color: var(--muted-foreground);');
-        styles = styles.replace(/--divider-color:\s*[^;]+;/g, '--divider-color: var(--border);');
-
-        // Remove the fixed container width to allow our parent to control size
-        styles = styles.replace(/\.container\s*{[^}]+}/g, '.blog-content-wrapper { width: 100%; }');
+        // Extract the main content and any styles
+        const content = $('article.container').html() || $('body').html() || '';
+        const styles = $('style').html() || '';
 
         return {
             content,
@@ -60,10 +47,10 @@ export default async function BlogPage({
     const blogData = await getBlogContent(requestedDate);
 
     return (
-        <main className="min-h-screen bg-background py-16 px-6 transition-colors duration-500">
+        <main className="min-h-screen bg-background py-16 px-4 md:px-6 flex justify-center">
             <style dangerouslySetInnerHTML={{ __html: blogData?.styles || '' }} />
 
-            <div className="max-w-4xl mx-auto flex flex-col items-center">
+            <div className="w-full max-w-4xl flex flex-col items-center">
                 <header className="mb-12 text-center space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-1000">
                     <h1 className="text-5xl font-dynapuff text-primary">b.blog</h1>
                     <p className="text-muted-foreground font-light tracking-[0.2em] uppercase text-sm">
@@ -74,15 +61,15 @@ export default async function BlogPage({
                 {blogData ? (
                     <div
                         className="
-                            w-full blog-content-wrapper
-                            bg-secondary/20 dark:bg-secondary/10 p-4 md:p-8 rounded-[3rem] 
+                            w-full
+                            bg-secondary/20 dark:bg-secondary/10 p-4 md:p-12 rounded-[3rem] 
                             border border-border/40 backdrop-blur-md shadow-sm
-                            transition-all duration-500 hover:shadow-lg
+                            flex justify-center
                             animate-in fade-in zoom-in-95 duration-1000 delay-200
                         "
                     >
                         <div
-                            className="max-w-[700px] mx-auto"
+                            className="w-full max-w-[800px] overflow-hidden"
                             dangerouslySetInnerHTML={{ __html: blogData.content }}
                         />
                     </div>
