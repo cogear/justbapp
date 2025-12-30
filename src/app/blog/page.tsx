@@ -1,6 +1,7 @@
 import React from 'react';
 import { Metadata } from 'next';
 import { format } from 'date-fns';
+import * as cheerio from 'cheerio';
 
 export const metadata: Metadata = {
     title: 'b. | Blog',
@@ -12,15 +13,36 @@ async function getBlogContent(date: Date) {
     const month = format(date, 'MM');
     const day = format(date, 'dd');
 
-    // Pattern: https://justbblog.s3.amazonaws.com/blog/{year}/{month}/{day}/index.html
     const url = `https://justbblog.s3.amazonaws.com/blog/${year}/${month}/${day}/index.html`;
 
     try {
         const response = await fetch(url, { next: { revalidate: 3600 } });
-        if (!response.ok) {
-            return null;
-        }
-        return await response.text();
+        if (!response.ok) return null;
+
+        const rawHtml = await response.text();
+        const $ = cheerio.load(rawHtml);
+
+        // Extract the main article content (most of the styling is here)
+        const content = $('article.container').html();
+        if (!content) return null;
+
+        // Extract and refine styles
+        let styles = $('style').html() || '';
+
+        // Transform hardcoded colors to CSS variables for theme support
+        // We'll replace the blog's internal variables with our app's variables
+        styles = styles.replace(/--background-color:\s*[^;]+;/g, '--background-color: transparent;');
+        styles = styles.replace(/--text-color:\s*[^;]+;/g, '--text-color: var(--foreground);');
+        styles = styles.replace(/--subtext-color:\s*[^;]+;/g, '--subtext-color: var(--muted-foreground);');
+        styles = styles.replace(/--divider-color:\s*[^;]+;/g, '--divider-color: var(--border);');
+
+        // Remove the fixed container width to allow our parent to control size
+        styles = styles.replace(/\.container\s*{[^}]+}/g, '.blog-content-wrapper { width: 100%; }');
+
+        return {
+            content,
+            styles
+        };
     } catch (error) {
         console.error('Failed to fetch blog content:', error);
         return null;
@@ -35,34 +57,37 @@ export default async function BlogPage({
     const params = await searchParams;
     const requestedDate = params.date ? new Date(params.date) : new Date();
 
-    const content = await getBlogContent(requestedDate);
+    const blogData = await getBlogContent(requestedDate);
 
     return (
         <main className="min-h-screen bg-background py-16 px-6 transition-colors duration-500">
+            <style dangerouslySetInnerHTML={{ __html: blogData?.styles || '' }} />
+
             <div className="max-w-4xl mx-auto flex flex-col items-center">
-                <header className="mb-16 text-center space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+                <header className="mb-12 text-center space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-1000">
                     <h1 className="text-5xl font-dynapuff text-primary">b.blog</h1>
                     <p className="text-muted-foreground font-light tracking-[0.2em] uppercase text-sm">
                         {format(requestedDate, 'MMMM do, yyyy')}
                     </p>
                 </header>
 
-                {content ? (
-                    <article
+                {blogData ? (
+                    <div
                         className="
-                            w-full prose prose-lg dark:prose-invert max-w-none 
-                            bg-secondary/20 dark:bg-secondary/10 p-8 md:p-16 rounded-[3rem] 
+                            w-full blog-content-wrapper
+                            bg-secondary/20 dark:bg-secondary/10 p-4 md:p-8 rounded-[3rem] 
                             border border-border/40 backdrop-blur-md shadow-sm
                             transition-all duration-500 hover:shadow-lg
-                            prose-headings:font-dynapuff prose-headings:text-primary 
-                            prose-p:text-foreground/80 prose-p:leading-relaxed
-                            prose-a:text-primary prose-a:no-underline hover:prose-a:underline
                             animate-in fade-in zoom-in-95 duration-1000 delay-200
                         "
-                        dangerouslySetInnerHTML={{ __html: content }}
-                    />
+                    >
+                        <div
+                            className="max-w-[700px] mx-auto"
+                            dangerouslySetInnerHTML={{ __html: blogData.content }}
+                        />
+                    </div>
                 ) : (
-                    <div className="w-full text-center py-24 bg-secondary/10 rounded-[3rem] border border-dashed border-border/40 animate-in fade-in zoom-in-95 duration-1000 delay-200">
+                    <div className="w-full max-w-2xl text-center py-24 bg-secondary/10 rounded-[3rem] border border-dashed border-border/40 animate-in fade-in zoom-in-95 duration-1000">
                         <p className="text-muted-foreground text-lg italic">
                             The essence of this day is still unfolding.
                             <br />
