@@ -18,7 +18,12 @@ export function Header() {
                         <Link href="/news" className="transition-colors hover:text-foreground">
                             News
                         </Link>
-
+                        <Link href="/newsletter" className="transition-colors hover:text-foreground">
+                            Newsletter
+                        </Link>
+                        <Link href="/blog" className="transition-colors hover:text-foreground">
+                            Blog
+                        </Link>
                         <Link href="/principles" className="transition-colors hover:text-foreground">
                             Principles
                         </Link>

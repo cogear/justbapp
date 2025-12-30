@@ -207,3 +207,12 @@ model DailySummary {
 
   @@unique([date, cluster]) // One summary per cluster per day
 }
+
+model Newsletter {
+  id          String   @id @default(uuid())
+  date        DateTime @unique @db.Date
+  blogS3Url   String?
+  htmlContent String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
