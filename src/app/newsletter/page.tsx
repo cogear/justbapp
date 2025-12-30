@@ -80,6 +80,7 @@ export default async function NewsletterPage({
                                     applicationExternal={content.applicationExternal}
                                     closingSummary={content.closingSummary}
                                     permissionStatement={content.permissionStatement}
+                                    previewMode={true}
                                 />
                             </div>
                         </div>
