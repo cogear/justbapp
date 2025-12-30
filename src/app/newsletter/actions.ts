@@ -1,6 +1,6 @@
 'use server';
 
-import { Resend } from 'resend';
+import { resend } from '@/lib/resend';
 import prisma from '@/lib/prisma';
 import { stackServerApp } from '@/lib/stack';
 import * as cheerio from 'cheerio';
@@ -9,7 +9,7 @@ import { NewsletterEmail } from '@/emails/NewsletterEmail';
 import { render } from '@react-email/render';
 import React from 'react';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Using consolidated resend client from @/lib/resend
 
 async function getNewsletterContent(date: Date) {
     // Ensure we use UTC parts to match S3 path structure (YYYY/MM/DD)

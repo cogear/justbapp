@@ -8,6 +8,8 @@ import { NewsletterEmail } from '@/emails/NewsletterEmail';
 import { Mail, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
     title: 'b. | Newsletter',
     description: 'A multisensory briefing on the daily essence.',
