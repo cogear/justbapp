@@ -11,18 +11,24 @@ import { render } from '@react-email/render';
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 async function getNewsletterContent(date: Date) {
-    const year = format(date, 'yyyy');
-    const month = format(date, 'MM');
-    const day = format(date, 'dd');
+    // Ensure we use UTC parts to match S3 path structure (YYYY/MM/DD)
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(date.getUTCDate()).padStart(2, '0');
     const url = `https://justbblog.s3.amazonaws.com/blog/${year}/${month}/${day}/index.html`;
 
+    console.log(`Fetching newsletter content from: ${url}`);
+
     try {
-        const response = await fetch(url);
-        if (!response.ok) return null;
+        const response = await fetch(url, { next: { revalidate: 3600 } });
+        if (!response.ok) {
+            console.error(`Failed to fetch newsletter content. Status: ${response.status} URL: ${url}`);
+            return null;
+        }
         const html = await response.text();
         const $ = cheerio.load(html);
 
-        return {
+        const content = {
             date: $('.blog-date').text().trim(),
             heroImage: $('.hero-image').attr('src'),
             anchorQuote: $('.anchor-quote').text().trim().replace(/^"|"$/g, ''),
@@ -35,6 +41,13 @@ async function getNewsletterContent(date: Date) {
             closingSummary: $('.closing-summary').text().trim(),
             permissionStatement: $('.permission-text').text().trim().replace(/^"|"$/g, ''),
         };
+
+        if (!content.date && !content.anchorQuote) {
+            console.error(`Newsletter content parsed but found empty for URL: ${url}`);
+            return null;
+        }
+
+        return content;
     } catch (error) {
         console.error('Failed to fetch newsletter content for parsing:', error);
         return null;
