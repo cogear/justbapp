@@ -52,8 +52,8 @@ function BriefContent() {
 
     return (
         <main className="min-h-screen bg-background flex flex-col items-center py-12 px-6 transition-opacity duration-1000 animate-in fade-in">
-            <div className="w-full max-w-lg space-y-8">
-                <header className="text-center space-y-4">
+            <div className="w-full max-w-4xl space-y-8">
+                <header className="text-center space-y-6">
                     <h1 className="text-3xl font-dynapuff text-primary">
                         b.brief
                     </h1>
@@ -66,9 +66,9 @@ function BriefContent() {
                     <ClusterSelector currentCluster={currentCluster} />
 
                     {dailySummary ? (
-                        <div className="bg-secondary/20 p-8 md:p-10 rounded-3xl border border-border/40 backdrop-blur-md animate-in fade-in zoom-in-95 duration-1000 shadow-sm">
-                            <p className="text-xl md:text-2xl font-serif text-foreground/90 leading-relaxed text-center">
-                                {dailySummary}
+                        <div className="bg-secondary/20 p-8 md:p-12 rounded-[2.5rem] border border-border/40 backdrop-blur-md animate-in fade-in zoom-in-95 duration-1000 shadow-sm">
+                            <p className="text-xl md:text-3xl font-serif text-foreground/90 leading-relaxed text-center max-w-3xl mx-auto">
+                                {dailySummary.replace(/\*\*/g, '')}
                             </p>
                         </div>
                     ) : (
