@@ -28,6 +28,12 @@ export async function Header() {
                         <Link href="/book" className="transition-colors hover:text-foreground font-dynapuff">
                             b.book
                         </Link>
+                        <Link
+                            href="/subscribe"
+                            className="ml-2 px-4 py-1.5 bg-primary/10 text-primary hover:bg-primary/20 rounded-full transition-all font-dynapuff text-xs border border-primary/20"
+                        >
+                            b.subscribe
+                        </Link>
                     </nav>
                 </div>
                 <div className="flex items-center gap-4">
