@@ -48,14 +48,26 @@ export default async function VisualProfilePage({ searchParams }: { searchParams
                 </header>
 
                 {/* Personality Cluster */}
-                <section className="bg-card border border-border/50 rounded-2xl p-8 text-center space-y-4 shadow-sm">
-                    <div className="inline-flex items-center justify-center px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium uppercase tracking-wider">
-                        Personality Archetype
+                <section className="relative overflow-hidden bg-card border border-border/50 rounded-[32px] shadow-xl group">
+                    {cluster.imageUrl && (
+                        <div className="relative h-64 md:h-80 w-full overflow-hidden">
+                            <img
+                                src={cluster.imageUrl}
+                                alt={cluster.name}
+                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-card via-card/40 to-transparent" />
+                        </div>
+                    )}
+                    <div className="relative p-8 text-center space-y-4 -mt-20">
+                        <div className="inline-flex items-center justify-center px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-[0.2em] backdrop-blur-md border border-primary/20">
+                            Personality Archetype
+                        </div>
+                        <h2 className="text-4xl font-serif text-foreground">{profile.cluster || 'Analyzing...'}</h2>
+                        <p className="text-muted-foreground leading-relaxed max-w-lg mx-auto text-lg">
+                            {cluster.description}
+                        </p>
                     </div>
-                    <h2 className="text-3xl font-serif text-foreground">{profile.cluster || 'Analyzing...'}</h2>
-                    <p className="text-muted-foreground leading-relaxed max-w-lg mx-auto">
-                        {cluster.description}
-                    </p>
                 </section>
 
                 {/* OCEAN Scores */}

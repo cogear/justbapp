@@ -10,6 +10,7 @@ export interface PersonalityCluster {
     id: string;
     name: string;
     description: string;
+    imageUrl: string;
     centroid: OceanScores;
 }
 
@@ -20,36 +21,42 @@ export const CLUSTERS: PersonalityCluster[] = [
         id: 'average',
         name: 'Balanced',
         description: 'Socially typical, a bit stress-sensitive, and pragmatic. The most common profile.',
+        imageUrl: '/images/archetypes/balanced.png',
         centroid: { openness: 40, conscientiousness: 50, extraversion: 50, agreeableness: 50, neuroticism: 70 }
     },
     {
         id: 'reserved',
         name: 'Reserved',
         description: 'Quiet, cautious, emotionally steady, and dependable. The calm friend everyone trusts.',
+        imageUrl: '/images/archetypes/reserved.png',
         centroid: { openness: 30, conscientiousness: 65, extraversion: 30, agreeableness: 65, neuroticism: 30 }
     },
     {
         id: 'self-centered',
         name: 'Ego-Resilient', // Using the nicer name
         description: 'Socially bold, impulsive, and attention-seeking. Often prioritizes own needs.',
+        imageUrl: '/images/archetypes/ego-resilient.png',
         centroid: { openness: 50, conscientiousness: 30, extraversion: 80, agreeableness: 30, neuroticism: 70 }
     },
     {
         id: 'role-model',
         name: 'Role Model',
         description: 'Emotionally stable, curious, prosocial, and high-functioning. Natural leaders.',
+        imageUrl: '/images/archetypes/role-model.png',
         centroid: { openness: 75, conscientiousness: 80, extraversion: 60, agreeableness: 80, neuroticism: 20 }
     },
     {
         id: 'methodical',
         name: 'Methodical Introvert',
         description: 'Structured, self-disciplined, and reliable. "I don\'t make noise, I make progress."',
+        imageUrl: '/images/archetypes/methodical.png',
         centroid: { openness: 50, conscientiousness: 85, extraversion: 30, agreeableness: 50, neuroticism: 30 }
     },
     {
         id: 'explorer',
         name: 'Explorer',
         description: 'Idea-driven, curious, and experimental. "I\'ll invent a rocket. The spreadsheet can wait."',
+        imageUrl: '/images/archetypes/explorer.png',
         centroid: { openness: 85, conscientiousness: 40, extraversion: 60, agreeableness: 60, neuroticism: 50 }
     }
 ];
