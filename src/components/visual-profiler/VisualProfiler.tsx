@@ -9,6 +9,8 @@ import { saveVisualProfile } from '@/app/visual-profile/actions';
 import { ArrowRight, RefreshCcw } from 'lucide-react';
 import Link from 'next/link';
 
+import Image from 'next/image';
+
 export function VisualProfiler() {
     const [showIntro, setShowIntro] = useState(true);
     const [currentPairId, setCurrentPairId] = useState<string | null>(PAIRS[0].id);
@@ -47,39 +49,54 @@ export function VisualProfiler() {
 
     if (showIntro) {
         return (
-            <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4 md:p-8 animate-in fade-in duration-1000">
-                <div className="max-w-md w-full space-y-8 text-center">
-                    <div className="space-y-6">
-                        <h1 className="text-4xl font-dynapuff text-primary">Discover Your Aesthetic</h1>
-                        <div className="space-y-4">
-                            <p className="text-muted-foreground leading-relaxed">
-                                Welcome to the visual profiler. This experience consists of 30 sets of images designed to capture your unique perspective.
-                            </p>
-                            <p className="text-muted-foreground leading-relaxed">
-                                For each pair, simply pick the image you relate to most.
-                            </p>
-                            <p className="text-primary/80 font-medium text-sm pt-4 italic">
-                                We really recommend doing this to get the full experience of this site.
-                            </p>
-                        </div>
-                        <div className="p-4 bg-secondary/20 rounded-2xl text-xs text-muted-foreground/80 italic">
-                            Note: This is not a diagnostic tool and is meant for demonstration purposes only.
-                        </div>
+            <div className="min-h-screen bg-background flex items-center justify-center p-4 md:p-12 animate-in fade-in duration-1000">
+                <div className="max-w-6xl w-full grid md:grid-cols-2 bg-white dark:bg-invert rounded-[3rem] overflow-hidden shadow-2xl border border-border/40">
+                    {/* Visual Side */}
+                    <div className="relative hidden md:block h-full min-h-[500px]">
+                        <Image
+                            src="/images/hero-human.png"
+                            alt="A moment of deep presence"
+                            fill
+                            className="object-cover"
+                        />
+                        <div className="absolute inset-0 bg-primary/20 mix-blend-overlay" />
                     </div>
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <button
-                            onClick={() => setShowIntro(false)}
-                            className="group inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground rounded-full font-medium hover:opacity-90 transition-all active:scale-95"
-                        >
-                            Begin Experience
-                            <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-                        </button>
-                        <Link
-                            href="/subscribe"
-                            className="px-8 py-4 text-muted-foreground hover:text-foreground transition-colors text-sm font-medium"
-                        >
-                            Skip to Newsletter Signup
-                        </Link>
+
+                    {/* Content Side */}
+                    <div className="p-8 md:p-16 flex flex-col justify-center space-y-10 text-left">
+                        <div className="space-y-6">
+                            <h1 className="text-5xl font-dynapuff text-primary leading-tight">Discover Your Aesthetic</h1>
+                            <div className="space-y-4">
+                                <p className="text-xl text-muted-foreground font-light leading-relaxed">
+                                    This experience consists of 30 sets of images designed to capture your unique perspective on the world.
+                                </p>
+                                <p className="text-lg text-muted-foreground font-light leading-relaxed">
+                                    For each pair, simply pick the image you relate to most. There are no wrong answers—only your truth.
+                                </p>
+                                <p className="text-primary font-medium italic pt-4">
+                                    We really recommend doing this to get the full experience of this site.
+                                </p>
+                            </div>
+                            <div className="p-5 bg-secondary/10 rounded-2xl text-sm text-muted-foreground italic border border-primary/5">
+                                Note: This is not a diagnostic tool and is meant for demonstration purposes only.
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row items-center gap-6">
+                            <button
+                                onClick={() => setShowIntro(false)}
+                                className="group w-full sm:w-auto inline-flex items-center justify-center gap-3 px-10 py-5 bg-primary text-primary-foreground rounded-full font-medium shadow-xl hover:shadow-2xl transition-all active:scale-95 text-lg"
+                            >
+                                Begin Experience
+                                <ArrowRight size={24} className="group-hover:translate-x-1 transition-transform" />
+                            </button>
+                            <Link
+                                href="/subscribe"
+                                className="text-muted-foreground hover:text-foreground transition-colors font-medium"
+                            >
+                                Skip to Signup
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </div>
