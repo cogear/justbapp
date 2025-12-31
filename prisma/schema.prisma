@@ -21,6 +21,7 @@ model User {
   dailyPulses          DailyPulse[]
   journalEntries       JournalEntry[]
   visualProfiles       VisualProfile[]
+  isNewsletterSubscriber Boolean               @default(false)
 }
 
 model VisualProfile {

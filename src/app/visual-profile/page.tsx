@@ -42,6 +42,9 @@ export default async function VisualProfilePage({ searchParams }: { searchParams
                     <p className="text-sm text-muted-foreground/80 max-w-lg mx-auto pt-2">
                         We use these insights solely to curate content that resonates with you. Your privacy is paramount—we never share or sell your data.
                     </p>
+                    <p className="text-[10px] text-muted-foreground/50 italic max-w-lg mx-auto">
+                        Disclaimer: This is not a diagnostic tool and is meant for demonstration purposes only.
+                    </p>
                 </header>
 
                 {/* Personality Cluster */}

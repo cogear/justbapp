@@ -1,9 +1,10 @@
 import Link from 'next/link';
 import React from 'react';
+import { stackServerApp } from '@/lib/stack';
 import { ThemeToggle } from './ThemeToggle';
 import { AuthButtons } from './AuthButtons';
 
-export function Header() {
+export async function Header() {
     return (
         <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
             <div className="container flex h-14 max-w-screen-2xl items-center justify-between px-4 md:px-8">
@@ -12,23 +13,20 @@ export function Header() {
                         <span className="font-serif text-xl font-bold">b.</span>
                     </Link>
                     <nav className="flex items-center gap-4 text-sm font-medium text-muted-foreground">
-                        <Link href="/visual-profile" className="transition-colors hover:text-foreground">
-                            Profile
+                        <Link href="/visual-profile" className="transition-colors hover:text-foreground font-dynapuff">
+                            b.profile
                         </Link>
-                        <Link href="/news" className="transition-colors hover:text-foreground">
-                            News
+                        <Link href="/news" className="transition-colors hover:text-foreground font-dynapuff">
+                            b.news
                         </Link>
-                        <Link href="/newsletter" className="transition-colors hover:text-foreground">
-                            Newsletter
+                        <Link href="/blog" className="transition-colors hover:text-foreground font-dynapuff">
+                            b.blog
                         </Link>
-                        <Link href="/blog" className="transition-colors hover:text-foreground">
-                            Blog
+                        <Link href="/principles" className="transition-colors hover:text-foreground font-dynapuff">
+                            b.principles
                         </Link>
-                        <Link href="/principles" className="transition-colors hover:text-foreground">
-                            Principles
-                        </Link>
-                        <Link href="/book" className="transition-colors hover:text-foreground">
-                            Book
+                        <Link href="/book" className="transition-colors hover:text-foreground font-dynapuff">
+                            b.book
                         </Link>
                     </nav>
                 </div>

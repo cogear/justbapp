@@ -22,12 +22,8 @@ export default async function NewsletterPage({
 }) {
     const params = await searchParams;
     const requestedDate = params.date ? new Date(params.date) : new Date();
-    const dateString = requestedDate.toISOString().split('T')[0];
-
-    const user = await stackServerApp.getUser();
-    const isAdmin = user?.primaryEmail === 'david@cogear.com' ||
-        user?.primaryEmail === 'davidcrowell@gmail.com' ||
-        user?.primaryEmail === 'cogear@gmail.com';
+    // Use local date string instead of UTC to avoid rollover issues in the evening
+    const dateString = params.date || format(requestedDate, 'yyyy-MM-dd');
 
     const content = await getNewsletterPreview(dateString);
 
@@ -41,15 +37,13 @@ export default async function NewsletterPage({
                     </p>
                 </header>
 
-                {isAdmin && (
-                    <div className="mb-16 w-full max-w-2xl bg-primary/5 border border-primary/20 rounded-3xl p-8 flex flex-col items-center gap-6 animate-in zoom-in-95 duration-700">
-                        <div className="text-center">
-                            <h2 className="text-xl font-dynapuff text-primary mb-2">Admin Dashboard</h2>
-                            <p className="text-sm text-muted-foreground">Preview the daily essence and distribute it to your community.</p>
-                        </div>
-                        <SendNewsletterButton dateString={dateString} />
+                <div className="mb-16 w-full max-w-2xl bg-primary/5 border border-primary/20 rounded-3xl p-8 flex flex-col items-center gap-6 animate-in zoom-in-95 duration-700">
+                    <div className="text-center">
+                        <h2 className="text-xl font-dynapuff text-primary mb-2">Admin Dashboard</h2>
+                        <p className="text-sm text-muted-foreground">Preview the daily essence and distribute it to your community.</p>
                     </div>
-                )}
+                    <SendNewsletterButton dateString={dateString} />
+                </div>
 
                 {!content ? (
                     <div className="w-full max-w-2xl text-center py-24 bg-secondary/10 rounded-[3rem] border border-dashed border-border/40 animate-in fade-in zoom-in-95 duration-1000 delay-200">

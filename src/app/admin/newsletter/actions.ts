@@ -23,7 +23,12 @@ async function getNewsletterContent(date: Date) {
     try {
         const response = await fetch(url, { next: { revalidate: 3600 } });
         if (!response.ok) {
-            console.error(`Failed to fetch newsletter content. Status: ${response.status} URL: ${url}`);
+            // Silence 404 and 403 as "not ready yet" rather than an error
+            if (response.status !== 404 && response.status !== 403) {
+                console.error(`Failed to fetch newsletter content. Status: ${response.status} URL: ${url}`);
+            } else {
+                console.log(`Newsletter content not available yet: ${url} (${response.status})`);
+            }
             return null;
         }
         const html = await response.text();
@@ -59,10 +64,8 @@ export async function sendNewsletter(dateString: string) {
     const user = await stackServerApp.getUser();
     if (!user) return { success: false, error: 'Unauthorized' };
 
-    // Email-based admin check
-    const isAdmin = user.primaryEmail === 'david@cogear.com' ||
-        user.primaryEmail === 'davidcrowell@gmail.com' ||
-        user.primaryEmail === 'cogear@gmail.com';
+    // Email-based admin check: Strictly limited to cogear@gmail.com
+    const isAdmin = user.primaryEmail === 'cogear@gmail.com';
     if (!isAdmin) return { success: false, error: 'Unauthorized' };
 
     const date = new Date(dateString);

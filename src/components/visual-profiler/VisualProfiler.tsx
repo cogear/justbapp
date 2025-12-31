@@ -7,8 +7,10 @@ import { calculateProfile, getNextPair } from '@/lib/visual-profiler/engine';
 import { Choice, UserProfile } from '@/lib/visual-profiler/types';
 import { saveVisualProfile } from '@/app/visual-profile/actions';
 import { ArrowRight, RefreshCcw } from 'lucide-react';
+import Link from 'next/link';
 
 export function VisualProfiler() {
+    const [showIntro, setShowIntro] = useState(true);
     const [currentPairId, setCurrentPairId] = useState<string | null>(PAIRS[0].id);
     const [choices, setChoices] = useState<Choice[]>([]);
     const [isFinished, setIsFinished] = useState(false);
@@ -42,6 +44,47 @@ export function VisualProfiler() {
         setCurrentPairId(PAIRS[0].id);
         setIsFinished(false);
     };
+
+    if (showIntro) {
+        return (
+            <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4 md:p-8 animate-in fade-in duration-1000">
+                <div className="max-w-md w-full space-y-8 text-center">
+                    <div className="space-y-6">
+                        <h1 className="text-4xl font-dynapuff text-primary">Discover Your Aesthetic</h1>
+                        <div className="space-y-4">
+                            <p className="text-muted-foreground leading-relaxed">
+                                Welcome to the visual profiler. This experience consists of 30 sets of images designed to capture your unique perspective.
+                            </p>
+                            <p className="text-muted-foreground leading-relaxed">
+                                For each pair, simply pick the image you relate to most.
+                            </p>
+                            <p className="text-primary/80 font-medium text-sm pt-4 italic">
+                                We really recommend doing this to get the full experience of this site.
+                            </p>
+                        </div>
+                        <div className="p-4 bg-secondary/20 rounded-2xl text-xs text-muted-foreground/80 italic">
+                            Note: This is not a diagnostic tool and is meant for demonstration purposes only.
+                        </div>
+                    </div>
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                        <button
+                            onClick={() => setShowIntro(false)}
+                            className="group inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground rounded-full font-medium hover:opacity-90 transition-all active:scale-95"
+                        >
+                            Begin Experience
+                            <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                        </button>
+                        <Link
+                            href="/subscribe"
+                            className="px-8 py-4 text-muted-foreground hover:text-foreground transition-colors text-sm font-medium"
+                        >
+                            Skip to Newsletter Signup
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     if (isFinished && profile) {
         return <ResultsView profile={profile} onReset={handleReset} />;

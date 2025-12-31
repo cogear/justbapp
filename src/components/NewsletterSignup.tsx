@@ -1,22 +1,47 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export function NewsletterSignup() {
-    const [email, setEmail] = useState('');
+export function NewsletterSignup({ initialEmail }: { initialEmail?: string }) {
+    const [email, setEmail] = useState(initialEmail || '');
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [message, setMessage] = useState('');
+    const [agreed, setAgreed] = useState(!!initialEmail);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    // Sync state with prop if it changes (e.g. after hydration or data loading)
+    useEffect(() => {
+        if (initialEmail) {
+            setEmail(initialEmail);
+            setAgreed(true);
+        }
+    }, [initialEmail]);
+
+    const handleSubmit = async (e?: React.FormEvent) => {
+        if (e) e.preventDefault();
+
+        // Use the prop directly if available to avoid any state desync issues
+        const emailToSubmit = initialEmail || email;
+
+        if (initialEmail && !agreed) {
+            setStatus('error');
+            setMessage('Please check the box to sign up.');
+            return;
+        }
+
+        if (!emailToSubmit || !emailToSubmit.includes('@')) {
+            setStatus('error');
+            setMessage('Please provide a valid email address.');
+            return;
+        }
+
         setStatus('loading');
 
         try {
             const response = await fetch('/api/newsletter', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email }),
+                body: JSON.stringify({ email: emailToSubmit }),
             });
 
             const data = await response.json();
@@ -25,7 +50,7 @@ export function NewsletterSignup() {
 
             setStatus('success');
             setMessage(data.message || 'Thank you for joining the "b" life.');
-            setEmail('');
+            if (!initialEmail) setEmail('');
         } catch (err: any) {
             setStatus('error');
             setMessage(err.message);
@@ -42,24 +67,52 @@ export function NewsletterSignup() {
             </div>
 
             <form onSubmit={handleSubmit} className="relative max-w-md mx-auto">
-                <div className="flex flex-col sm:flex-row gap-3">
-                    <input
-                        type="email"
-                        placeholder="your@email.com"
-                        required
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        disabled={status === 'loading' || status === 'success'}
-                        className="flex-1 px-6 py-3 rounded-full bg-background border border-border focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-foreground disabled:opacity-50"
-                    />
-                    <button
-                        type="submit"
-                        disabled={status === 'loading' || status === 'success'}
-                        className="px-8 py-3 rounded-full bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-all disabled:opacity-50 whitespace-nowrap"
-                    >
-                        {status === 'loading' ? 'Joining...' : 'Subscribe'}
-                    </button>
-                </div>
+                {initialEmail ? (
+                    <div className="space-y-6">
+                        <div className="p-4 bg-background border border-border rounded-2xl text-center">
+                            <span className="text-foreground font-medium">{initialEmail}</span>
+                        </div>
+                        <div className="flex flex-col items-center gap-6">
+                            <label className="flex items-center gap-3 cursor-pointer group">
+                                <input
+                                    type="checkbox"
+                                    checked={agreed}
+                                    onChange={(e) => setAgreed(e.target.checked)}
+                                    className="w-5 h-5 rounded border-border text-primary focus:ring-primary/20 accent-primary"
+                                />
+                                <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
+                                    Sign me up for the daily essence
+                                </span>
+                            </label>
+                            <button
+                                type="submit"
+                                disabled={status === 'loading' || status === 'success' || !agreed}
+                                className="w-full px-8 py-3 rounded-full bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-all disabled:opacity-50 whitespace-nowrap"
+                            >
+                                {status === 'loading' ? 'Joining...' : 'Subscribe'}
+                            </button>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="flex flex-col sm:flex-row gap-3">
+                        <input
+                            type="email"
+                            placeholder="your@email.com"
+                            required
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            disabled={status === 'loading' || status === 'success'}
+                            className="flex-1 px-6 py-3 rounded-full bg-background border border-border focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-foreground disabled:opacity-50"
+                        />
+                        <button
+                            type="submit"
+                            disabled={status === 'loading' || status === 'success'}
+                            className="px-8 py-3 rounded-full bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-all disabled:opacity-50 whitespace-nowrap"
+                        >
+                            {status === 'loading' ? 'Joining...' : 'Subscribe'}
+                        </button>
+                    </div>
+                )}
 
                 <AnimatePresence>
                     {message && (

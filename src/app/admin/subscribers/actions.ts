@@ -16,67 +16,37 @@ export interface Subscriber {
 
 export async function getSubscribers(): Promise<Subscriber[]> {
     try {
-        // 1. Fetch Users from Prisma
+        // 1. Fetch Users from Prisma with their profile count
         const prismaUsers = await prisma.user.findMany({
             include: {
-                visualProfiles: {
-                    select: { id: true }
+                _count: {
+                    select: { visualProfiles: true }
                 }
             },
             orderBy: { createdAt: 'desc' }
         });
 
-        const appSubscribers: Subscriber[] = prismaUsers.map(user => ({
-            id: user.id,
-            email: user.email,
-            createdAt: user.createdAt,
-            source: 'APP',
-            hasProfile: user.visualProfiles.length > 0,
-            zipCode: user.zipCode
-        }));
+        const subscribers: Subscriber[] = prismaUsers.map(user => {
+            const hasProfile = user._count.visualProfiles > 0;
 
-        // 2. Try to fetch from Resend (Newsletter)
-        // Note: Without an audienceId, we might just get all contacts or have to skip.
-        // For now, let's just use Prisma as the primary source of truth for the "App" 
-        // and later we can integrate Resend Audience listing if configured.
+            // Logic: 
+            // - If they signed up through the newsletter API, isNewsletterSubscriber is true.
+            // - If they signed up through Stack and did profiling, they are APP.
+            // - If they are ONLY a newsletter subscriber (no profile and isNewsletterSubscriber is true), source is NEWSLETTER.
+            // - Otherwise, default to APP (as they are in our User table).
+            const source = ((user as any).isNewsletterSubscriber && !hasProfile) ? 'NEWSLETTER' : 'APP';
 
-        let newsletterSubscribers: Subscriber[] = [];
+            return {
+                id: user.id,
+                email: user.email,
+                createdAt: user.createdAt,
+                source,
+                hasProfile,
+                zipCode: user.zipCode
+            };
+        });
 
-        /* 
-        try {
-            // This requires RESEND_AUDIENCE_ID to be set in env
-            const audienceId = process.env.RESEND_AUDIENCE_ID;
-            if (audienceId) {
-                const { data, error } = await resend.contacts.list({ audienceId });
-                if (data && !error) {
-                    newsletterSubscribers = data.data.map(contact => ({
-                        id: contact.id,
-                        email: contact.email,
-                        createdAt: new Date(contact.created_at),
-                        source: 'NEWSLETTER',
-                        hasProfile: false, // Newsletter only subs haven't done profiling
-                        firstName: contact.first_name,
-                        lastName: contact.last_name
-                    }));
-                }
-            }
-        } catch (e) {
-            console.warn('Failed to fetch Resend contacts:', e);
-        }
-        */
-
-        // Combine and dedup by email (App User takes precedence)
-        const combined = [...appSubscribers];
-        const seenEmails = new Set(appSubscribers.map(s => s.email.toLowerCase()));
-
-        for (const sub of newsletterSubscribers) {
-            if (!seenEmails.has(sub.email.toLowerCase())) {
-                combined.push(sub);
-                seenEmails.add(sub.email.toLowerCase());
-            }
-        }
-
-        return combined.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+        return subscribers.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
     } catch (error) {
         console.error('Failed to fetch subscribers:', error);
         return [];

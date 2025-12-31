@@ -1,6 +1,7 @@
 import { resend } from '@/lib/resend';
 import { WelcomeEmail } from '@/emails/WelcomeEmail';
 import { NextResponse } from 'next/server';
+import prisma from '@/lib/prisma';
 
 export async function POST(request: Request) {
     try {
@@ -12,6 +13,17 @@ export async function POST(request: Request) {
                 { status: 400 }
             );
         }
+
+        // 0. Persist to our database
+        // Using 'as any' temporarily to bypass stale Prisma Client types in dev
+        await (prisma.user as any).upsert({
+            where: { email },
+            update: { isNewsletterSubscriber: true },
+            create: {
+                email,
+                isNewsletterSubscriber: true
+            },
+        });
 
         // 1. Try to add to Audience (managed newsletter list)
         // You must create an 'Audience' in the Resend dashboard first.

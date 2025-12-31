@@ -9,13 +9,13 @@ declare global {
 }
 
 const prisma = (() => {
-    const existing = globalThis.prisma;
-    // If we're in development and the newsletter model is missing (stale client), force a recreate
-    if (process.env.NODE_ENV !== 'production' && existing && !('newsletter' in existing)) {
-        console.log('Newsletter model missing in Prisma client, recreating...');
+    // In development, always return a new client to pick up schema changes immediately.
+    // Turbopack's aggressive caching can otherwise keep a stale client instance.
+    if (process.env.NODE_ENV !== 'production') {
         return prismaClientSingleton();
     }
-    return existing ?? prismaClientSingleton();
+
+    return globalThis.prisma ?? prismaClientSingleton();
 })();
 
 export default prisma;
