@@ -40,7 +40,7 @@ export function BriefContent({ initialSummary, initialCluster }: BriefContentPro
         <main className="min-h-screen bg-background flex flex-col items-center py-12 px-6 transition-opacity duration-1000 animate-in fade-in">
             <div className="w-full max-w-4xl space-y-8">
                 <header className="text-center space-y-6">
-                    <h1 className="text-3xl font-dynapuff text-primary">
+                    <h1 className="text-3xl font-georgia text-primary">
                         b.brief
                     </h1>
                     <p className="text-muted-foreground text-sm tracking-wide">

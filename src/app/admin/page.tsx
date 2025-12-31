@@ -42,7 +42,7 @@ export default function AdminDashboard() {
         <main className="min-h-screen bg-[#FDFCFB] dark:bg-[#0A0A0A] py-16 px-6">
             <div className="max-w-4xl mx-auto">
                 <header className="mb-16">
-                    <h1 className="text-4xl font-dynapuff text-primary mb-4">Admin Dashboard</h1>
+                    <h1 className="text-4xl font-georgia text-primary mb-4">Admin Dashboard</h1>
                     <p className="text-muted-foreground">Select a tool to manage the Just Be ecosystem.</p>
                 </header>
 

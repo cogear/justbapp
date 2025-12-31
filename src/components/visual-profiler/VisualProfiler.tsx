@@ -65,7 +65,7 @@ export function VisualProfiler() {
                     {/* Content Side */}
                     <div className="p-8 md:p-16 flex flex-col justify-center space-y-10 text-left">
                         <div className="space-y-6">
-                            <h1 className="text-5xl font-dynapuff text-primary leading-tight">Discover Your Aesthetic</h1>
+                            <h1 className="text-5xl font-georgia text-primary leading-tight">Discover Your Aesthetic</h1>
                             <div className="space-y-4">
                                 <p className="text-xl text-muted-foreground font-light leading-relaxed">
                                     This experience consists of 30 sets of images designed to capture your unique perspective on the world.

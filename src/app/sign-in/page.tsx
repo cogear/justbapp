@@ -7,7 +7,7 @@ export default function SignInPage() {
         <main className="min-h-screen bg-background flex flex-col items-center justify-center p-6 transition-colors duration-500">
             <div className="w-full max-w-md space-y-12 animate-in fade-in zoom-in-95 duration-1000">
                 <header className="text-center space-y-4">
-                    <h1 className="text-6xl font-dynapuff text-primary">b.</h1>
+                    <h1 className="text-6xl font-georgia text-primary">b.</h1>
                     <p className="text-muted-foreground text-sm tracking-widest uppercase font-light">
                         Just be. For a moment.
                     </p>

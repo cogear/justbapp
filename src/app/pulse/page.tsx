@@ -70,7 +70,7 @@ function PulseContent() {
             <div className="w-full max-w-md text-center space-y-12">
 
                 <header className="space-y-4">
-                    <h1 className="text-3xl font-dynapuff text-primary">
+                    <h1 className="text-3xl font-georgia text-primary">
                         b.pulse
                     </h1>
                     <h2 className="text-2xl font-serif text-foreground">

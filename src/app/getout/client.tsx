@@ -80,7 +80,7 @@ export default function GetOutClient({ initialZip, initialEvents }: GetOutClient
             <main className="min-h-screen bg-background flex flex-col items-center justify-center p-6 animate-in fade-in">
                 <div className="max-w-md w-full space-y-8 text-center">
                     <div className="space-y-4">
-                        <h1 className="text-4xl font-dynapuff text-primary">b.getout</h1>
+                        <h1 className="text-4xl font-georgia text-primary">b.getout</h1>
                         <p className="text-muted-foreground text-lg">
                             To discover local events, we need to know where you are.
                         </p>
@@ -124,7 +124,7 @@ export default function GetOutClient({ initialZip, initialEvents }: GetOutClient
         <main className="min-h-screen bg-background flex flex-col items-center p-6 transition-opacity duration-1000 animate-in fade-in">
             <div className="w-full max-w-4xl space-y-12">
                 <header className="text-center space-y-4 mt-12">
-                    <h1 className="text-4xl font-dynapuff text-primary">
+                    <h1 className="text-4xl font-georgia text-primary">
                         b.getout
                     </h1>
                     <p className="text-muted-foreground text-lg max-w-xl mx-auto">

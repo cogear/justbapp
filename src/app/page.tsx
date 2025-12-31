@@ -19,7 +19,7 @@ export default async function Home() {
         <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-background" />
 
         <div className="relative z-10 text-center space-y-6 px-4">
-          <h1 className="text-9xl md:text-[12rem] font-dynapuff text-white drop-shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-1000">
+          <h1 className="text-9xl md:text-[12rem] font-georgia text-white drop-shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-1000">
             b.
           </h1>
           <p className="text-2xl md:text-3xl text-white/90 font-light tracking-[0.2em] uppercase drop-shadow-lg animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">

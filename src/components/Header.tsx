@@ -10,22 +10,22 @@ export async function Header() {
             <div className="container flex h-14 max-w-screen-2xl items-center justify-between px-4 md:px-8">
                 <div className="flex items-center gap-6 md:gap-10">
                     <Link href="/" className="flex items-center space-x-2">
-                        <span className="font-serif text-xl font-bold">b.</span>
+                        <span className="font-georgia text-xl font-bold">b.</span>
                     </Link>
                     <nav className="flex items-center gap-4 text-sm font-medium text-muted-foreground">
-                        <Link href="/visual-profile" className="transition-colors hover:text-foreground font-dynapuff">
+                        <Link href="/visual-profile" className="transition-colors hover:text-foreground font-georgia">
                             b.profile
                         </Link>
-                        <Link href="/news" className="transition-colors hover:text-foreground font-dynapuff">
+                        <Link href="/news" className="transition-colors hover:text-foreground font-georgia">
                             b.news
                         </Link>
-                        <Link href="/blog" className="transition-colors hover:text-foreground font-dynapuff">
+                        <Link href="/blog" className="transition-colors hover:text-foreground font-georgia">
                             b.blog
                         </Link>
-                        <Link href="/principles" className="transition-colors hover:text-foreground font-dynapuff">
+                        <Link href="/principles" className="transition-colors hover:text-foreground font-georgia">
                             b.principles
                         </Link>
-                        <Link href="/book" className="transition-colors hover:text-foreground font-dynapuff">
+                        <Link href="/book" className="transition-colors hover:text-foreground font-georgia">
                             b.book
                         </Link>
                         <Link

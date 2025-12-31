@@ -71,7 +71,7 @@ export default function PrinciplesPage() {
                     transition={{ duration: 0.6 }}
                     className="text-center mb-16"
                 >
-                    <h1 className="text-4xl md:text-5xl font-bold font-dynapuff mb-6 text-primary">
+                    <h1 className="text-4xl md:text-5xl font-bold font-georgia mb-6 text-primary">
                         The 7 Principles
                     </h1>
                     <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
@@ -91,12 +91,12 @@ export default function PrinciplesPage() {
                         >
                             <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-start">
                                 <div className="flex-shrink-0">
-                                    <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary font-dynapuff text-2xl md:text-3xl font-bold">
+                                    <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary font-georgia text-2xl md:text-3xl font-bold">
                                         {principle.number}
                                     </div>
                                 </div>
                                 <div className="flex-1">
-                                    <h2 className="text-2xl md:text-3xl font-bold mb-4 font-dynapuff text-foreground">
+                                    <h2 className="text-2xl md:text-3xl font-bold mb-4 font-georgia text-foreground">
                                         {principle.title}
                                     </h2>
                                     <div className="space-y-4 text-muted-foreground leading-relaxed text-lg">
@@ -117,7 +117,7 @@ export default function PrinciplesPage() {
                     transition={{ delay: 0.5, duration: 0.8 }}
                     className="mt-20 text-center"
                 >
-                    <p className="text-2xl font-dynapuff text-primary/80">
+                    <p className="text-2xl font-georgia text-primary/80">
                         Just be.
                     </p>
                 </motion.div>

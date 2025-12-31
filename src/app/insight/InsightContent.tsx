@@ -33,7 +33,7 @@ export default function InsightContent({ initialQuestion }: InsightContentProps)
         <main className="min-h-screen bg-background flex flex-col items-center justify-center p-6 transition-opacity duration-1000 animate-in fade-in">
             <div className="w-full max-w-lg">
                 <header className="mb-12 text-center">
-                    <h1 className="text-3xl font-dynapuff text-primary">
+                    <h1 className="text-3xl font-georgia text-primary">
                         b.insight
                     </h1>
                 </header>

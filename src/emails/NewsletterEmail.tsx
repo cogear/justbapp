@@ -66,7 +66,7 @@ export const NewsletterEmail = ({
             <Container className="border border-solid border-[#E0E6E6] rounded-[32px] my-[40px] mx-auto p-[0px] w-full max-w-[600px] overflow-hidden bg-white shadow-sm">
                 {/* Header */}
                 <Section className="pt-[40px] px-[40px] text-center">
-                    <Text className="text-[32px] font-normal m-0 p-0 mb-[8px] font-serif" style={{ fontFamily: 'DynaPuff, Arial, sans-serif' }}>
+                    <Text className="text-[32px] font-normal m-0 p-0 mb-[8px] font-serif">
                         <strong>b.</strong>
                     </Text>
                     <Text className="text-[#888888] text-[12px] uppercase tracking-[0.2em] m-0 mb-[24px]">
@@ -185,7 +185,7 @@ export const NewsletterEmail = ({
 
                 {/* Footer */}
                 <Section className="bg-[#F9FBFB] p-[40px] text-center border-t border-[#E0E6E6]">
-                    <Text className="text-[20px] font-serif m-0 mb-[8px]" style={{ fontFamily: 'Arial, sans-serif' }}>
+                    <Text className="text-[20px] font-serif m-0 mb-[8px]">
                         <strong>b.</strong>
                     </Text>
                     <Text className="text-[#888888] text-[12px] m-0 mb-[16px]">

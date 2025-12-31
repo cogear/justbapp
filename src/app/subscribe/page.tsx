@@ -32,7 +32,7 @@ export default async function SubscribePage() {
                         <div className="inline-flex items-center justify-center p-4 bg-primary/10 text-primary rounded-2xl">
                             <Mail size={32} />
                         </div>
-                        <h1 className="text-5xl font-dynapuff text-primary tracking-tight">b.connected</h1>
+                        <h1 className="text-5xl font-georgia text-primary tracking-tight">b.connected</h1>
                         <p className="text-xl text-muted-foreground font-light leading-relaxed">
                             Stay in touch with the quiet essence of the "b" life. Join our community of mindful observers.
                         </p>

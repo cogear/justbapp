@@ -31,7 +31,7 @@ export default async function NewsletterPage({
         <main className="min-h-screen bg-[#FDFCFB] dark:bg-[#0A0A0A] py-16 px-6 transition-colors duration-500">
             <div className="max-w-4xl mx-auto flex flex-col items-center">
                 <header className="mb-16 text-center space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-                    <h1 className="text-5xl font-dynapuff text-primary">b.newsletter</h1>
+                    <h1 className="text-5xl font-georgia text-primary">b.newsletter</h1>
                     <p className="text-muted-foreground font-light tracking-[0.2em] uppercase text-sm">
                         {format(requestedDate, 'EEEE, MMMM do, yyyy')}
                     </p>
@@ -39,7 +39,7 @@ export default async function NewsletterPage({
 
                 <div className="mb-16 w-full max-w-2xl bg-primary/5 border border-primary/20 rounded-3xl p-8 flex flex-col items-center gap-6 animate-in zoom-in-95 duration-700">
                     <div className="text-center">
-                        <h2 className="text-xl font-dynapuff text-primary mb-2">Admin Dashboard</h2>
+                        <h2 className="text-xl font-georgia text-primary mb-2">Admin Dashboard</h2>
                         <p className="text-sm text-muted-foreground">Preview the daily essence and distribute it to your community.</p>
                     </div>
                     <SendNewsletterButton dateString={dateString} />

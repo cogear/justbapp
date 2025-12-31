@@ -52,7 +52,7 @@ export default async function BlogPage({
 
             <div className="w-full max-w-4xl flex flex-col items-center">
                 <header className="mb-12 text-center space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-                    <h1 className="text-5xl font-dynapuff text-primary">b.blog</h1>
+                    <h1 className="text-5xl font-georgia text-primary">b.blog</h1>
                     <p className="text-muted-foreground font-light tracking-[0.2em] uppercase text-sm">
                         {format(requestedDate, 'MMMM do, yyyy')}
                     </p>
