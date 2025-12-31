@@ -30,9 +30,9 @@ export async function Header() {
                         </Link>
                         <Link
                             href="/subscribe"
-                            className="ml-2 px-4 py-1.5 bg-primary/10 text-primary hover:bg-primary/20 rounded-full transition-all font-dynapuff text-xs border border-primary/20"
+                            className="ml-2 px-6 py-2 bg-primary text-primary-foreground hover:opacity-90 rounded-full transition-all text-sm font-medium shadow-sm"
                         >
-                            b.subscribe
+                            Sign up for the Newsletter
                         </Link>
                     </nav>
                 </div>
