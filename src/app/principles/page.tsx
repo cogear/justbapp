@@ -83,7 +83,7 @@ export default function PrinciplesPage() {
                         The Principles
                     </h1>
                     <div className="h-1 w-24 bg-primary/20 mx-auto rounded-full" />
-                    <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto font-serif italic font-light leading-relaxed">
+                    <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto font-georgia italic font-light leading-relaxed">
                         Guiding values for a life of intention, comfort, and genuine connection.
                     </p>
                 </motion.header>
@@ -107,7 +107,7 @@ export default function PrinciplesPage() {
                                         {principle.title}
                                     </h2>
                                 </div>
-                                <div className="space-y-6 text-muted-foreground font-serif leading-relaxed text-lg md:text-xl">
+                                <div className="space-y-6 text-muted-foreground font-georgia leading-relaxed text-lg md:text-xl">
                                     {principle.content.map((paragraph, pIndex) => (
                                         <p key={pIndex}>{paragraph}</p>
                                     ))}

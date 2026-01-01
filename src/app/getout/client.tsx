@@ -182,7 +182,7 @@ export default function GetOutClient({ initialZip, initialEvents }: GetOutClient
                                 </span>
                             </div>
 
-                            <h3 className="text-xl font-serif mb-2 line-clamp-2">
+                            <h3 className="text-xl font-georgia mb-2 line-clamp-2">
                                 {event.title}
                             </h3>
 

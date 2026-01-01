@@ -89,7 +89,7 @@ export default async function IndividualArticlePage({ params, searchParams }: Ar
                                     {format(new Date(article.publishedAt), 'MMMM do, yyyy')}
                                 </div>
                             </div>
-                            <h1 className="text-4xl md:text-5xl font-serif font-bold leading-tight tracking-tight text-charcoal dark:text-white">
+                            <h1 className="text-4xl md:text-5xl font-georgia font-bold leading-tight tracking-tight text-charcoal dark:text-white">
                                 {article.title}
                             </h1>
                         </div>
@@ -109,7 +109,7 @@ export default async function IndividualArticlePage({ params, searchParams }: Ar
                         </div>
                     )}
 
-                    <div className="prose prose-lg dark:prose-invert max-w-none prose-serif prose-headings:font-serif">
+                    <div className="prose prose-lg dark:prose-invert max-w-none prose-serif prose-headings:font-georgia">
                         <ReactMarkdown>{article.content}</ReactMarkdown>
                     </div>
 
@@ -144,7 +144,7 @@ export default async function IndividualArticlePage({ params, searchParams }: Ar
                     <p className="text-muted-foreground italic text-sm mb-6">Explore more perspectives</p>
                     <Link
                         href="/news"
-                        className="text-primary hover:underline font-serif text-xl"
+                        className="text-primary hover:underline font-georgia text-xl"
                     >
                         Back to the daily brief
                     </Link>

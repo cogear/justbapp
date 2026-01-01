@@ -33,7 +33,7 @@ export default function BookPage() {
 
                 {/* Hero Text */}
                 <div className="md:w-1/2 flex flex-col items-start space-y-8 max-w-xl md:pl-10 z-10">
-                    <h2 className="text-5xl md:text-7xl font-bold tracking-tight text-foreground font-serif">
+                    <h2 className="text-5xl md:text-7xl font-bold tracking-tight text-foreground font-georgia">
                         What AI Can't Replace: <span className="text-primary italic">You.</span>
                     </h2>
                     <p className="text-xl md:text-2xl text-muted-foreground font-light leading-relaxed">
@@ -58,7 +58,7 @@ export default function BookPage() {
             {/* Quote / Synopsis Section */}
             <section className="w-full py-24 px-6 bg-secondary/30">
                 <div className="max-w-4xl mx-auto text-center space-y-12">
-                    <blockquote className="text-3xl md:text-4xl font-serif italic text-foreground leading-normal">
+                    <blockquote className="text-3xl md:text-4xl font-georgia italic text-foreground leading-normal">
                         "The machine hums with anxiety. You don't have to."
                     </blockquote>
                     <div className="w-24 h-1 bg-accent mx-auto rounded-full"></div>
@@ -75,16 +75,16 @@ export default function BookPage() {
                     {/* Intro / Acceptance */}
                     <div className="prose prose-xl dark:prose-invert mx-auto">
                         <span className="text-primary font-bold tracking-widest uppercase text-xs block mb-6 text-center">The Philosophy</span>
-                        <h3 className="text-4xl md:text-5xl font-bold font-serif text-center mb-12 text-foreground">A Life That Fits</h3>
+                        <h3 className="text-4xl md:text-5xl font-bold font-georgia text-center mb-12 text-foreground">A Life That Fits</h3>
 
-                        <p className="font-serif leading-relaxed text-muted-foreground first-letter:text-5xl first-letter:font-bold first-letter:mr-3 first-letter:float-left">
+                        <p className="font-georgia leading-relaxed text-muted-foreground first-letter:text-5xl first-letter:font-bold first-letter:mr-3 first-letter:float-left">
                             We spend our lives waiting for the great day. We're taught that we are projects to be finished—that if we just pushed a little harder, worked a little longer, or fixed ourselves a little more, we'd finally be "enough." But the gap between who you are and who you think you should be never closes. It’s not a problem to solve; it's a trick to see through. True change doesn't come from fighting yourself. It starts with a period at the end of the sentence. A full stop. An acceptance of *what is* as the only place where life actually happens.
                         </p>
                     </div>
 
                     {/* Comfort */}
                     <div className="border-l-2 border-primary/20 pl-8 md:pl-12 py-2">
-                        <p className="text-xl md:text-2xl font-serif text-foreground italic leading-relaxed">
+                        <p className="text-xl md:text-2xl font-georgia text-foreground italic leading-relaxed">
                             "Creating genuine conditions of comfort is an achievement, not a sign of laziness."
                         </p>
                         <p className="mt-6 text-lg text-muted-foreground leading-relaxed">
@@ -94,7 +94,7 @@ export default function BookPage() {
 
                     {/* Quality / Status */}
                     <div className="prose prose-lg dark:prose-invert mx-auto">
-                        <h4 className="font-serif text-2xl font-bold mb-4 text-foreground">Stepping Off the Treadmill</h4>
+                        <h4 className="font-georgia text-2xl font-bold mb-4 text-foreground">Stepping Off the Treadmill</h4>
                         <p className="text-muted-foreground leading-relaxed">
                             We run on a hedonic treadmill, chasing titles and purchases that promise happiness but only deliver a temporary spike before we adapt and want more. We post the highlight reel while hiding the reality. But a good Tuesday is worth more than a good title. When you stop measuring your life by how it looks to others and start measuring it by how it feels to you—choosing quality over status—you reclaim your autonomy. You build a life that fits, rather than one that just performs.
                         </p>
@@ -103,7 +103,7 @@ export default function BookPage() {
                     {/* Speed / Slow */}
                     <div className="grid md:grid-cols-[1fr_auto_1fr] gap-8 items-center">
                         <div className="h-px bg-border w-full md:block hidden"></div>
-                        <div className="text-center font-serif italic text-2xl text-primary">The Speed of Life</div>
+                        <div className="text-center font-georgia italic text-2xl text-primary">The Speed of Life</div>
                         <div className="h-px bg-border w-full md:block hidden"></div>
                     </div>
 
@@ -116,14 +116,14 @@ export default function BookPage() {
                     {/* Balance */}
                     <div className="bg-background rounded-2xl p-8 md:p-12 shadow-sm border border-border/50">
                         <p className="text-lg text-muted-foreground leading-relaxed">
-                            <strong className="text-foreground block mb-2 font-serif text-xl">You are a battery, not a machine.</strong>
+                            <strong className="text-foreground block mb-2 font-georgia text-xl">You are a battery, not a machine.</strong>
                             Burnout isn't a badge of honor; it's a sign of debt. We treat our energy like an infinite resource, but it requires sustainable renewal. The most effective people aren't the ones who sprint until they crash—they're the ones who honor their own rhythms, who understand that rest is a prerequisite for contribution, not a reward for it.
                         </p>
                     </div>
 
                     {/* Community */}
                     <div className="prose prose-lg dark:prose-invert mx-auto">
-                        <h4 className="font-serif text-2xl font-bold mb-4 text-foreground">The Myth of the Self-Made</h4>
+                        <h4 className="font-georgia text-2xl font-bold mb-4 text-foreground">The Myth of the Self-Made</h4>
                         <p className="text-muted-foreground leading-relaxed">
                             In a digital age that promised connection, we find ourselves in a loneliness epidemic. We've bought into the myth that we should be able to do it all alone. But humans are pack animals. We need "Third Places" where we can just be. We need to move from transaction to gift, from competition to community. Because ultimately, we cannot "just be" in isolation. We need others to reflect our humanity back to us.
                         </p>
@@ -132,11 +132,11 @@ export default function BookPage() {
                     {/* Gratitude */}
                     <div className="text-center max-w-2xl mx-auto pt-12">
                         <div className="w-16 h-1 bg-primary mx-auto mb-8 rounded-full"></div>
-                        <h4 className="font-serif text-3xl font-bold mb-6 text-foreground">The Ordinary Miraculous</h4>
+                        <h4 className="font-georgia text-3xl font-bold mb-6 text-foreground">The Ordinary Miraculous</h4>
                         <p className="text-xl text-muted-foreground leading-relaxed font-light">
                             Finally, we learn that the extraordinary is hiding in the ordinary. The happiness we're chasing isn't over the next hill—it's in the coffee cup in your hand, the light in the window, the friend who calls. Gratitude isn't just a nice feeling; it's a way of seeing. It's the practice that turns what we have into enough.
                         </p>
-                        <p className="text-2xl text-primary font-serif font-bold mt-12 italic">
+                        <p className="text-2xl text-primary font-georgia font-bold mt-12 italic">
                             Just be.
                         </p>
                     </div>
@@ -148,7 +148,7 @@ export default function BookPage() {
 
             {/* Final CTA */}
             <section className="w-full py-24 px-6 flex flex-col items-center justify-center text-center bg-primary text-white">
-                <h2 className="text-4xl md:text-5xl font-bold font-serif mb-6">Don't Just Optimize. Live.</h2>
+                <h2 className="text-4xl md:text-5xl font-bold font-georgia mb-6">Don't Just Optimize. Live.</h2>
                 <p className="text-lg md:text-xl text-white/90 max-w-2xl mb-10">
                     The world is spinning faster. Algorithms are getting smarter. But your humanity is your superpower.
                 </p>

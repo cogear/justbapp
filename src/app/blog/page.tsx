@@ -1,7 +1,7 @@
 import React from 'react';
 import { Metadata } from 'next';
-import { format } from 'date-fns';
 import * as cheerio from 'cheerio';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
     title: 'b. | Blog',
@@ -9,9 +9,9 @@ export const metadata: Metadata = {
 };
 
 async function getBlogContent(date: Date) {
-    const year = format(date, 'yyyy');
-    const month = format(date, 'MM');
-    const day = format(date, 'dd');
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(date.getUTCDate()).padStart(2, '0');
 
     const url = `https://justbblog.s3.amazonaws.com/blog/${year}/${month}/${day}/index.html`;
 
@@ -42,24 +42,56 @@ export default async function BlogPage({
     searchParams: { date?: string };
 }) {
     const params = await searchParams;
-    const requestedDate = params.date ? new Date(params.date) : new Date();
+
+    // When a date string is provided from the archive (YYYY-MM-DD), 
+    // new Date(string) is treated as UTC midnight.
+    // For "now", we want the current UTC date to match S3 publication timing.
+    let requestedDate: Date;
+    if (params.date) {
+        requestedDate = new Date(params.date);
+    } else {
+        requestedDate = new Date();
+    }
 
     const blogData = await getBlogContent(requestedDate);
 
+    // Format the date for display using UTC to match the requested day
+    const displayDate = requestedDate.toLocaleDateString('en-US', {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric',
+        timeZone: 'UTC'
+    });
+
     return (
         <main className="min-h-screen bg-background py-16 px-4 md:px-6 flex justify-center">
-            <style dangerouslySetInnerHTML={{ __html: blogData?.styles || '' }} />
-
+            <style dangerouslySetInnerHTML={{
+                __html: blogData?.styles
+                    .replace(/body\s*\{/g, '#blog-content-container {')
+                    .replace(/\.container\s*\{/g, '#blog-content-container .container {')
+                    .replace(/header\s*\{/g, '#blog-content-container header {')
+                    .replace(/\.blog-header\s*\{/g, '#blog-content-container .blog-header {')
+                    || ''
+            }} />
             <div className="w-full max-w-4xl flex flex-col items-center">
-                <header className="mb-12 text-center space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-                    <h1 className="text-5xl font-georgia text-primary">b.blog</h1>
-                    <p className="text-muted-foreground font-light tracking-[0.2em] uppercase text-sm">
-                        {format(requestedDate, 'MMMM do, yyyy')}
-                    </p>
-                </header>
+                <div role="presentation" className="mb-12 text-center space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+                    <h1 className="text-5xl text-primary font-georgia">b.blog</h1>
+                    <div className="flex flex-col items-center gap-2">
+                        <p className="text-muted-foreground font-light tracking-[0.2em] uppercase text-sm">
+                            {displayDate}
+                        </p>
+                        <Link
+                            href="/blog/archive"
+                            className="text-[10px] text-primary/40 hover:text-primary transition-colors tracking-[0.2em] uppercase font-medium"
+                        >
+                            View Archive
+                        </Link>
+                    </div>
+                </div>
 
                 {blogData ? (
                     <div
+                        id="blog-content-container"
                         className="
                             w-full
                             bg-secondary/20 dark:bg-secondary/10 p-4 md:p-12 rounded-[3rem] 
@@ -82,10 +114,6 @@ export default async function BlogPage({
                         </p>
                     </div>
                 )}
-
-                <footer className="mt-20 text-center opacity-30 text-xs tracking-widest uppercase">
-                    just be.
-                </footer>
             </div>
         </main>
     );

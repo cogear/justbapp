@@ -44,7 +44,7 @@ export default async function PublicLensPage({
                     </div>
 
                     <div className="space-y-3">
-                        <h1 className="text-4xl md:text-5xl font-serif font-bold tracking-tight leading-tight max-w-2xl mx-auto">
+                        <h1 className="text-4xl md:text-5xl font-georgia font-bold tracking-tight leading-tight max-w-2xl mx-auto">
                             {article.title}
                         </h1>
                         <div className="flex items-center justify-center gap-2 text-[10px] uppercase tracking-widest text-muted-foreground font-medium">
@@ -85,7 +85,7 @@ export default async function PublicLensPage({
 
                 <div className="text-center sm:text-right">
                     <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1">Your Daily Briefing</p>
-                    <Link href="/news" className="text-sm font-serif font-bold hover:underline">
+                    <Link href="/news" className="text-sm font-georgia font-bold hover:underline">
                         the b life.
                     </Link>
                 </div>

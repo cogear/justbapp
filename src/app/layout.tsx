@@ -6,6 +6,7 @@ import "./globals.css";
 
 import { ThemeProvider } from "@/components/theme-provider";
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,7 +37,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         suppressHydrationWarning
-        className={`${geistSans.variable} ${geistMono.variable} ${dynapuff.variable} antialiased bg-background text-foreground`}
+        className={`${geistSans.variable} ${geistMono.variable} ${dynapuff.variable} antialiased bg-background text-foreground min-h-screen flex flex-col`}
       >
         {/* Google Tag Manager (gtag.js) */}
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-0DW5BR7WLY"></script>
@@ -59,7 +60,10 @@ export default function RootLayout({
               disableTransitionOnChange
             >
               <Header />
-              {children}
+              <div className="flex-1">
+                {children}
+              </div>
+              <Footer />
             </ThemeProvider>
           </StackTheme>
         </StackProvider>

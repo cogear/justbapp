@@ -11,17 +11,17 @@ datasource db {
 }
 
 model User {
-  id                   String                 @id @default(uuid())
-  email                String                 @unique
-  createdAt            DateTime               @default(now())
-  updatedAt            DateTime               @updatedAt
-  psychographicProfile String?
-  memoryVector         Unsupported("vector")?
-  zipCode              String?
-  dailyPulses          DailyPulse[]
-  journalEntries       JournalEntry[]
-  visualProfiles       VisualProfile[]
-  isNewsletterSubscriber Boolean               @default(false)
+  id                     String                 @id @default(uuid())
+  email                  String                 @unique
+  createdAt              DateTime               @default(now())
+  updatedAt              DateTime               @updatedAt
+  psychographicProfile   String?
+  memoryVector           Unsupported("vector")?
+  zipCode                String?
+  isNewsletterSubscriber Boolean                @default(false)
+  dailyPulses            DailyPulse[]
+  journalEntries         JournalEntry[]
+  visualProfiles         VisualProfile[]
 }
 
 model VisualProfile {

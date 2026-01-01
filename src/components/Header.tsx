@@ -3,11 +3,12 @@ import React from 'react';
 import { stackServerApp } from '@/lib/stack';
 import { ThemeToggle } from './ThemeToggle';
 import { AuthButtons } from './AuthButtons';
+import { Youtube } from 'lucide-react';
 
 export async function Header() {
     return (
         <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <div className="container flex h-14 max-w-screen-2xl items-center justify-between px-4 md:px-8">
+            <div className="b-nav-content flex h-14 items-center justify-between">
                 <div className="flex items-center gap-6 md:gap-10">
                     <Link href="/" className="flex items-center space-x-2">
                         <span className="font-georgia text-xl font-bold">b.</span>
@@ -32,7 +33,7 @@ export async function Header() {
                             href="/subscribe"
                             className="ml-2 px-6 py-2 bg-primary text-primary-foreground hover:opacity-90 rounded-full transition-all text-sm font-medium shadow-sm"
                         >
-                            Sign up for the Newsletter
+                            Newsletter Signup.
                         </Link>
                     </nav>
                 </div>
@@ -40,6 +41,15 @@ export async function Header() {
                     <React.Suspense fallback={<div className="w-20" />}>
                         <AuthButtons />
                     </React.Suspense>
+                    <a
+                        href="https://www.youtube.com/@b.justbe"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2 text-muted-foreground hover:text-primary transition-colors hover:bg-secondary/50 rounded-full"
+                        title="Follow b. on YouTube"
+                    >
+                        <Youtube size={20} />
+                    </a>
                     <ThemeToggle />
                 </div>
             </div>

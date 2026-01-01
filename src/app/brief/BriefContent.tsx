@@ -56,7 +56,7 @@ export function BriefContent({ initialSummary, initialCluster }: BriefContentPro
 
                     {dailySummary ? (
                         <div className="bg-secondary/20 p-8 md:p-12 rounded-[2.5rem] border border-border/40 backdrop-blur-md animate-in fade-in zoom-in-95 duration-1000 shadow-sm">
-                            <p className="text-xl md:text-3xl font-serif text-foreground/90 leading-relaxed text-center max-w-3xl mx-auto">
+                            <p className="text-xl md:text-3xl font-georgia text-foreground/90 leading-relaxed text-center max-w-3xl mx-auto">
                                 {dailySummary.replace(/\*\*/g, '')}
                             </p>
                         </div>

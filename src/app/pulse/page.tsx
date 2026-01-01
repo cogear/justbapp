@@ -73,7 +73,7 @@ function PulseContent() {
                     <h1 className="text-3xl font-georgia text-primary">
                         b.pulse
                     </h1>
-                    <h2 className="text-2xl font-serif text-foreground">
+                    <h2 className="text-2xl font-georgia text-foreground">
                         Where is your energy?
                     </h2>
                     <p className="text-muted-foreground text-sm tracking-wide">

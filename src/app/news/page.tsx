@@ -46,7 +46,7 @@ export default async function NewsPage({ searchParams }: { searchParams: Promise
                                 {activeCluster} Lens
                             </span>
                         </div>
-                        <h1 className="text-4xl md:text-5xl font-serif tracking-tight font-bold">Your Daily Briefing</h1>
+                        <h1 className="text-4xl md:text-5xl font-georgia tracking-tight font-bold">Your Daily Briefing</h1>
                         <p className="text-muted-foreground max-w-lg mx-auto leading-relaxed">
                             A curated perspective on the world, refined for your specific personality and values.
                         </p>

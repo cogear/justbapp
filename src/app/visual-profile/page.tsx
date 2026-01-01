@@ -37,7 +37,7 @@ export default async function VisualProfilePage({ searchParams }: { searchParams
         <main className="min-h-screen bg-background p-6 md:p-12">
             <div className="max-w-2xl mx-auto space-y-12">
                 <header className="space-y-4 text-center">
-                    <h1 className="text-4xl font-serif tracking-tight">Your Visual Profile</h1>
+                    <h1 className="text-4xl font-georgia tracking-tight">Your Visual Profile</h1>
                     <p className="text-muted-foreground">Based on your visual preferences.</p>
                     <p className="text-sm text-muted-foreground/80 max-w-lg mx-auto pt-2">
                         We use these insights solely to curate content that resonates with you. Your privacy is paramount—we never share or sell your data.
@@ -63,7 +63,7 @@ export default async function VisualProfilePage({ searchParams }: { searchParams
                         <div className="inline-flex items-center justify-center px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-[0.2em] backdrop-blur-md border border-primary/20">
                             Personality Archetype
                         </div>
-                        <h2 className="text-4xl font-serif text-foreground">{profile.cluster || 'Analyzing...'}</h2>
+                        <h2 className="text-4xl font-georgia text-foreground">{profile.cluster || 'Analyzing...'}</h2>
                         <p className="text-muted-foreground leading-relaxed max-w-lg mx-auto text-lg">
                             {cluster.description}
                         </p>
