@@ -100,7 +100,13 @@ export async function sendNewsletter(dateString: string) {
     try {
         console.log(`Starting newsletter delivery for ${dateString}...`);
 
-        const deliveryResults = await Promise.allSettled(allRecipientEmails.map(async (email) => {
+        // Rate limiting: Resend allows 2 requests per second
+        // We'll send emails sequentially with a 600ms delay between each
+        const deliveryResults: Array<{ email: string; success: boolean; id?: string; error?: any }> = [];
+
+        for (let i = 0; i < allRecipientEmails.length; i++) {
+            const email = allRecipientEmails[i];
+
             try {
                 // Find the user's cluster for personalization
                 const dbUser = await prisma.user.findUnique({
@@ -135,19 +141,24 @@ export async function sendNewsletter(dateString: string) {
 
                 if (response.error) {
                     console.error(`Resend API error for ${email}:`, response.error);
-                    throw response.error;
+                    deliveryResults.push({ email, success: false, error: response.error });
+                } else {
+                    console.log(`Successfully sent email ID ${response.data?.id} to ${email} (${i + 1}/${allRecipientEmails.length})`);
+                    deliveryResults.push({ email, success: true, id: response.data?.id });
                 }
-
-                console.log(`Successfully sent email ID ${response.data?.id} to ${email}`);
-                return { email: email, success: true, id: response.data?.id };
             } catch (err) {
                 console.error(`Failed to execute send for ${email}:`, err);
-                throw err;
+                deliveryResults.push({ email, success: false, error: err });
             }
-        }));
 
-        const succeeded = deliveryResults.filter(r => r.status === 'fulfilled').length;
-        const failed = deliveryResults.filter(r => r.status === 'rejected').length;
+            // Rate limiting: Wait 600ms between emails (allows ~1.67 emails/sec, safely under 2/sec limit)
+            if (i < allRecipientEmails.length - 1) {
+                await new Promise(resolve => setTimeout(resolve, 600));
+            }
+        }
+
+        const succeeded = deliveryResults.filter(r => r.success).length;
+        const failed = deliveryResults.filter(r => !r.success).length;
         const recipientList = allRecipientEmails.join(', ');
 
         console.log(`Newsletter delivery complete. Succeeded: ${succeeded}, Failed: ${failed}`);

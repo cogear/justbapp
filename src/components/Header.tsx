@@ -3,6 +3,7 @@ import React from 'react';
 import { stackServerApp } from '@/lib/stack';
 import { ThemeToggle } from './ThemeToggle';
 import { AuthButtons } from './AuthButtons';
+import { MobileNav } from './MobileNav';
 import { Youtube } from 'lucide-react';
 
 export async function Header() {
@@ -13,7 +14,8 @@ export async function Header() {
                     <Link href="/" className="flex items-center space-x-2">
                         <span className="font-georgia text-xl font-bold">b.</span>
                     </Link>
-                    <nav className="flex items-center gap-4 text-sm font-medium text-muted-foreground">
+                    {/* Desktop Navigation - Hidden on mobile */}
+                    <nav className="hidden md:flex items-center gap-4 text-sm font-medium text-muted-foreground">
                         <Link href="/visual-profile" className="transition-colors hover:text-foreground font-georgia">
                             b.profile
                         </Link>
@@ -51,6 +53,8 @@ export async function Header() {
                         <Youtube size={20} />
                     </a>
                     <ThemeToggle />
+                    {/* Mobile Navigation - Shown only on mobile */}
+                    <MobileNav />
                 </div>
             </div>
         </header>
