@@ -61,6 +61,7 @@ async function getNewsletterContent(date: Date) {
             applicationExternal: $('.application-card:contains("External") .application-text').text().trim(),
             closingSummary: $('.closing-summary').text().trim(),
             permissionStatement: $('.permission-text').text().trim().replace(/^"|"$/g, ''),
+            permissionImage: $('.permission-image').attr('src') || undefined,
         };
 
         // Strict validation: Must have at least a date and anchor quote

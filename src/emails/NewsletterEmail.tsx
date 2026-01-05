@@ -26,6 +26,7 @@ interface NewsletterEmailProps {
     applicationExternal?: string;
     closingSummary?: string;
     permissionStatement?: string;
+    permissionImage?: string;
     newsRecap?: { id: string; title: string }[];
     previewMode?: boolean;
     unsubscribeUrl?: string;
@@ -43,6 +44,7 @@ export const NewsletterEmail = ({
     applicationExternal = "",
     closingSummary = "Today we explored how the push for faster, louder progress can quietly cost us our own rhythm.",
     permissionStatement = "You are allowed to choose sustainability over burnout.",
+    permissionImage,
     newsRecap = [],
     previewMode = false,
     unsubscribeUrl,
@@ -183,6 +185,14 @@ export const NewsletterEmail = ({
                         <Text className="text-[18px] font-serif text-charcoal mb-[32px]">
                             "{permissionStatement}"
                         </Text>
+                        {permissionImage && (
+                            <Img
+                                src={permissionImage}
+                                alt={permissionStatement}
+                                width="300"
+                                className="mx-auto mb-[32px] rounded-[12px]"
+                            />
+                        )}
                     </Section>
                 </Section>
 
