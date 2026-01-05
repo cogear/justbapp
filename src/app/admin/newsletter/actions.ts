@@ -8,8 +8,19 @@ import { format } from 'date-fns';
 import { NewsletterEmail } from '@/emails/NewsletterEmail';
 import { render } from '@react-email/render';
 import React from 'react';
+import { createHmac } from 'crypto';
 
 // Using consolidated resend client from @/lib/resend
+
+function generateUnsubscribeUrl(email: string) {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://theblife.com";
+    const secret = process.env.UNSUBSCRIBE_SECRET || 'fallback-secret-change-me';
+    const token = createHmac('sha256', secret)
+        .update(email.toLowerCase())
+        .digest('hex')
+        .substring(0, 32);
+    return `${baseUrl}/api/unsubscribe?email=${encodeURIComponent(email)}&token=${token}`;
+}
 
 async function getNewsletterContent(date: Date) {
     // Ensure we use UTC parts to match S3 path structure (YYYY/MM/DD)
@@ -18,10 +29,10 @@ async function getNewsletterContent(date: Date) {
     const day = String(date.getUTCDate()).padStart(2, '0');
     const url = `https://justbblog.s3.amazonaws.com/blog/${year}/${month}/${day}/index.html`;
 
-    console.log(`Fetching newsletter content from: ${url}`);
+    console.log(`Fetching newsletter content from: ${url} (no-store)`);
 
     try {
-        const response = await fetch(url, { next: { revalidate: 3600 } });
+        const response = await fetch(url, { cache: 'no-store' });
         if (!response.ok) {
             // Silence 404 and 403 as "not ready yet" rather than an error
             if (response.status !== 404 && response.status !== 403) {
@@ -52,11 +63,14 @@ async function getNewsletterContent(date: Date) {
             permissionStatement: $('.permission-text').text().trim().replace(/^"|"$/g, ''),
         };
 
-        if (!content.date && !content.anchorQuote) {
-            console.error(`Newsletter content parsed but found empty for URL: ${url}`);
+        // Strict validation: Must have at least a date and anchor quote
+        if (!content.date || !content.anchorQuote) {
+            console.error(`Newsletter content parsed but missing required fields for URL: ${url}`);
+            console.error('Content details:', JSON.stringify(content, null, 2));
             return null;
         }
 
+        console.log(`Successfully parsed newsletter content for ${url}`);
         return content;
     } catch (error) {
         console.error('Failed to fetch newsletter content for parsing:', error);
@@ -133,10 +147,11 @@ export async function sendNewsletter(dateString: string) {
                 });
 
                 // Use React.createElement since this is a .ts file (not .tsx)
+                const unsubscribeUrl = generateUnsubscribeUrl(email);
                 const emailHtml = await render(React.createElement(NewsletterEmail, {
                     ...content,
                     newsRecap,
-                    recipientEmail: email,
+                    unsubscribeUrl,
                     previewMode: false
                 }));
 
@@ -262,12 +277,25 @@ export async function sendTestNewsletter(dateString: string) {
     try {
         console.log(`Sending test newsletter to ${user.primaryEmail}...`);
 
+        const unsubscribeUrl = generateUnsubscribeUrl(user.primaryEmail);
         const emailHtml = await render(React.createElement(NewsletterEmail, {
             ...content,
             newsRecap,
-            recipientEmail: user.primaryEmail,
+            unsubscribeUrl,
             previewMode: false
         }));
+
+        console.log(`Generated HTML Length: ${emailHtml.length}`);
+        if (emailHtml.length < 500) {
+            console.log('WARNING: HTML is suspiciously short!');
+            console.log('HTML Preview:', emailHtml);
+        } else {
+            console.log('HTML Preview (start):', emailHtml.substring(0, 200));
+        }
+
+        if (!emailHtml) {
+            return { success: false, error: 'Failed to generate email HTML' };
+        }
 
         const response = await resend.emails.send({
             from: 'b. | The Daily Essence <newsletter@theblife.com>',

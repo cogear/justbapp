@@ -28,7 +28,7 @@ interface NewsletterEmailProps {
     permissionStatement?: string;
     newsRecap?: { id: string; title: string }[];
     previewMode?: boolean;
-    recipientEmail?: string;
+    unsubscribeUrl?: string;
 }
 
 export const NewsletterEmail = ({
@@ -45,22 +45,9 @@ export const NewsletterEmail = ({
     permissionStatement = "You are allowed to choose sustainability over burnout.",
     newsRecap = [],
     previewMode = false,
-    recipientEmail,
+    unsubscribeUrl,
 }: NewsletterEmailProps) => {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://theblife.com";
-
-    // Generate unsubscribe token if recipientEmail is provided
-    let unsubscribeUrl: string | undefined;
-    if (recipientEmail) {
-        const crypto = require('crypto');
-        const secret = process.env.UNSUBSCRIBE_SECRET || 'fallback-secret-change-me';
-        const token = crypto
-            .createHmac('sha256', secret)
-            .update(recipientEmail.toLowerCase())
-            .digest('hex')
-            .substring(0, 32);
-        unsubscribeUrl = `${baseUrl}/api/unsubscribe?email=${encodeURIComponent(recipientEmail)}&token=${token}`;
-    }
 
     const content = (
         <Tailwind
@@ -218,7 +205,7 @@ export const NewsletterEmail = ({
                         <Text className="text-[#888888] text-[10px] m-0 mt-[24px]">
                             <Link
                                 href={unsubscribeUrl}
-                                className="text-[#888888] underline hover:text-[#666666]"
+                                className="text-[#888888] underline"
                             >
                                 Unsubscribe
                             </Link>
