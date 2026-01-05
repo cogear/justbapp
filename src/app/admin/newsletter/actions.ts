@@ -223,3 +223,72 @@ export async function getNewsletterPreview(dateString: string) {
         newsRecap
     };
 }
+
+export async function sendTestNewsletter(dateString: string) {
+    const user = await stackServerApp.getUser();
+    if (!user) return { success: false, error: 'Unauthorized' };
+
+    // Email-based admin check: Strictly limited to cogear@gmail.com
+    const isAdmin = user.primaryEmail === 'cogear@gmail.com';
+    if (!isAdmin) return { success: false, error: 'Unauthorized' };
+
+    const date = new Date(dateString);
+    const content = await getNewsletterContent(date);
+    if (!content) return { success: false, error: 'Newsletter content not found' };
+
+    // Fetch recent articles for the test email
+    const recentArticles = await prisma.newsArticle.findMany({
+        take: 7,
+        orderBy: { publishedAt: 'desc' },
+        include: { reframedArticles: true }
+    });
+
+    // Get admin's cluster for personalization
+    const dbUser = await prisma.user.findUnique({
+        where: { email: user.primaryEmail },
+        include: { visualProfiles: { take: 1, orderBy: { createdAt: 'desc' } } }
+    });
+
+    const cluster = dbUser?.visualProfiles?.[0]?.cluster || 'Global';
+
+    const newsRecap = recentArticles.map(article => {
+        const reframed = article.reframedArticles.find(r => r.cluster === cluster);
+        return {
+            id: article.id,
+            title: reframed?.headline || article.title,
+        };
+    });
+
+    try {
+        console.log(`Sending test newsletter to ${user.primaryEmail}...`);
+
+        const emailHtml = await render(React.createElement(NewsletterEmail, {
+            ...content,
+            newsRecap,
+            recipientEmail: user.primaryEmail,
+            previewMode: false
+        }));
+
+        const response = await resend.emails.send({
+            from: 'b. | The Daily Essence <newsletter@theblife.com>',
+            to: user.primaryEmail,
+            subject: `[TEST] Today's b.brief: ${content.anchorQuote.substring(0, 50)}...`,
+            html: emailHtml,
+        });
+
+        if (response.error) {
+            console.error(`Test email failed:`, response.error);
+            return { success: false, error: response.error.message };
+        }
+
+        console.log(`✅ Test email sent successfully! ID: ${response.data?.id}`);
+        return {
+            success: true,
+            emailId: response.data?.id,
+            recipient: user.primaryEmail
+        };
+    } catch (error) {
+        console.error('Failed to send test newsletter:', error);
+        return { success: false, error: 'Failed to send test email' };
+    }
+}

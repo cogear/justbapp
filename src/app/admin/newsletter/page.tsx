@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 import { stackServerApp } from '@/lib/stack';
 import { getNewsletterPreview } from './actions';
 import { SendNewsletterButton } from './SendNewsletterButton';
+import { SendTestEmailButton } from './SendTestEmailButton';
 import { NewsletterEmail } from '@/emails/NewsletterEmail';
 import { Mail, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
@@ -42,7 +43,10 @@ export default async function NewsletterPage({
                         <h2 className="text-xl font-georgia text-primary mb-2">Admin Dashboard</h2>
                         <p className="text-sm text-muted-foreground">Preview the daily essence and distribute it to your community.</p>
                     </div>
-                    <SendNewsletterButton dateString={dateString} />
+                    <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
+                        <SendTestEmailButton dateString={dateString} />
+                        <SendNewsletterButton dateString={dateString} />
+                    </div>
                 </div>
 
                 {!content ? (
