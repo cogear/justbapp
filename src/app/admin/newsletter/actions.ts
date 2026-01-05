@@ -36,7 +36,11 @@ async function getNewsletterContent(date: Date) {
 
         const content = {
             date: $('.blog-date').text().trim(),
-            heroImage: $('.hero-image').attr('src'),
+            heroImage: $('.hero-image').attr('src') ||
+                $('img[alt*="Anchor" i]').first().attr('src') ||
+                $('img[alt*="Daily" i]').first().attr('src') ||
+                $('article img, .container img').first().attr('src') ||
+                undefined,
             anchorQuote: $('.anchor-quote').text().trim().replace(/^"|"$/g, ''),
             anchorElaboration: $('.anchor-elaboration').text().trim(),
             signalTitle: $('.signal-article-title').text().trim(),
