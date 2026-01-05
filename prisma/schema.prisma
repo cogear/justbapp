@@ -19,6 +19,7 @@ model User {
   memoryVector           Unsupported("vector")?
   zipCode                String?
   isNewsletterSubscriber Boolean                @default(false)
+  emailActive            Boolean                @default(true)
   dailyPulses            DailyPulse[]
   journalEntries         JournalEntry[]
   visualProfiles         VisualProfile[]

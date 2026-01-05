@@ -76,9 +76,12 @@ export async function sendNewsletter(dateString: string) {
     const content = await getNewsletterContent(date);
     if (!content) return { success: false, error: 'Newsletter content not found' };
 
-    // Fetch subscribers
+    // Fetch subscribers - ONLY active email subscribers
     const dbUsers = await prisma.user.findMany({
-        where: { email: { not: '' } },
+        where: {
+            email: { not: '' },
+            emailActive: true
+        },
         select: { email: true }
     });
 
@@ -133,6 +136,7 @@ export async function sendNewsletter(dateString: string) {
                 const emailHtml = await render(React.createElement(NewsletterEmail, {
                     ...content,
                     newsRecap,
+                    recipientEmail: email,
                     previewMode: false
                 }));
 

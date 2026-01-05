@@ -2,6 +2,7 @@ import { getSubscribers } from './actions';
 import { format } from 'date-fns';
 import { Mail, Calendar, User, CheckCircle2, XCircle, MapPin, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { ToggleEmailButton } from './ToggleEmailButton';
 
 export default async function AdminSubscribersPage() {
     const subscribers = await getSubscribers();
@@ -36,6 +37,8 @@ export default async function AdminSubscribersPage() {
                                     <th className="p-4 font-medium text-muted-foreground">Source</th>
                                     <th className="p-4 font-medium text-muted-foreground">Profile Status</th>
                                     <th className="p-4 font-medium text-muted-foreground">Location</th>
+                                    <th className="p-4 font-medium text-muted-foreground">Email Status</th>
+                                    <th className="p-4 font-medium text-muted-foreground">Actions</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-border">
@@ -90,11 +93,26 @@ export default async function AdminSubscribersPage() {
                                                 )}
                                             </div>
                                         </td>
+                                        <td className="p-4">
+                                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${sub.emailActive
+                                                    ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
+                                                    : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'
+                                                }`}>
+                                                {sub.emailActive ? 'Active' : 'Inactive'}
+                                            </span>
+                                        </td>
+                                        <td className="p-4">
+                                            <ToggleEmailButton
+                                                userId={sub.id}
+                                                currentStatus={sub.emailActive}
+                                                userEmail={sub.email}
+                                            />
+                                        </td>
                                     </tr>
                                 ))}
                                 {subscribers.length === 0 && (
                                     <tr>
-                                        <td colSpan={5} className="p-8 text-center text-muted-foreground">
+                                        <td colSpan={7} className="p-8 text-center text-muted-foreground">
                                             No subscribers found yet.
                                         </td>
                                     </tr>

@@ -12,6 +12,7 @@ export interface Subscriber {
     zipCode?: string | null;
     firstName?: string | null;
     lastName?: string | null;
+    emailActive: boolean;
 }
 
 export async function getSubscribers(): Promise<Subscriber[]> {
@@ -42,7 +43,8 @@ export async function getSubscribers(): Promise<Subscriber[]> {
                 createdAt: user.createdAt,
                 source,
                 hasProfile,
-                zipCode: user.zipCode
+                zipCode: user.zipCode,
+                emailActive: user.emailActive
             };
         });
 
@@ -50,5 +52,28 @@ export async function getSubscribers(): Promise<Subscriber[]> {
     } catch (error) {
         console.error('Failed to fetch subscribers:', error);
         return [];
+    }
+}
+
+export async function toggleSubscriberEmailStatus(userId: string, currentStatus: boolean) {
+    'use server';
+
+    // Admin-only check
+    const { stackServerApp } = await import('@/lib/stack');
+    const user = await stackServerApp.getUser();
+    if (!user || user.primaryEmail !== 'cogear@gmail.com') {
+        return { success: false, error: 'Unauthorized' };
+    }
+
+    try {
+        await prisma.user.update({
+            where: { id: userId },
+            data: { emailActive: !currentStatus }
+        });
+
+        return { success: true };
+    } catch (error) {
+        console.error('Failed to toggle email status:', error);
+        return { success: false, error: 'Failed to update status' };
     }
 }
