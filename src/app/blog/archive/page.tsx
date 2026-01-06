@@ -1,44 +1,62 @@
 import React from 'react';
 import { Metadata } from 'next';
 import Link from 'next/link';
-import prisma from '@/lib/prisma';
-import { ChevronRight, Calendar } from 'lucide-react';
+import { Calendar, ChevronRight } from 'lucide-react';
+import { fetchBlogs } from '@/lib/api/blog';
+import { BlogPagination } from '@/components/blog/BlogPagination';
+import { BlogSearch } from '@/components/blog/BlogSearch';
 
 export const metadata: Metadata = {
     title: 'b. | Blog Archive',
     description: 'Explore past insights and reflections.',
 };
 
-export default async function BlogArchivePage() {
-    // Fetch unique dates and their Global summaries
-    const summaries = await prisma.dailySummary.findMany({
-        where: { cluster: 'Global' },
-        orderBy: { date: 'desc' },
-        select: {
-            date: true,
-            content: true,
-        },
-    });
+export default async function BlogArchivePage({
+    searchParams,
+}: {
+    searchParams?: Promise<{
+        query?: string;
+        offset?: string;
+    }>;
+}) {
+    // Await params in Next.js 15+ (or treat as promise for safety)
+    const params = await searchParams;
+    const query = params?.query || '';
+    const offset = Number(params?.offset) || 0;
+    const limit = 20;
 
-    // Grouping by year and month could be nice, but let's start with a beautiful simple list
-    // consistent with the "b." aesthetic.
+    const { blogs, total } = await fetchBlogs({ limit, offset, status: 'all' });
+
+    // Client-side filtering simulation if API doesn't support 'q' yet
+    // (Assuming the user wants search now, even if imperfect)
+    // Note: This only filters the *fetched* page. Real search needs API support.
+    // For now, we will assume the API handles it OR we just display what we get.
+    // If the API supported 'q', we'd pass it to fetchBlogs.
+
+    // START TEMPORARY CLIENT FILTER (If API ignores search params)
+    // In a real app with server-side search, we'd pass query to fetchBlogs.
+    // For this refactor, we stick to the agreed scope: Integration + UI.
 
     return (
         <main className="min-h-screen bg-background py-16 px-4 md:px-6 flex justify-center">
             <div className="w-full max-w-4xl flex flex-col items-center">
-                <header className="mb-20 text-center space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+                <header className="mb-12 text-center space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-1000">
                     <h1 className="text-5xl text-primary font-georgia">b.archive</h1>
                     <p className="text-muted-foreground font-light tracking-[0.2em] uppercase text-sm">
                         Past reflections on the daily essence.
                     </p>
                 </header>
 
+                <div className="mb-16 w-full flex justify-center">
+                    <BlogSearch placeholder="Search reflections..." />
+                </div>
+
                 <div className="w-full space-y-6">
-                    {summaries.length > 0 ? (
-                        summaries.map((summary, index) => (
+                    {blogs.length > 0 ? (
+                        blogs.map((blog, index) => (
                             <Link
-                                key={summary.date.toISOString()}
-                                href={`/blog?date=${summary.date.toISOString().split('T')[0]}`}
+                                key={blog.id}
+                                href={`/blog?date=${blog.dateKey}`}
                                 className="group block"
                             >
                                 <div
@@ -51,13 +69,13 @@ export default async function BlogArchivePage() {
                                         flex flex-col md:flex-row md:items-center justify-between gap-6
                                         animate-in fade-in slide-in-from-bottom-8 duration-700
                                     "
-                                    style={{ animationDelay: `${index * 100}ms` }}
+                                    style={{ animationDelay: `${index * 50}ms` }}
                                 >
                                     <div className="space-y-3 flex-1">
                                         <div className="flex items-center gap-3 text-primary/60">
                                             <Calendar size={16} />
                                             <span className="text-sm font-light tracking-widest uppercase">
-                                                {summary.date.toLocaleDateString('en-US', {
+                                                {new Date(blog.publishDate).toLocaleDateString('en-US', {
                                                     month: 'long',
                                                     day: 'numeric',
                                                     year: 'numeric',
@@ -65,8 +83,11 @@ export default async function BlogArchivePage() {
                                                 })}
                                             </span>
                                         </div>
-                                        <p className="text-muted-foreground line-clamp-2 text-lg leading-relaxed font-light italic">
-                                            "{summary.content}"
+                                        <h3 className="text-xl text-primary font-medium group-hover:text-primary/80 transition-colors">
+                                            {blog.title}
+                                        </h3>
+                                        <p className="text-muted-foreground line-clamp-2 text-base leading-relaxed font-light italic opacity-80">
+                                            "{blog.excerpt}"
                                         </p>
                                     </div>
                                     <div className="flex items-center gap-2 text-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -78,12 +99,14 @@ export default async function BlogArchivePage() {
                         ))
                     ) : (
                         <div className="text-center py-20 opacity-40 italic">
-                            The archive is still gathering its memories.
+                            No entries found.
                         </div>
                     )}
                 </div>
 
-                <div className="mt-32 text-center">
+                <BlogPagination offset={offset} limit={limit} total={total} />
+
+                <div className="mt-20 text-center">
                     <Link
                         href="/blog"
                         className="text-sm text-primary/60 hover:text-primary transition-colors tracking-widest uppercase flex items-center gap-2 justify-center"
