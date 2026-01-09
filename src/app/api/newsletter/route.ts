@@ -1,7 +1,9 @@
 import { resend } from '@/lib/resend';
 import { WelcomeEmail } from '@/emails/WelcomeEmail';
+import { NewsletterConfirmationEmail } from '@/emails/NewsletterConfirmationEmail';
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import crypto from 'crypto';
 
 export async function POST(request: Request) {
     try {
@@ -14,52 +16,51 @@ export async function POST(request: Request) {
             );
         }
 
-        // 0. Persist to our database
-        // Using 'as any' temporarily to bypass stale Prisma Client types in dev
+        // 0. Generate a verification token
+        const verificationToken = crypto.randomUUID();
+
+        // 1. Persist to our database with the token
+        // We set isNewsletterSubscriber to FALSE initially for double opt-in
         await (prisma.user as any).upsert({
             where: { email },
-            update: { isNewsletterSubscriber: true },
+            update: {
+                newsletterVerificationToken: verificationToken,
+                // Don't change subscription status if they are already false/true, 
+                // but if they are re-subscribing, they might be effectively resetting.
+                // For safety, let's keep their current status or set to false?
+                // If they are already true, they don't need to verify, but if they are here, they might want to.
+                // Let's assume re-verification is harmless.
+            },
             create: {
                 email,
-                isNewsletterSubscriber: true
+                isNewsletterSubscriber: false,
+                newsletterVerificationToken: verificationToken
             },
         });
 
-        // 1. Try to add to Audience (managed newsletter list)
-        // You must create an 'Audience' in the Resend dashboard first.
-        let contactCreated = false;
-        try {
-            const { data: contactData, error: contactError } = await resend.contacts.create({
-                email,
-                unsubscribed: false,
-                // audienceId: 'YOUR_AUDIENCE_ID', // Recommending logic: user adds this to .env later
-            });
+        const host = request.headers.get('host') || 'theblife.com';
+        const protocol = host.includes('localhost') ? 'http' : 'https';
+        const confirmationUrl = `${protocol}://${host}/newsletter/verify?token=${verificationToken}`;
 
-            if (!contactError) contactCreated = true;
-        } catch (e) {
-            console.warn('Silent failure adding to Resend Audience. This is likely because no Audience is configured.');
-        }
-
-        // 2. Send the Welcome Email immediately
-        // Note: This requires the 'theblife.com' domain to be verified in Resend.
-        const { data: emailData, error: emailError } = await resend.emails.send({
+        // 2. Send Confirmation Email
+        const { error: emailError } = await resend.emails.send({
             from: 'b <updates@theblife.com>',
             to: [email],
-            subject: 'Welcome to the b life.',
-            react: WelcomeEmail(),
+            subject: 'Please confim your subscription',
+            react: NewsletterConfirmationEmail({ confirmationUrl }),
         });
 
         if (emailError) {
-            // If domain isn't verified yet, this will error. 
-            // We'll return a specific message but won't crash the whole flow.
             return NextResponse.json({
-                success: true,
-                warning: 'Contact logged, but email delivery failed. Is theblife.com verified in Resend?',
+                success: false,
                 error: emailError.message
             });
         }
 
-        return NextResponse.json({ success: true, contactCreated, emailSent: true });
+        return NextResponse.json({
+            success: true,
+            message: 'Please check your email to confirm your subscription.'
+        });
     } catch (error: any) {
         return NextResponse.json(
             { error: error.message || 'Something went wrong.' },

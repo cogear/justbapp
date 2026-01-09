@@ -49,7 +49,7 @@ export function NewsletterSignup({ initialEmail }: { initialEmail?: string }) {
             if (!response.ok) throw new Error(data.error || 'Something went wrong');
 
             setStatus('success');
-            setMessage(data.message || 'Thank you for joining the "b" life.');
+            setMessage(data.message || 'Please check your email to confirm your subscription.');
             if (!initialEmail) setEmail('');
         } catch (err: any) {
             setStatus('error');
