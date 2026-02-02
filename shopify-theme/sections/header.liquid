@@ -1,0 +1,62 @@
+{% comment %}
+  Header Section - Sticky navigation with b. branding
+{% endcomment %}
+
+<header class="header {% if settings.header_sticky %}header--sticky{% endif %}">
+  <div class="header__inner container">
+    <div style="display: flex; align-items: center; gap: 2.5rem;">
+      <a href="{{ routes.root_url }}" class="header__logo">
+        b.
+      </a>
+      
+      <nav class="header__nav">
+        {% for link in linklists.main-menu.links %}
+          <a href="{{ link.url }}" class="header__nav-link">
+            {{ link.title }}
+          </a>
+        {% endfor %}
+      </nav>
+    </div>
+
+    <div class="header__actions">
+      {% if shop.customer_accounts_enabled %}
+        <a href="{{ routes.account_url }}" class="header__account-link">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10 10C12.7614 10 15 7.76142 15 5C15 2.23858 12.7614 0 10 0C7.23858 0 5 2.23858 5 5C5 7.76142 7.23858 10 10 10Z" fill="currentColor"/>
+            <path d="M10 12C4.47715 12 0 14.4772 0 17.5C0 18.8807 4.47715 20 10 20C15.5228 20 20 18.8807 20 17.5C20 14.4772 15.5228 12 10 12Z" fill="currentColor"/>
+          </svg>
+        </a>
+      {% endif %}
+
+      <a href="{{ routes.search_url }}" class="header__search-link">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M9 17C13.4183 17 17 13.4183 17 9C17 4.58172 13.4183 1 9 1C4.58172 1 1 4.58172 1 9C1 13.4183 4.58172 17 9 17Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M19 19L14.65 14.65" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+
+      <button type="button" class="header__cart-toggle" data-cart-toggle>
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M7 18C7.55228 18 8 17.5523 8 17C8 16.4477 7.55228 16 7 16C6.44772 16 6 16.4477 6 17C6 17.5523 6.44772 18 7 18Z" fill="currentColor"/>
+          <path d="M16 18C16.5523 18 17 17.5523 17 17C17 16.4477 16.5523 16 16 16C15.4477 16 15 16.4477 15 17C15 17.5523 15.4477 18 16 18Z" fill="currentColor"/>
+          <path d="M1 1H4L6.68 11.39C6.77144 11.8504 7.02191 12.264 7.38755 12.5583C7.75318 12.8526 8.2107 13.009 8.68 13H15.4C15.8693 13.009 16.3268 12.8526 16.6925 12.5583C17.0581 12.264 17.3086 11.8504 17.4 11.39L19 5H5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="header__cart-count" data-cart-count>{{ cart.item_count }}</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+{% schema %}
+{
+  "name": "Header",
+  "settings": [
+    {
+      "type": "link_list",
+      "id": "menu",
+      "default": "main-menu",
+      "label": "Menu"
+    }
+  ]
+}
+{% endschema %}

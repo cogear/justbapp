@@ -1,0 +1,59 @@
+{% comment %}
+  Welcome Message - Warm, personal greeting with handwritten feel
+{% endcomment %}
+
+<section class="section section--small" style="background-color: rgba(212, 165, 154, 0.08);">
+  <div class="container">
+    <div style="max-width: 48rem; margin: 0 auto; text-align: center;">
+      {% if section.settings.message != blank %}
+        <p class="handwritten-large" style="margin-bottom: 1rem; color: var(--color-accent);">
+          {{ section.settings.message }}
+        </p>
+      {% endif %}
+      
+      {% if section.settings.description != blank %}
+        <p style="font-size: 1.125rem; color: var(--color-muted-foreground); line-height: 1.8;">
+          {{ section.settings.description }}
+        </p>
+      {% endif %}
+      
+      {% if section.settings.signature != blank %}
+        <p class="handwritten" style="margin-top: 2rem; font-size: 1.5rem; color: var(--color-foreground);">
+          {{ section.settings.signature }}
+        </p>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Welcome Message",
+  "settings": [
+    {
+      "type": "text",
+      "id": "message",
+      "label": "Welcome Message",
+      "default": "Welcome, friend."
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "We're so glad you're here. Take a moment to breathe, slow down, and explore what it means to just be."
+    },
+    {
+      "type": "text",
+      "id": "signature",
+      "label": "Signature",
+      "default": "- The b. Team",
+      "info": "Optional personal signature"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Welcome Message"
+    }
+  ]
+}
+{% endschema %}

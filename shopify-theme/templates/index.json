@@ -1,0 +1,43 @@
+{
+    "sections": {
+        "hero": {
+            "type": "hero",
+            "settings": {
+                "title": "b.",
+                "subtitle": "just be",
+                "hero_height": 70
+            }
+        },
+        "featured-collection": {
+            "type": "featured-collection",
+            "settings": {
+                "title": "Featured Products",
+                "description": "Curated items to support your journey toward mindful living.",
+                "products_to_show": 6,
+                "show_view_all": true
+            }
+        },
+        "text-with-image-1": {
+            "type": "text-with-image",
+            "settings": {
+                "layout": "image_left",
+                "title": "Discover Your Lens",
+                "text": "<p>In a world obsessed with doing, we invite you to simply be. Our products are designed to help you slow down, find comfort, and embrace the present moment.</p>"
+            }
+        },
+        "text-with-image-2": {
+            "type": "text-with-image",
+            "settings": {
+                "layout": "image_right",
+                "title": "The Daily Essence",
+                "text": "<p>Quality over status. Presence over productivity. Join us in the quiet revolution of just being.</p>"
+            }
+        }
+    },
+    "order": [
+        "hero",
+        "featured-collection",
+        "text-with-image-1",
+        "text-with-image-2"
+    ]
+}

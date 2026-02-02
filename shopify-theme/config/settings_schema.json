@@ -1,0 +1,211 @@
+[
+    {
+        "name": "theme_info",
+        "theme_name": "b. Just Be",
+        "theme_version": "1.0.0",
+        "theme_author": "b. Just Be",
+        "theme_documentation_url": "",
+        "theme_support_url": ""
+    },
+    {
+        "name": "Colors",
+        "settings": [
+            {
+                "type": "header",
+                "content": "Brand Colors"
+            },
+            {
+                "type": "color",
+                "id": "color_background",
+                "label": "Background",
+                "default": "#F5F2EB",
+                "info": "Warm Sand"
+            },
+            {
+                "type": "color",
+                "id": "color_foreground",
+                "label": "Text",
+                "default": "#2D2D2D",
+                "info": "Soft Charcoal"
+            },
+            {
+                "type": "color",
+                "id": "color_primary",
+                "label": "Primary",
+                "default": "#8DA399",
+                "info": "Sage Green"
+            },
+            {
+                "type": "color",
+                "id": "color_accent",
+                "label": "Accent",
+                "default": "#D4A59A",
+                "info": "Dusty Clay"
+            },
+            {
+                "type": "color",
+                "id": "color_secondary",
+                "label": "Secondary",
+                "default": "#E0E6E6",
+                "info": "Morning Mist"
+            },
+            {
+                "type": "color",
+                "id": "color_dark_background",
+                "label": "Dark Mode Background",
+                "default": "#1A1A1A",
+                "info": "Deep Night"
+            }
+        ]
+    },
+    {
+        "name": "Typography",
+        "settings": [
+            {
+                "type": "header",
+                "content": "Fonts"
+            },
+            {
+                "type": "font_picker",
+                "id": "font_heading",
+                "label": "Heading Font",
+                "default": "serif",
+                "info": "Georgia or similar serif recommended"
+            },
+            {
+                "type": "font_picker",
+                "id": "font_body",
+                "label": "Body Font",
+                "default": "sans-serif",
+                "info": "Clean sans-serif recommended"
+            },
+            {
+                "type": "range",
+                "id": "font_size_base",
+                "label": "Base Font Size",
+                "min": 14,
+                "max": 20,
+                "step": 1,
+                "unit": "px",
+                "default": 16
+            }
+        ]
+    },
+    {
+        "name": "Layout",
+        "settings": [
+            {
+                "type": "header",
+                "content": "Layout Settings"
+            },
+            {
+                "type": "range",
+                "id": "layout_max_width",
+                "label": "Max Content Width",
+                "min": 1200,
+                "max": 1600,
+                "step": 50,
+                "unit": "px",
+                "default": 1536
+            },
+            {
+                "type": "range",
+                "id": "border_radius",
+                "label": "Border Radius",
+                "min": 0,
+                "max": 50,
+                "step": 2,
+                "unit": "px",
+                "default": 48,
+                "info": "Rounded corners for cards and buttons"
+            }
+        ]
+    },
+    {
+        "name": "Header",
+        "settings": [
+            {
+                "type": "header",
+                "content": "Header Settings"
+            },
+            {
+                "type": "checkbox",
+                "id": "header_sticky",
+                "label": "Sticky Header",
+                "default": true
+            },
+            {
+                "type": "checkbox",
+                "id": "header_transparent",
+                "label": "Transparent Header on Homepage",
+                "default": false
+            }
+        ]
+    },
+    {
+        "name": "Product",
+        "settings": [
+            {
+                "type": "header",
+                "content": "Product Settings"
+            },
+            {
+                "type": "checkbox",
+                "id": "product_show_vendor",
+                "label": "Show Vendor",
+                "default": false
+            },
+            {
+                "type": "checkbox",
+                "id": "product_show_sku",
+                "label": "Show SKU",
+                "default": false
+            },
+            {
+                "type": "select",
+                "id": "product_image_ratio",
+                "label": "Product Image Ratio",
+                "options": [
+                    {
+                        "value": "natural",
+                        "label": "Natural"
+                    },
+                    {
+                        "value": "square",
+                        "label": "Square (1:1)"
+                    },
+                    {
+                        "value": "portrait",
+                        "label": "Portrait (2:3)"
+                    }
+                ],
+                "default": "natural"
+            }
+        ]
+    },
+    {
+        "name": "Cart",
+        "settings": [
+            {
+                "type": "header",
+                "content": "Cart Settings"
+            },
+            {
+                "type": "select",
+                "id": "cart_type",
+                "label": "Cart Type",
+                "options": [
+                    {
+                        "value": "drawer",
+                        "label": "Drawer"
+                    },
+                    {
+                        "value": "page",
+                        "label": "Page"
+                    }
+                ],
+                "default": "drawer"
+            }
+        ]
+    }
+]

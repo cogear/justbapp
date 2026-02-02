@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>b. Theme Preview - Humanized Design</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Import theme CSS variables */
+        :root {
+            --color-background: #F5F2EB;
+            --color-foreground: #2D2D2D;
+            --color-primary: #8DA399;
+            --color-primary-foreground: #ffffff;
+            --color-accent: #D4A59A;
+            --color-accent-foreground: #ffffff;
+            --color-secondary: #E0E6E6;
+            --color-muted-foreground: #2D2D2D;
+            
+            --font-heading: Georgia, 'Times New Roman', serif;
+            --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --font-handwritten: 'Caveat', cursive;
+            
+            --radius-xl: 3rem;
+            --radius-full: 9999px;
+            
+            --shadow-md: 0 4px 8px -1px rgb(141 163 153 / 0.12);
+            --shadow-warm: 0 8px 16px -4px rgb(212 165 154 / 0.2);
+            --shadow-2xl: 0 25px 50px -12px rgb(141 163 153 / 0.25);
+            
+            --transition-bounce: 500ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font-body);
+            background-color: var(--color-background);
+            color: var(--color-foreground);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1536px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        /* Hero Section */
+        .hero {
+            position: relative;
+            min-height: 70vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            overflow: hidden;
+        }
+        
+        .hero__image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.85) contrast(1.05);
+        }
+        
+        .hero__overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(245,242,235,1));
+        }
+        
+        .hero__content {
+            position: relative;
+            z-index: 10;
+            padding: 3rem;
+        }
+        
+        .hero__title {
+            font-family: var(--font-heading);
+            font-size: 8rem;
+            color: white;
+            text-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            margin-bottom: 1rem;
+        }
+        
+        .hero__subtitle {
+            font-family: var(--font-handwritten);
+            font-size: 3rem;
+            color: rgba(255,255,255,0.95);
+            font-weight: 600;
+        }
+        
+        /* Welcome Section */
+        .welcome {
+            background-color: rgba(212, 165, 154, 0.08);
+            padding: 4rem 0;
+        }
+        
+        .welcome__content {
+            max-width: 48rem;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .handwritten-large {
+            font-family: var(--font-handwritten);
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--color-accent);
+            line-height: 1.1;
+            margin-bottom: 1rem;
+        }
+        
+        .handwritten {
+            font-family: var(--font-handwritten);
+            font-weight: 600;
+            font-size: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        /* Product Grid */
+        .section {
+            padding: 6rem 0;
+        }
+        
+        .section-title {
+            font-family: var(--font-handwritten);
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--color-accent);
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .product-card {
+            background-color: rgba(224, 230, 230, 0.1);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            transition: all 600ms cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .product-card:hover {
+            box-shadow: var(--shadow-2xl);
+            transform: translateY(-8px);
+        }
+        
+        .product-card__image {
+            position: relative;
+            width: 100%;
+            padding-bottom: 100%;
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-background) 100%);
+        }
+        
+        .product-card__image img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 1s ease;
+        }
+        
+        .product-card:hover .product-card__image img {
+            transform: scale(1.08);
+        }
+        
+        .product-card__content {
+            padding: 1.5rem;
+        }
+        
+        .product-card__title {
+            font-family: var(--font-heading);
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .product-card__price {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--color-primary);
+        }
+        
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem 3rem;
+            font-family: var(--font-body);
+            font-size: 1.125rem;
+            font-weight: 500;
+            text-decoration: none;
+            border: none;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: all var(--transition-bounce);
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--color-primary) 0%, #7a9088 100%);
+            color: var(--color-primary-foreground);
+            margin-top: 2rem;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 600ms ease, height 600ms ease;
+        }
+        
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: var(--shadow-warm);
+            background: linear-gradient(135deg, #7a9088 0%, var(--color-primary) 100%);
+        }
+        
+        .btn:active {
+            transform: translateY(-1px) scale(1.01);
+        }
+        
+        /* Comparison Section */
+        .comparison {
+            background: white;
+            padding: 4rem 0;
+        }
+        
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .comparison-card {
+            padding: 2rem;
+            border-radius: 1rem;
+            border: 2px solid var(--color-secondary);
+        }
+        
+        .comparison-card h3 {
+            font-family: var(--font-heading);
+            margin-bottom: 1rem;
+            color: var(--color-foreground);
+        }
+        
+        .comparison-card.before {
+            opacity: 0.6;
+        }
+        
+        .comparison-card.after {
+            border-color: var(--color-primary);
+            background: rgba(141, 163, 153, 0.05);
+        }
+        
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        
+        li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: var(--color-accent);
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero__overlay"></div>
+        <div class="hero__content">
+            <h1 class="hero__title">b.</h1>
+            <p class="hero__subtitle">just be</p>
+            <a href="#" class="btn">Explore the Collection</a>
+        </div>
+    </section>
+    
+    <!-- Welcome Message -->
+    <section class="welcome">
+        <div class="container">
+            <div class="welcome__content">
+                <p class="handwritten-large">Welcome, friend.</p>
+                <p style="font-size: 1.125rem; color: var(--color-muted-foreground); line-height: 1.8;">
+                    We're so glad you're here. Take a moment to breathe, slow down, and explore what it means to just be. 
+                    Every product is chosen with intention, every detail crafted with care.
+                </p>
+                <p class="handwritten">- The b. Team</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Products Section -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Handpicked for you</h2>
+            
+            <div class="product-grid">
+                <a href="#" class="product-card">
+                    <div class="product-card__image">
+                        <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-family: var(--font-heading); font-size: 3rem; color: var(--color-primary);">
+                            Product 1
+                        </div>
+                    </div>
+                    <div class="product-card__content">
+                        <h3 class="product-card__title">Mindful Journal</h3>
+                        <p class="product-card__price">$24.00</p>
+                    </div>
+                </a>
+                
+                <a href="#" class="product-card">
+                    <div class="product-card__image">
+                        <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-family: var(--font-heading); font-size: 3rem; color: var(--color-primary);">
+                            Product 2
+                        </div>
+                    </div>
+                    <div class="product-card__content">
+                        <h3 class="product-card__title">Ceramic Tea Set</h3>
+                        <p class="product-card__price">$48.00</p>
+                    </div>
+                </a>
+                
+                <a href="#" class="product-card">
+                    <div class="product-card__image">
+                        <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-family: var(--font-heading); font-size: 3rem; color: var(--color-primary);">
+                            Product 3
+                        </div>
+                    </div>
+                    <div class="product-card__content">
+                        <h3 class="product-card__title">Cozy Blanket</h3>
+                        <p class="product-card__price">$68.00</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Comparison Section -->
+    <section class="comparison">
+        <div class="container">
+            <h2 style="font-family: var(--font-heading); font-size: 2.5rem; text-align: center; margin-bottom: 1rem;">What Changed?</h2>
+            <p style="text-align: center; color: var(--color-muted-foreground); margin-bottom: 2rem;">Hover over the buttons and cards to see the humanized interactions</p>
+            
+            <div class="comparison-grid">
+                <div class="comparison-card before">
+                    <h3>❌ Before: Sterile</h3>
+                    <ul>
+                        <li>Harsh black shadows</li>
+                        <li>Flat button colors</li>
+                        <li>Linear animations</li>
+                        <li>Sharp geometric shapes</li>
+                        <li>No personal touches</li>
+                    </ul>
+                </div>
+                
+                <div class="comparison-card after">
+                    <h3>✅ After: Human</h3>
+                    <ul>
+                        <li>Warm sage-tinted shadows</li>
+                        <li>Gradient buttons with glow</li>
+                        <li>Playful bounce animations</li>
+                        <li>Softer, organic shapes</li>
+                        <li>Handwritten accents</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 3rem;">
+                <a href="#" class="btn">Try Hovering This Button!</a>
+                <p style="margin-top: 1rem; color: var(--color-muted-foreground); font-style: italic;">
+                    Notice the warm glow expanding from the center ✨
+                </p>
+            </div>
+        </div>
+    </section>
+    
+    <div style="padding: 4rem 0; text-align: center; background: var(--color-secondary);">
+        <p style="font-family: var(--font-handwritten); font-size: 2rem; color: var(--color-accent);">
+            This is what human-centered design feels like.
+        </p>
+        <p style="margin-top: 1rem; color: var(--color-muted-foreground);">
+            Upload to Shopify to see it live with your products!
+        </p>
+    </div>
+</body>
+</html>

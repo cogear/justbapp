@@ -1,0 +1,100 @@
+{% comment %}
+  Hero Section - Warm, human-centered hero with handwritten accents
+{% endcomment %}
+
+<section class="hero" style="min-height: {{ section.settings.hero_height }}vh;">
+  {% if section.settings.image != blank %}
+    <img
+      src="{{ section.settings.image | image_url: width: 1920 }}"
+      srcset="{{ section.settings.image | image_url: width: 600 }} 600w,
+              {{ section.settings.image | image_url: width: 1200 }} 1200w,
+              {{ section.settings.image | image_url: width: 1920 }} 1920w"
+      sizes="100vw"
+      alt="{{ section.settings.image.alt | escape }}"
+      class="hero__image"
+      loading="eager"
+    >
+  {% endif %}
+  
+  <div class="hero__overlay"></div>
+  
+  <div class="hero__content">
+    {% if section.settings.title != blank %}
+      <h1 class="hero__title">
+        {{ section.settings.title }}
+      </h1>
+    {% endif %}
+    
+    {% if section.settings.subtitle != blank %}
+      <p class="hero__subtitle {% if section.settings.handwritten_subtitle %}handwritten-large{% endif %}" style="{% if section.settings.handwritten_subtitle %}text-transform: none; letter-spacing: normal; font-size: 2.5rem;{% endif %}">
+        {{ section.settings.subtitle }}
+      </p>
+    {% endif %}
+    
+    {% if section.settings.button_text != blank %}
+      <div style="margin-top: 2rem; animation: fadeInUp 1s ease 0.4s both;">
+        <a href="{{ section.settings.button_link }}" class="btn btn--primary btn--large">
+          {{ section.settings.button_text }}
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Hero",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Background Image"
+    },
+    {
+      "type": "range",
+      "id": "hero_height",
+      "label": "Hero Height",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "vh",
+      "default": 70
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "b."
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "just be"
+    },
+    {
+      "type": "checkbox",
+      "id": "handwritten_subtitle",
+      "label": "Use handwritten font for subtitle",
+      "default": false,
+      "info": "Adds a warm, human touch"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "Shop Now"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero"
+    }
+  ]
+}
+{% endschema %}

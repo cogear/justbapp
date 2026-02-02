@@ -19,8 +19,8 @@ export async function Header() {
                         <Link href="/visual-profile" className="transition-colors hover:text-foreground font-georgia">
                             b.profile
                         </Link>
-                        <Link href="/news" className="transition-colors hover:text-foreground font-georgia">
-                            b.news
+                        <Link href="/community" className="transition-colors hover:text-foreground font-georgia">
+                            b.community
                         </Link>
                         <Link href="/blog" className="transition-colors hover:text-foreground font-georgia">
                             b.blog

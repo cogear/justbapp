@@ -1,0 +1,144 @@
+{% comment %}
+  Footer Section - Matching b. aesthetic
+{% endcomment %}
+
+<footer class="footer">
+  <div class="footer__content container">
+    <div class="footer__section">
+      <h3 class="footer__section-title">{{ section.settings.heading_1 }}</h3>
+      <ul class="footer__links">
+        {% for link in linklists[section.settings.menu_1].links %}
+          <li>
+            <a href="{{ link.url }}" class="footer__link">
+              {{ link.title }}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="footer__section">
+      <h3 class="footer__section-title">{{ section.settings.heading_2 }}</h3>
+      <ul class="footer__links">
+        {% for link in linklists[section.settings.menu_2].links %}
+          <li>
+            <a href="{{ link.url }}" class="footer__link">
+              {{ link.title }}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="footer__section">
+      <h3 class="footer__section-title">{{ section.settings.heading_3 }}</h3>
+      {% if section.settings.show_newsletter %}
+        <div class="footer__newsletter">
+          <p class="mb-md">{{ section.settings.newsletter_text }}</p>
+          {% form 'customer' %}
+            <div style="display: flex; gap: 0.5rem;">
+              <input
+                type="email"
+                name="contact[email]"
+                placeholder="Your email"
+                style="flex: 1; padding: 0.75rem 1rem; border: 1px solid var(--color-border); border-radius: var(--radius-full); background: var(--color-background); color: var(--color-foreground);"
+                required
+              >
+              <button type="submit" class="btn btn--primary btn--small">
+                Subscribe
+              </button>
+            </div>
+          {% endform %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="footer__bottom container">
+    <p>&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. {{ section.settings.footer_text }}</p>
+    {% if section.settings.show_payment_icons %}
+      <div style="margin-top: 1rem;">
+        {% for type in shop.enabled_payment_types %}
+          {{ type | payment_type_svg_tag: class: 'payment-icon' }}
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "Footer",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Column 1"
+    },
+    {
+      "type": "text",
+      "id": "heading_1",
+      "label": "Heading",
+      "default": "Quick Links"
+    },
+    {
+      "type": "link_list",
+      "id": "menu_1",
+      "label": "Menu",
+      "default": "footer"
+    },
+    {
+      "type": "header",
+      "content": "Column 2"
+    },
+    {
+      "type": "text",
+      "id": "heading_2",
+      "label": "Heading",
+      "default": "Information"
+    },
+    {
+      "type": "link_list",
+      "id": "menu_2",
+      "label": "Menu"
+    },
+    {
+      "type": "header",
+      "content": "Column 3"
+    },
+    {
+      "type": "text",
+      "id": "heading_3",
+      "label": "Heading",
+      "default": "Newsletter"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_newsletter",
+      "label": "Show Newsletter Signup",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "newsletter_text",
+      "label": "Newsletter Text",
+      "default": "Stay connected with b. Subscribe for mindful updates."
+    },
+    {
+      "type": "header",
+      "content": "Bottom"
+    },
+    {
+      "type": "text",
+      "id": "footer_text",
+      "label": "Footer Text",
+      "default": "Just be."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_payment_icons",
+      "label": "Show Payment Icons",
+      "default": true
+    }
+  ]
+}
+{% endschema %}
