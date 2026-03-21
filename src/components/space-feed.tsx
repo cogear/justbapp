@@ -23,11 +23,10 @@ export async function SpaceFeed({ spaceId }: { spaceId: string }) {
                             <div key={post.id} className="bg-card rounded-lg border p-6 shadow-sm">
                                 <div className="flex items-center gap-3 mb-4">
                                     <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground font-semibold">
-                                        {post.author.email?.[0]?.toUpperCase() || '?'}
+                                        {(post.author.displayName || post.author.email)?.[0]?.toUpperCase() || '?'}
                                     </div>
                                     <div>
-                                        {/* Use email as name for now, fallback to User */}
-                                        <div className="font-medium">{post.author.email || 'User'}</div>
+                                        <div className="font-medium">{post.author.displayName || post.author.email || 'User'}</div>
                                         <div className="text-xs text-muted-foreground">{new Date(post.createdAt).toLocaleDateString()}</div>
                                     </div>
                                 </div>
