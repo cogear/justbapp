@@ -22,14 +22,11 @@ interface Space {
     type: 'FEED' | 'COURSE';
 }
 
-// Placeholder data - in real app this would come from props or a query
-const MOCK_SPACES: Space[] = [
-    { id: '1', name: 'General', slug: 'general', type: 'FEED' },
-    { id: '2', name: 'Introductions', slug: 'introductions', type: 'FEED' },
-    { id: '3', name: 'Just Be Foundations', slug: 'foundations', type: 'COURSE' },
-];
+interface CommunitySidebarProps {
+    spaces: Space[];
+}
 
-export function CommunitySidebar() {
+export function CommunitySidebar({ spaces }: CommunitySidebarProps) {
     const pathname = usePathname();
 
     return (
@@ -64,7 +61,7 @@ export function CommunitySidebar() {
                             <h3 className="text-sm font-medium text-muted-foreground">Spaces</h3>
                         </div>
                         <div className="space-y-1">
-                            {MOCK_SPACES.filter(s => s.type === 'FEED').map((space) => (
+                            {spaces.filter(s => s.type === 'FEED').map((space) => (
                                 <Button
                                     key={space.id}
                                     variant="ghost"
@@ -89,7 +86,7 @@ export function CommunitySidebar() {
                             <h3 className="text-sm font-medium text-muted-foreground">Courses</h3>
                         </div>
                         <div className="space-y-1">
-                            {MOCK_SPACES.filter(s => s.type === 'COURSE').map((space) => (
+                            {spaces.filter(s => s.type === 'COURSE').map((space) => (
                                 <Button
                                     key={space.id}
                                     variant="ghost"
