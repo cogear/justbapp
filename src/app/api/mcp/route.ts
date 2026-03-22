@@ -1,17 +1,7 @@
 import { createMcpServer } from "@/lib/mcp/server";
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
 import { NextRequest, NextResponse } from "next/server";
-
-function authenticate(request: NextRequest): boolean {
-    const apiKey = process.env.MCP_API_KEY;
-    if (!apiKey) return false;
-
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader) return false;
-
-    const token = authHeader.replace("Bearer ", "");
-    return token === apiKey;
-}
+import { authenticate } from "@/lib/api-auth";
 
 // Stateless transport — new server instance per request (suitable for serverless)
 async function handleMcpRequest(request: Request): Promise<Response> {
