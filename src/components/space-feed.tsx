@@ -1,12 +1,34 @@
 import prisma from '@/lib/prisma';
+import { stackServerApp } from '@/lib/stack';
 import { CreatePostForm } from './create-post-form';
+import { CommentThread } from './comment-thread';
+import { LikeButton } from './like-button';
 
 export async function SpaceFeed({ spaceId }: { spaceId: string }) {
+    const stackUser = await stackServerApp.getUser();
+    let currentUserId: string | null = null;
+
+    if (stackUser?.primaryEmail) {
+        const dbUser = await prisma.user.findUnique({
+            where: { email: stackUser.primaryEmail },
+            select: { id: true },
+        });
+        currentUserId = dbUser?.id ?? null;
+    }
+
     const posts = await prisma.post.findMany({
         where: { spaceId },
         orderBy: { createdAt: 'desc' },
         include: {
-            author: true
+            author: true,
+            comments: {
+                include: { author: { select: { displayName: true, email: true } } },
+                orderBy: { createdAt: 'asc' },
+            },
+            likes: currentUserId
+                ? { where: { userId: currentUserId }, select: { id: true } }
+                : false,
+            _count: { select: { comments: true, likes: true } },
         }
     });
 
@@ -31,6 +53,18 @@ export async function SpaceFeed({ spaceId }: { spaceId: string }) {
                                     </div>
                                 </div>
                                 <p className="text-card-foreground whitespace-pre-wrap">{post.content}</p>
+                                <div className="flex items-center gap-4 mt-4">
+                                    <LikeButton
+                                        postId={post.id}
+                                        likeCount={post._count.likes}
+                                        isLiked={Array.isArray(post.likes) && post.likes.length > 0}
+                                    />
+                                    <CommentThread
+                                        postId={post.id}
+                                        comments={post.comments}
+                                        commentCount={post._count.comments}
+                                    />
+                                </div>
                             </div>
                         ))
                     )}

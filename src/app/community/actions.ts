@@ -4,19 +4,10 @@ import prisma from '@/lib/prisma';
 import { stackServerApp } from '@/lib/stack';
 import { revalidatePath } from 'next/cache';
 
-export async function createPost(content: string, spaceId: string) {
-    if (!content || !content.trim()) {
-        return { error: 'Content cannot be empty' };
-    }
-
+async function getOrCreateUser() {
     const stackUser = await stackServerApp.getUser();
-    if (!stackUser) {
-        return { error: 'Not authenticated' };
-    }
+    if (!stackUser) return null;
 
-    // Find or create user in our database (sync with Stack)
-    // Note: In a real app, you might want to sync this via webhook or middleware
-    // But for now, lazy sync on action is fine.
     let user = await prisma.user.findUnique({
         where: { email: stackUser.primaryEmail || '' },
     });
@@ -25,9 +16,21 @@ export async function createPost(content: string, spaceId: string) {
         user = await prisma.user.create({
             data: {
                 email: stackUser.primaryEmail || '',
-                // You might want to grab name/image from stackUser if available
             },
         });
+    }
+
+    return user;
+}
+
+export async function createPost(content: string, spaceId: string) {
+    if (!content || !content.trim()) {
+        return { error: 'Content cannot be empty' };
+    }
+
+    const user = await getOrCreateUser();
+    if (!user) {
+        return { error: 'Not authenticated' };
     }
 
     try {
@@ -44,5 +47,62 @@ export async function createPost(content: string, spaceId: string) {
     } catch (e) {
         console.error('Failed to create post:', e);
         return { error: 'Failed to create post' };
+    }
+}
+
+export async function toggleLike(postId: string) {
+    const user = await getOrCreateUser();
+    if (!user) {
+        return { error: 'Not authenticated' };
+    }
+
+    try {
+        const existing = await prisma.postLike.findUnique({
+            where: { postId_userId: { postId, userId: user.id } },
+        });
+
+        if (existing) {
+            await prisma.postLike.delete({
+                where: { id: existing.id },
+            });
+            revalidatePath('/community');
+            return { liked: false };
+        } else {
+            await prisma.postLike.create({
+                data: { postId, userId: user.id },
+            });
+            revalidatePath('/community');
+            return { liked: true };
+        }
+    } catch (e) {
+        console.error('Failed to toggle like:', e);
+        return { error: 'Failed to toggle like' };
+    }
+}
+
+export async function createComment(content: string, postId: string) {
+    if (!content || !content.trim()) {
+        return { error: 'Content cannot be empty' };
+    }
+
+    const user = await getOrCreateUser();
+    if (!user) {
+        return { error: 'Not authenticated' };
+    }
+
+    try {
+        await prisma.comment.create({
+            data: {
+                content,
+                postId,
+                authorId: user.id,
+            },
+        });
+
+        revalidatePath(`/community`);
+        return { success: true };
+    } catch (e) {
+        console.error('Failed to create comment:', e);
+        return { error: 'Failed to create comment' };
     }
 }
