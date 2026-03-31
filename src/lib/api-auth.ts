@@ -4,11 +4,18 @@ export function authenticate(request: NextRequest): boolean {
     const apiKey = process.env.MCP_API_KEY;
     if (!apiKey) return false;
 
+    // Check Bearer header
     const authHeader = request.headers.get('authorization');
-    if (!authHeader) return false;
+    if (authHeader) {
+        const token = authHeader.replace('Bearer ', '');
+        if (token === apiKey) return true;
+    }
 
-    const token = authHeader.replace('Bearer ', '');
-    return token === apiKey;
+    // Check ?secret_key= query param (for Claude cowork connections)
+    const secretKey = request.nextUrl.searchParams.get('secret_key');
+    if (secretKey === apiKey) return true;
+
+    return false;
 }
 
 export function unauthorized() {
