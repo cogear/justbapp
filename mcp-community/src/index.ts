@@ -133,10 +133,10 @@ function registerTools(server: McpServer) {
 // --- HTTP mode with Bearer auth ---
 async function startHttpServer() {
     const port = parseInt(process.env.MCP_PORT || "3100", 10);
-    const bearerToken = process.env.MCP_SECRET_KEY;
+    const bearerToken = process.env.MCP_API_KEY;
 
     if (!bearerToken) {
-        console.error("MCP_SECRET_KEY environment variable is required for HTTP mode");
+        console.error("MCP_API_KEY environment variable is required for HTTP mode");
         process.exit(1);
     }
 
