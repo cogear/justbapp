@@ -163,11 +163,12 @@ export function SubscriberTable({ subscribers }: SubscriberTableProps) {
                                         </div>
                                     </td>
                                     <td className="p-4">
-                                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${sub.emailActive
+                                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                                            sub.emailActive && sub.optedIn
                                                 ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
                                                 : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'
                                             }`}>
-                                            {sub.emailActive ? 'Active' : 'Inactive'}
+                                            {sub.emailActive && sub.optedIn ? 'Active' : 'Inactive'}
                                         </span>
                                     </td>
                                     <td className="p-4">
