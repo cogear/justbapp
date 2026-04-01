@@ -13,6 +13,7 @@ export interface Subscriber {
     firstName?: string | null;
     lastName?: string | null;
     emailActive: boolean;
+    optedIn: boolean;
 }
 
 interface GetSubscribersParams {
@@ -20,6 +21,7 @@ interface GetSubscribersParams {
     pageSize?: number;
     search?: string;
     showDisabled?: boolean;
+    optedInOnly?: boolean;
 }
 
 interface GetSubscribersResult {
@@ -30,7 +32,7 @@ interface GetSubscribersResult {
 }
 
 export async function getSubscribers(params: GetSubscribersParams = {}): Promise<GetSubscribersResult> {
-    const { page = 1, pageSize = 50, search, showDisabled = false } = params;
+    const { page = 1, pageSize = 50, search, showDisabled = false, optedInOnly = false } = params;
 
     try {
         const where: any = {};
@@ -39,6 +41,9 @@ export async function getSubscribers(params: GetSubscribersParams = {}): Promise
         }
         if (!showDisabled) {
             where.emailActive = true;
+        }
+        if (optedInOnly) {
+            where.isNewsletterSubscriber = true;
         }
 
         const [prismaUsers, totalCount] = await Promise.all([
@@ -67,7 +72,8 @@ export async function getSubscribers(params: GetSubscribersParams = {}): Promise
                 source,
                 hasProfile,
                 zipCode: user.zipCode,
-                emailActive: user.emailActive
+                emailActive: user.emailActive,
+                optedIn: !!(user as any).isNewsletterSubscriber,
             };
         });
 

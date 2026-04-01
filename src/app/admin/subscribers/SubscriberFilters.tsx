@@ -20,13 +20,14 @@ export function SubscriberFilters() {
     }, 300);
 
     const showDisabled = searchParams.get('showDisabled') === 'true';
+    const optedInOnly = searchParams.get('optedInOnly') === 'true';
 
-    function handleToggleDisabled() {
+    function handleToggle(key: string, currentValue: boolean) {
         const params = new URLSearchParams(searchParams);
-        if (showDisabled) {
-            params.delete('showDisabled');
+        if (currentValue) {
+            params.delete(key);
         } else {
-            params.set('showDisabled', 'true');
+            params.set(key, 'true');
         }
         params.set('page', '1');
         router.replace(`/admin/subscribers?${params.toString()}`);
@@ -48,10 +49,19 @@ export function SubscriberFilters() {
                 <input
                     type="checkbox"
                     checked={showDisabled}
-                    onChange={handleToggleDisabled}
+                    onChange={() => handleToggle('showDisabled', showDisabled)}
                     className="rounded border-border"
                 />
                 Show disabled
+            </label>
+            <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer select-none whitespace-nowrap">
+                <input
+                    type="checkbox"
+                    checked={optedInOnly}
+                    onChange={() => handleToggle('optedInOnly', optedInOnly)}
+                    className="rounded border-border"
+                />
+                Opted in only
             </label>
         </div>
     );

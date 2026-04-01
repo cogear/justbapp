@@ -100,7 +100,7 @@ export function SubscriberTable({ subscribers }: SubscriberTableProps) {
                                 <th className="p-4 font-medium text-muted-foreground">Email</th>
                                 <th className="p-4 font-medium text-muted-foreground">Join Date</th>
                                 <th className="p-4 font-medium text-muted-foreground">Source</th>
-                                <th className="p-4 font-medium text-muted-foreground">Profile Status</th>
+                                <th className="p-4 font-medium text-muted-foreground">Opted In</th>
                                 <th className="p-4 font-medium text-muted-foreground">Location</th>
                                 <th className="p-4 font-medium text-muted-foreground">Email Status</th>
                                 <th className="p-4 font-medium text-muted-foreground">Actions</th>
@@ -138,21 +138,17 @@ export function SubscriberTable({ subscribers }: SubscriberTableProps) {
                                         </span>
                                     </td>
                                     <td className="p-4">
-                                        <div className="flex items-center gap-2">
-                                            {sub.hasProfile ? (
-                                                <span className="flex items-center gap-1.5 text-green-600 dark:text-green-400">
-                                                    <CheckCircle2 size={14} />
-                                                    <span className="text-xs font-medium">Completed</span>
-                                                </span>
-                                            ) : sub.source === 'APP' ? (
-                                                <span className="flex items-center gap-1.5 text-yellow-600 dark:text-yellow-500">
-                                                    <XCircle size={14} />
-                                                    <span className="text-xs font-medium">Pending</span>
-                                                </span>
-                                            ) : (
-                                                <span className="text-xs text-muted-foreground italic">N/A</span>
-                                            )}
-                                        </div>
+                                        {sub.optedIn ? (
+                                            <span className="flex items-center gap-1.5 text-green-600 dark:text-green-400">
+                                                <CheckCircle2 size={14} />
+                                                <span className="text-xs font-medium">Yes</span>
+                                            </span>
+                                        ) : (
+                                            <span className="flex items-center gap-1.5 text-muted-foreground">
+                                                <XCircle size={14} />
+                                                <span className="text-xs font-medium">No</span>
+                                            </span>
+                                        )}
                                     </td>
                                     <td className="p-4">
                                         <div className="flex items-center gap-2 text-muted-foreground">
