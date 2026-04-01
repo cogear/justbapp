@@ -8,11 +8,13 @@ export default async function AdminSubscribersPage({ searchParams }: { searchPar
     const params = await searchParams;
     const page = typeof params.page === 'string' ? parseInt(params.page) : 1;
     const search = typeof params.search === 'string' ? params.search : undefined;
+    const showDisabled = params.showDisabled === 'true';
 
     const { subscribers, totalCount, totalPages, currentPage } = await getSubscribers({
         page,
         pageSize: 50,
         search,
+        showDisabled,
     });
 
     const PaginationLink = ({ p, disabled, children }: { p: number, disabled?: boolean, children: React.ReactNode }) => {
@@ -20,6 +22,7 @@ export default async function AdminSubscribersPage({ searchParams }: { searchPar
 
         const query = new URLSearchParams();
         if (search) query.set('search', search);
+        if (showDisabled) query.set('showDisabled', 'true');
         query.set('page', p.toString());
 
         return (

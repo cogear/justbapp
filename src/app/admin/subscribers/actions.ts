@@ -19,6 +19,7 @@ interface GetSubscribersParams {
     page?: number;
     pageSize?: number;
     search?: string;
+    showDisabled?: boolean;
 }
 
 interface GetSubscribersResult {
@@ -29,12 +30,16 @@ interface GetSubscribersResult {
 }
 
 export async function getSubscribers(params: GetSubscribersParams = {}): Promise<GetSubscribersResult> {
-    const { page = 1, pageSize = 50, search } = params;
+    const { page = 1, pageSize = 50, search, showDisabled = false } = params;
 
     try {
-        const where = search
-            ? { email: { contains: search, mode: 'insensitive' as const } }
-            : {};
+        const where: any = {};
+        if (search) {
+            where.email = { contains: search, mode: 'insensitive' };
+        }
+        if (!showDisabled) {
+            where.emailActive = true;
+        }
 
         const [prismaUsers, totalCount] = await Promise.all([
             prisma.user.findMany({
