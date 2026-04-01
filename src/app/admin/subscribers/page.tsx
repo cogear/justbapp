@@ -1,11 +1,33 @@
 import { getSubscribers } from './actions';
-import { format } from 'date-fns';
-import { Mail, Calendar, User, CheckCircle2, XCircle, MapPin, ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
-import { ToggleEmailButton } from './ToggleEmailButton';
+import { SubscriberFilters } from './SubscriberFilters';
+import { SubscriberTable } from './SubscriberTable';
 
-export default async function AdminSubscribersPage() {
-    const subscribers = await getSubscribers();
+export default async function AdminSubscribersPage({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+    const params = await searchParams;
+    const page = typeof params.page === 'string' ? parseInt(params.page) : 1;
+    const search = typeof params.search === 'string' ? params.search : undefined;
+
+    const { subscribers, totalCount, totalPages, currentPage } = await getSubscribers({
+        page,
+        pageSize: 50,
+        search,
+    });
+
+    const PaginationLink = ({ p, disabled, children }: { p: number, disabled?: boolean, children: React.ReactNode }) => {
+        if (disabled) return <span className="px-3 py-1 text-muted-foreground opacity-50 cursor-not-allowed">{children}</span>;
+
+        const query = new URLSearchParams();
+        if (search) query.set('search', search);
+        query.set('page', p.toString());
+
+        return (
+            <Link href={`/admin/subscribers?${query.toString()}`} className="px-3 py-1 bg-secondary hover:bg-secondary/80 rounded-md transition-colors">
+                {children}
+            </Link>
+        );
+    };
 
     return (
         <div className="min-h-screen bg-background text-foreground p-8 font-sans">
@@ -23,104 +45,31 @@ export default async function AdminSubscribersPage() {
                                 News Manager
                             </Link>
                         </div>
-                        <p className="text-muted-foreground text-sm">{subscribers.length} total subscribers across app and newsletter</p>
+                        <p className="text-muted-foreground text-sm">
+                            {totalCount} total subscriber{totalCount === 1 ? '' : 's'}
+                            {search && ` matching "${search}"`}
+                        </p>
                     </div>
                 </div>
 
-                <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden flex flex-col min-h-[600px]">
-                    <div className="flex-1 overflow-auto">
-                        <table className="w-full text-left text-sm">
-                            <thead className="bg-muted/50 border-b border-border sticky top-0 z-10 backdrop-blur-sm">
-                                <tr>
-                                    <th className="p-4 font-medium text-muted-foreground">Email</th>
-                                    <th className="p-4 font-medium text-muted-foreground">Join Date</th>
-                                    <th className="p-4 font-medium text-muted-foreground">Source</th>
-                                    <th className="p-4 font-medium text-muted-foreground">Profile Status</th>
-                                    <th className="p-4 font-medium text-muted-foreground">Location</th>
-                                    <th className="p-4 font-medium text-muted-foreground">Email Status</th>
-                                    <th className="p-4 font-medium text-muted-foreground">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-border">
-                                {subscribers.map((sub) => (
-                                    <tr key={sub.id} className="hover:bg-muted/30 transition-colors">
-                                        <td className="p-4">
-                                            <div className="flex items-center gap-2 font-medium">
-                                                <Mail size={14} className="text-muted-foreground" />
-                                                {sub.email}
-                                            </div>
-                                        </td>
-                                        <td className="p-4 whitespace-nowrap">
-                                            <div className="flex items-center gap-2">
-                                                <Calendar size={14} className="text-muted-foreground" />
-                                                {format(sub.createdAt, 'MMM d, yyyy')}
-                                            </div>
-                                        </td>
-                                        <td className="p-4">
-                                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium 
-                                                ${sub.source === 'APP'
-                                                    ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
-                                                    : 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'}`}>
-                                                {sub.source === 'APP' ? 'App User' : 'Newsletter'}
-                                            </span>
-                                        </td>
-                                        <td className="p-4">
-                                            <div className="flex items-center gap-2">
-                                                {sub.hasProfile ? (
-                                                    <span className="flex items-center gap-1.5 text-green-600 dark:text-green-400">
-                                                        <CheckCircle2 size={14} />
-                                                        <span className="text-xs font-medium">Completed</span>
-                                                    </span>
-                                                ) : sub.source === 'APP' ? (
-                                                    <span className="flex items-center gap-1.5 text-yellow-600 dark:text-yellow-500">
-                                                        <XCircle size={14} />
-                                                        <span className="text-xs font-medium">Pending</span>
-                                                    </span>
-                                                ) : (
-                                                    <span className="text-xs text-muted-foreground italic">N/A</span>
-                                                )}
-                                            </div>
-                                        </td>
-                                        <td className="p-4">
-                                            <div className="flex items-center gap-2 text-muted-foreground">
-                                                {sub.zipCode ? (
-                                                    <>
-                                                        <MapPin size={14} />
-                                                        {sub.zipCode}
-                                                    </>
-                                                ) : (
-                                                    <span className="text-xs italic">Unknown</span>
-                                                )}
-                                            </div>
-                                        </td>
-                                        <td className="p-4">
-                                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${sub.emailActive
-                                                    ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
-                                                    : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'
-                                                }`}>
-                                                {sub.emailActive ? 'Active' : 'Inactive'}
-                                            </span>
-                                        </td>
-                                        <td className="p-4">
-                                            <ToggleEmailButton
-                                                userId={sub.id}
-                                                currentStatus={sub.emailActive}
-                                                userEmail={sub.email}
-                                            />
-                                        </td>
-                                    </tr>
-                                ))}
-                                {subscribers.length === 0 && (
-                                    <tr>
-                                        <td colSpan={7} className="p-8 text-center text-muted-foreground">
-                                            No subscribers found yet.
-                                        </td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
+                <SubscriberFilters />
+                <SubscriberTable subscribers={subscribers} />
+
+                {totalPages > 1 && (
+                    <div className="mt-4 p-4 border border-border rounded-xl bg-card flex justify-between items-center">
+                        <div className="text-sm text-muted-foreground">
+                            Page {currentPage} of {totalPages}
+                        </div>
+                        <div className="flex gap-2">
+                            <PaginationLink p={currentPage - 1} disabled={currentPage <= 1}>
+                                <div className="flex items-center gap-1"><ChevronLeft size={14} /> Previous</div>
+                            </PaginationLink>
+                            <PaginationLink p={currentPage + 1} disabled={currentPage >= totalPages}>
+                                <div className="flex items-center gap-1">Next <ChevronRight size={14} /></div>
+                            </PaginationLink>
+                        </div>
                     </div>
-                </div>
+                )}
             </div>
         </div>
     );

@@ -1,7 +1,7 @@
 'use server';
 
 import prisma from '@/lib/prisma';
-import { resend } from '@/lib/resend';
+import { revalidatePath } from 'next/cache';
 
 export interface Subscriber {
     id: string;
@@ -15,26 +15,44 @@ export interface Subscriber {
     emailActive: boolean;
 }
 
-export async function getSubscribers(): Promise<Subscriber[]> {
+interface GetSubscribersParams {
+    page?: number;
+    pageSize?: number;
+    search?: string;
+}
+
+interface GetSubscribersResult {
+    subscribers: Subscriber[];
+    totalCount: number;
+    totalPages: number;
+    currentPage: number;
+}
+
+export async function getSubscribers(params: GetSubscribersParams = {}): Promise<GetSubscribersResult> {
+    const { page = 1, pageSize = 50, search } = params;
+
     try {
-        // 1. Fetch Users from Prisma with their profile count
-        const prismaUsers = await prisma.user.findMany({
-            include: {
-                _count: {
-                    select: { visualProfiles: true }
-                }
-            },
-            orderBy: { createdAt: 'desc' }
-        });
+        const where = search
+            ? { email: { contains: search, mode: 'insensitive' as const } }
+            : {};
+
+        const [prismaUsers, totalCount] = await Promise.all([
+            prisma.user.findMany({
+                where,
+                include: {
+                    _count: {
+                        select: { visualProfiles: true }
+                    }
+                },
+                orderBy: { createdAt: 'desc' },
+                skip: (page - 1) * pageSize,
+                take: pageSize,
+            }),
+            prisma.user.count({ where }),
+        ]);
 
         const subscribers: Subscriber[] = prismaUsers.map(user => {
             const hasProfile = user._count.visualProfiles > 0;
-
-            // Logic: 
-            // - If they signed up through the newsletter API, isNewsletterSubscriber is true.
-            // - If they signed up through Stack and did profiling, they are APP.
-            // - If they are ONLY a newsletter subscriber (no profile and isNewsletterSubscriber is true), source is NEWSLETTER.
-            // - Otherwise, default to APP (as they are in our User table).
             const source = ((user as any).isNewsletterSubscriber && !hasProfile) ? 'NEWSLETTER' : 'APP';
 
             return {
@@ -48,17 +66,19 @@ export async function getSubscribers(): Promise<Subscriber[]> {
             };
         });
 
-        return subscribers.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+        return {
+            subscribers,
+            totalCount,
+            totalPages: Math.ceil(totalCount / pageSize),
+            currentPage: page,
+        };
     } catch (error) {
         console.error('Failed to fetch subscribers:', error);
-        return [];
+        return { subscribers: [], totalCount: 0, totalPages: 0, currentPage: 1 };
     }
 }
 
 export async function toggleSubscriberEmailStatus(userId: string, currentStatus: boolean) {
-    'use server';
-
-    // Admin-only check
     const { stackServerApp } = await import('@/lib/stack');
     const user = await stackServerApp.getUser();
     if (!user || user.primaryEmail !== 'cogear@gmail.com') {
@@ -70,10 +90,30 @@ export async function toggleSubscriberEmailStatus(userId: string, currentStatus:
             where: { id: userId },
             data: { emailActive: !currentStatus }
         });
-
+        revalidatePath('/admin/subscribers');
         return { success: true };
     } catch (error) {
         console.error('Failed to toggle email status:', error);
         return { success: false, error: 'Failed to update status' };
+    }
+}
+
+export async function bulkDisableSubscribers(userIds: string[]) {
+    const { stackServerApp } = await import('@/lib/stack');
+    const user = await stackServerApp.getUser();
+    if (!user || user.primaryEmail !== 'cogear@gmail.com') {
+        return { success: false, error: 'Unauthorized' };
+    }
+
+    try {
+        const result = await prisma.user.updateMany({
+            where: { id: { in: userIds } },
+            data: { emailActive: false }
+        });
+        revalidatePath('/admin/subscribers');
+        return { success: true, count: result.count };
+    } catch (error) {
+        console.error('Failed to bulk disable subscribers:', error);
+        return { success: false, error: 'Failed to disable subscribers' };
     }
 }

@@ -1,5 +1,6 @@
 import { stackServerApp } from '@/lib/stack';
 import { notFound } from 'next/navigation';
+import { Toaster } from 'sonner';
 import React from 'react';
 
 export default async function AdminLayout({
@@ -18,6 +19,7 @@ export default async function AdminLayout({
 
     return (
         <div className="admin-layout">
+            <Toaster position="top-right" />
             {children}
         </div>
     );

@@ -16,6 +16,18 @@ export async function POST(request: Request) {
             );
         }
 
+        // Reject likely spam: gmail addresses with >3 periods in local part
+        const [localPart, domain] = email.split('@');
+        if (domain?.toLowerCase() === 'gmail.com') {
+            const periodCount = (localPart.match(/\./g) || []).length;
+            if (periodCount > 3) {
+                return NextResponse.json(
+                    { error: 'Please provide a valid email address.' },
+                    { status: 400 }
+                );
+            }
+        }
+
         // 0. Generate a verification token
         const verificationToken = crypto.randomUUID();
 
