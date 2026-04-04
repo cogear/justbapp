@@ -1,6 +1,17 @@
 import Link from 'next/link';
 import { NewsletterSignup } from '@/components/NewsletterSignup';
+import type { Metadata } from 'next';
 
+export const metadata: Metadata = {
+    title: "The b. Life Book",
+    description: "A guide to intentional living through seven core principles by David Crowell. Discover how to slow down, find quality over status, and embrace gratitude in everyday life.",
+    openGraph: {
+        title: "The b. Life Book | b. Just Be",
+        description: "A guide to intentional living through seven core principles.",
+        images: [{ url: "/images/b-book-cover-new.jpg" }],
+    },
+    alternates: { canonical: "https://theblife.com/book" },
+};
 
 export default function BookPage() {
     return (

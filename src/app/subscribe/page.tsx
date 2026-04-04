@@ -3,6 +3,13 @@ import Image from 'next/image';
 import { NewsletterSignup } from '@/components/NewsletterSignup';
 import { Mail } from 'lucide-react';
 import { stackServerApp } from '@/lib/stack';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: "Subscribe to The b. Life Newsletter",
+    description: "Join The b. Life community. Get weekly insights on intentional living, AI-informed perspectives, and curated content delivered to your inbox.",
+    alternates: { canonical: "https://theblife.com/subscribe" },
+};
 
 export default async function SubscribePage() {
     const user = await stackServerApp.getUser();

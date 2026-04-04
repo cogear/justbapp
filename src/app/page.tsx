@@ -1,6 +1,13 @@
 import Link from "next/link";
 import Image from "next/image";
 import { stackServerApp } from "@/lib/stack";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "b. | Just Be - Intentional Living in the Modern World",
+  description: "Discover a philosophy of intentional living through seven core principles. Explore AI-informed courses, community discussions, and tools for a more mindful life at theblife.com.",
+  alternates: { canonical: "https://theblife.com" },
+};
 
 export default async function Home() {
   const user = await stackServerApp.getUser();

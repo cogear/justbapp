@@ -1,0 +1,71 @@
+# The b. Life - theblife.com
+
+## About
+The b. Life is a digital platform and philosophy for intentional living in the modern world. Founded by David Crowell, it combines wellness principles with AI-informed perspectives to help people live more mindfully.
+
+## Core Philosophy
+The b. Life is built on seven principles:
+1. Acceptance, Not Settling — Embracing what is without giving up on growth
+2. Comfort as Achievement — Recognizing rest and ease as valid accomplishments
+3. Quality Over Status — Choosing depth and meaning over appearances
+4. Slow Down Intentionally — Making deliberate space in an accelerated world
+5. Balance Over Burnout — Sustaining energy rather than depleting it
+6. Community Not Competition — Growing together rather than against each other
+7. Gratitude and Small Joys — Finding richness in everyday moments
+
+## Content
+
+### Book
+"The b. Life" by David Crowell — a guide to intentional living through the seven core principles. Available on Amazon.
+
+### Courses (Free)
+
+#### AI for Humans
+A human-centered guide to understanding and working with AI. 12 modules, 109 articles covering:
+- Foundation Stories — How AI actually learns and works, explained through human analogies
+- Working with AI — Practical collaboration with AI tools
+- AI in Daily Life — Real-world applications from morning routines to decision-making
+- Creativity & AI — How AI changes creative work
+- Learning & Growth — Using AI as a learning companion
+- Work & Productivity — AI in professional contexts
+- Relationships & Communication — AI's role in human connection
+- Mental Health & Wellbeing — AI and emotional wellness
+- Ethics & Critical Thinking — Navigating AI responsibly
+- Future & Philosophy — Where AI and humanity are heading
+- Technical Concepts Made Human — Complex ideas in plain language
+
+#### Living with AI
+Intentional living in an AI-forward world. 8 modules, 71 articles covering:
+- Acceptance, Not Settling
+- Comfort as Achievement
+- Quality Over Status
+- Slow Down Intentionally
+- Balance Over Burnout
+- Community Not Competition
+- Gratitude and Small Joys
+
+### Community
+Discussion spaces for members exploring intentional living, with feeds for general discussion and introductions.
+
+### News
+Personalized news feed covering AI, technology, wellness, and intentional living, curated through individual reader perspectives.
+
+### Events
+Local events for wellness, creativity, and community connection.
+
+### Newsletter
+Weekly insights on intentional living and AI-informed perspectives delivered by email.
+
+## URLs
+- Home: https://theblife.com
+- Principles: https://theblife.com/principles
+- Book: https://theblife.com/book
+- AI for Humans Course: https://theblife.com/community/ai-for-humans
+- Living with AI Course: https://theblife.com/community/living-with-ai
+- Community: https://theblife.com/community
+- News: https://theblife.com/news
+- Events: https://theblife.com/events
+- Subscribe: https://theblife.com/subscribe
+
+## Contact
+Website: https://theblife.com

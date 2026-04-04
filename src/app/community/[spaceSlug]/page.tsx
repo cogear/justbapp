@@ -2,6 +2,23 @@ import { notFound } from "next/navigation"
 import prisma from "@/lib/prisma"
 import { SpaceFeed } from "@/components/space-feed"
 import { CourseView } from "@/components/course-view"
+import type { Metadata } from "next"
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+    const { spaceSlug } = await params;
+    const space = await prisma.space.findUnique({ where: { slug: spaceSlug } });
+    if (!space) return {};
+
+    return {
+        title: space.name,
+        description: space.description || `Explore ${space.name} on The b. Life community.`,
+        alternates: { canonical: `https://theblife.com/community/${space.slug}` },
+        openGraph: {
+            title: `${space.name} | b. Just Be`,
+            description: space.description || `Explore ${space.name} on The b. Life community.`,
+        },
+    };
+}
 
 interface PageProps {
     params: Promise<{

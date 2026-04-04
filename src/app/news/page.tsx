@@ -3,6 +3,13 @@ import prisma from '@/lib/prisma';
 import { getTopStories } from '@/lib/news/service';
 import { NewsFeed } from '@/components/news/NewsFeed';
 import { ClusterSelector } from '@/components/news/ClusterSelector';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: "News - Personalized AI & Wellness Stories",
+    description: "Stay informed with personalized news on AI, technology, wellness, and intentional living. Stories curated through your unique perspective.",
+    alternates: { canonical: "https://theblife.com/news" },
+};
 import { redirect } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
