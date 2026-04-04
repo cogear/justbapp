@@ -52,6 +52,61 @@ export async function getCourseData(spaceId: string) {
     };
 }
 
+function extractSummary(content: string | null): string {
+    if (!content) return '';
+    const lines = content.split('\n').map(l => l.trim()).filter(Boolean);
+    // Look for italic subtitle line (e.g. "*Why AI learns through exposure*")
+    for (const line of lines) {
+        if (line.startsWith('*') && line.endsWith('*') && !line.startsWith('**')) {
+            return line.replace(/^\*+|\*+$/g, '');
+        }
+    }
+    // Look for first H2 text
+    for (const line of lines) {
+        if (line.startsWith('## ')) {
+            return line.replace(/^##\s+/, '');
+        }
+    }
+    // Fall back to first non-heading paragraph
+    for (const line of lines) {
+        if (!line.startsWith('#') && !line.startsWith('*') && line.length > 20) {
+            return line.length > 150 ? line.substring(0, 147) + '...' : line;
+        }
+    }
+    return '';
+}
+
+export async function getModuleLessons(moduleId: string) {
+    const mod = await prisma.module.findUnique({
+        where: { id: moduleId },
+        include: {
+            lessons: {
+                orderBy: { order: 'asc' },
+                select: { id: true, title: true, content: true, order: true },
+            },
+            course: {
+                select: {
+                    space: { select: { slug: true } },
+                },
+            },
+        },
+    });
+
+    if (!mod) return null;
+
+    return {
+        id: mod.id,
+        title: mod.title,
+        spaceSlug: mod.course.space.slug,
+        lessons: mod.lessons.map(l => ({
+            id: l.id,
+            title: l.title,
+            summary: extractSummary(l.content),
+            order: l.order,
+        })),
+    };
+}
+
 export async function getLessonContent(lessonId: string) {
     const lesson = await prisma.lesson.findUnique({
         where: { id: lessonId },
