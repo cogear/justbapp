@@ -1,5 +1,6 @@
 import { CommunitySidebar } from '@/components/community-sidebar';
 import prisma from '@/lib/prisma';
+import { Suspense } from 'react';
 
 async function getSpaces() {
     return prisma.space.findMany({
@@ -8,6 +9,23 @@ async function getSpaces() {
             name: true,
             slug: true,
             type: true,
+            courses: {
+                select: {
+                    id: true,
+                    modules: {
+                        orderBy: { order: 'asc' },
+                        select: {
+                            id: true,
+                            title: true,
+                            order: true,
+                            lessons: {
+                                orderBy: { order: 'asc' },
+                                select: { id: true, title: true, order: true },
+                            },
+                        },
+                    },
+                },
+            },
         },
         orderBy: { createdAt: 'asc' },
     });
@@ -22,7 +40,9 @@ export default async function CommunityLayout({
 
     return (
         <div className="flex min-h-screen">
-            <CommunitySidebar spaces={spaces} />
+            <Suspense>
+                <CommunitySidebar spaces={spaces} />
+            </Suspense>
             <main className="flex-1 overflow-y-auto">
                 {/* Mobile Header would go here */}
                 {children}

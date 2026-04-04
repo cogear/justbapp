@@ -7,10 +7,12 @@ interface PageProps {
     params: Promise<{
         spaceSlug: string
     }>
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
-export default async function SpacePage({ params }: PageProps) {
+export default async function SpacePage({ params, searchParams }: PageProps) {
     const { spaceSlug } = await params
+    const query = await searchParams
 
     const space = await prisma.space.findUnique({
         where: {
@@ -23,7 +25,8 @@ export default async function SpacePage({ params }: PageProps) {
     }
 
     if (space.type === 'COURSE') {
-        return <CourseView spaceId={space.id} />
+        const lessonId = typeof query.lesson === 'string' ? query.lesson : undefined;
+        return <CourseView spaceId={space.id} initialLessonId={lessonId} />
     }
 
     return (
