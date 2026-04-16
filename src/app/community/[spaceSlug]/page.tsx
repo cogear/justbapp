@@ -2,6 +2,7 @@ import { notFound } from "next/navigation"
 import prisma from "@/lib/prisma"
 import { SpaceFeed } from "@/components/space-feed"
 import { CourseView } from "@/components/course-view"
+import { CourseLanding } from "@/components/course-landing"
 import type { Metadata } from "next"
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -42,6 +43,10 @@ export default async function SpacePage({ params, searchParams }: PageProps) {
     }
 
     if (space.type === 'COURSE') {
+        const hasSelection = typeof query.module === 'string' || typeof query.lesson === 'string';
+        if (!hasSelection) {
+            return <CourseLanding spaceId={space.id} spaceSlug={space.slug} />
+        }
         const lessonId = typeof query.lesson === 'string' ? query.lesson : undefined;
         return <CourseView spaceId={space.id} initialLessonId={lessonId} />
     }

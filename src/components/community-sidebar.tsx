@@ -118,17 +118,27 @@ export function CommunitySidebar({ spaces }: CommunitySidebarProps) {
 
                                 return (
                                     <div key={space.id}>
-                                        <button
-                                            onClick={() => toggleCourse(space.id)}
+                                        <div
                                             className={cn(
                                                 "w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-accent/50",
                                                 isActiveCourse && "bg-accent/50"
                                             )}
                                         >
                                             <BookOpen className="h-4 w-4 text-muted-foreground shrink-0" />
-                                            <span className="flex-1 text-left truncate">{space.name}</span>
-                                            {isCourseExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-                                        </button>
+                                            <Link
+                                                href={`/community/${space.slug}`}
+                                                className="flex-1 text-left truncate hover:underline"
+                                            >
+                                                {space.name}
+                                            </Link>
+                                            <button
+                                                onClick={() => toggleCourse(space.id)}
+                                                aria-label={isCourseExpanded ? 'Collapse modules' : 'Expand modules'}
+                                                className="p-0.5 rounded hover:bg-accent/50 text-muted-foreground"
+                                            >
+                                                {isCourseExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                                            </button>
+                                        </div>
 
                                         {isCourseExpanded && modules.length > 0 && (
                                             <div className="ml-3 mt-1 space-y-0.5">

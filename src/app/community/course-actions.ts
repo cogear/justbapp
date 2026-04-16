@@ -2,6 +2,7 @@
 
 import prisma from '@/lib/prisma';
 import { stackServerApp } from '@/lib/stack';
+import { extractSummary } from '@/lib/extract-summary';
 
 export async function getCourseData(spaceId: string) {
     const course = await prisma.course.findFirst({
@@ -52,28 +53,38 @@ export async function getCourseData(spaceId: string) {
     };
 }
 
-function extractSummary(content: string | null): string {
-    if (!content) return '';
-    const lines = content.split('\n').map(l => l.trim()).filter(Boolean);
-    // Look for italic subtitle line (e.g. "*Why AI learns through exposure*")
-    for (const line of lines) {
-        if (line.startsWith('*') && line.endsWith('*') && !line.startsWith('**')) {
-            return line.replace(/^\*+|\*+$/g, '');
-        }
-    }
-    // Look for first H2 text
-    for (const line of lines) {
-        if (line.startsWith('## ')) {
-            return line.replace(/^##\s+/, '');
-        }
-    }
-    // Fall back to first non-heading paragraph
-    for (const line of lines) {
-        if (!line.startsWith('#') && !line.startsWith('*') && line.length > 20) {
-            return line.length > 150 ? line.substring(0, 147) + '...' : line;
-        }
-    }
-    return '';
+export async function getCourseLandingData(spaceId: string) {
+    const course = await prisma.course.findFirst({
+        where: { spaceId },
+        include: {
+            modules: {
+                orderBy: { order: 'asc' },
+                include: {
+                    lessons: {
+                        orderBy: { order: 'asc' },
+                        take: 1,
+                        select: { content: true },
+                    },
+                    _count: { select: { lessons: true } },
+                },
+            },
+        },
+    });
+
+    if (!course) return null;
+
+    return {
+        id: course.id,
+        title: course.title,
+        description: course.description,
+        modules: course.modules.map(mod => ({
+            id: mod.id,
+            title: mod.title,
+            order: mod.order,
+            lessonCount: mod._count.lessons,
+            firstLessonSummary: extractSummary(mod.lessons[0]?.content ?? null),
+        })),
+    };
 }
 
 export async function getModuleLessons(moduleId: string) {
@@ -97,6 +108,8 @@ export async function getModuleLessons(moduleId: string) {
     return {
         id: mod.id,
         title: mod.title,
+        order: mod.order,
+        summary: extractSummary(mod.lessons[0]?.content ?? null),
         spaceSlug: mod.course.space.slug,
         lessons: mod.lessons.map(l => ({
             id: l.id,

@@ -5,8 +5,10 @@ import { useSearchParams } from 'next/navigation';
 import { CheckCircle, BookOpen, ArrowLeft, FileText } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { getCourseData, getLessonContent, getModuleLessons, markLessonComplete } from '@/app/community/course-actions';
+import { courseLandingContent } from '@/lib/course-landing-content';
 import { toast } from 'sonner';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface LessonCard {
     id: string;
@@ -18,6 +20,8 @@ interface LessonCard {
 interface ModuleView {
     id: string;
     title: string;
+    order: number;
+    summary: string;
     spaceSlug: string;
     lessons: LessonCard[];
 }
@@ -137,10 +141,39 @@ export function CourseView({ spaceId, initialLessonId }: { spaceId: string; init
 
     // Module card grid view
     if (moduleData) {
+        const courseCopy = courseLandingContent[moduleData.spaceSlug];
+        const moduleSummary = courseCopy?.moduleOverviews?.[moduleData.order] ?? moduleData.summary;
+        const moduleImage = courseCopy?.moduleImages?.[moduleData.order];
+        const lessonLabel = moduleData.lessons.length === 1 ? 'article' : 'articles';
+
         return (
             <div className="max-w-4xl mx-auto px-6 py-10">
-                <h1 className="text-2xl font-georgia font-bold mb-2">{moduleData.title}</h1>
-                <p className="text-sm text-muted-foreground mb-8">{moduleData.lessons.length} articles</p>
+                <Link
+                    href={`/community/${moduleData.spaceSlug}`}
+                    className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors"
+                >
+                    <ArrowLeft size={14} />
+                    Back to course
+                </Link>
+                <h1 className="text-3xl font-georgia font-bold mb-3">{moduleData.title}</h1>
+                {moduleSummary && (
+                    <p className="text-lg leading-relaxed text-foreground/80 mb-3 max-w-2xl">
+                        {moduleSummary}
+                    </p>
+                )}
+                <p className="text-sm text-muted-foreground mb-6">{moduleData.lessons.length} {lessonLabel}</p>
+                {moduleImage && (
+                    <div className="relative mb-10 overflow-hidden rounded-2xl aspect-[16/6] bg-muted">
+                        <Image
+                            src={moduleImage.src}
+                            alt={moduleImage.alt}
+                            fill
+                            className="object-cover brightness-[0.92]"
+                            sizes="(max-width: 896px) 100vw, 896px"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/20" />
+                    </div>
+                )}
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {moduleData.lessons.map(lesson => (
