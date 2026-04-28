@@ -106,3 +106,52 @@ export async function createComment(content: string, postId: string) {
         return { error: 'Failed to create comment' };
     }
 }
+
+export async function createLessonComment(content: string, lessonId: string) {
+    if (!content || !content.trim()) {
+        return { error: 'Content cannot be empty' };
+    }
+
+    const user = await getOrCreateUser();
+    if (!user) {
+        return { error: 'Not authenticated' };
+    }
+
+    try {
+        await prisma.comment.create({
+            data: {
+                content,
+                lessonId,
+                authorId: user.id,
+            },
+        });
+
+        revalidatePath('/community/[spaceSlug]', 'page');
+        return { success: true };
+    } catch (e) {
+        console.error('Failed to create lesson comment:', e);
+        return { error: 'Failed to create comment' };
+    }
+}
+
+export async function getLessonComments(lessonId: string) {
+    const stackUser = await stackServerApp.getUser();
+
+    const comments = await prisma.comment.findMany({
+        where: { lessonId },
+        include: {
+            author: { select: { displayName: true, email: true } },
+        },
+        orderBy: { createdAt: 'asc' },
+    });
+
+    return {
+        comments: comments.map(c => ({
+            id: c.id,
+            content: c.content,
+            createdAt: c.createdAt,
+            author: c.author,
+        })),
+        isAuthenticated: !!stackUser,
+    };
+}

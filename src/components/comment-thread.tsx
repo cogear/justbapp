@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { createComment } from '@/app/community/actions';
+import { createComment, createLessonComment } from '@/app/community/actions';
 import { MessageCircle } from 'lucide-react';
 
 interface Comment {
@@ -15,13 +16,25 @@ interface Comment {
     };
 }
 
+type Target =
+    | { type: 'post'; postId: string }
+    | { type: 'lesson'; lessonId: string };
+
 interface CommentThreadProps {
-    postId: string;
+    target: Target;
     comments: Comment[];
     commentCount: number;
+    canComment?: boolean;
+    onCommentPosted?: () => void | Promise<void>;
 }
 
-export function CommentThread({ postId, comments, commentCount }: CommentThreadProps) {
+export function CommentThread({
+    target,
+    comments,
+    commentCount,
+    canComment = true,
+    onCommentPosted,
+}: CommentThreadProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [content, setContent] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -34,9 +47,13 @@ export function CommentThread({ postId, comments, commentCount }: CommentThreadP
         setIsSubmitting(true);
         setError('');
         try {
-            const result = await createComment(content, postId);
+            const result =
+                target.type === 'post'
+                    ? await createComment(content, target.postId)
+                    : await createLessonComment(content, target.lessonId);
             if (result.success) {
                 setContent('');
+                if (onCommentPosted) await onCommentPosted();
             } else {
                 setError(result.error || 'Failed to post comment');
             }
@@ -80,18 +97,27 @@ export function CommentThread({ postId, comments, commentCount }: CommentThreadP
                         </div>
                     )}
 
-                    <form onSubmit={handleSubmit} className="flex gap-2">
-                        <input
-                            type="text"
-                            value={content}
-                            onChange={(e) => setContent(e.target.value)}
-                            placeholder="Write a comment..."
-                            className="flex-1 bg-muted/50 rounded-md px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring"
-                        />
-                        <Button type="submit" size="sm" disabled={isSubmitting}>
-                            {isSubmitting ? '...' : 'Reply'}
-                        </Button>
-                    </form>
+                    {canComment ? (
+                        <form onSubmit={handleSubmit} className="flex gap-2">
+                            <input
+                                type="text"
+                                value={content}
+                                onChange={(e) => setContent(e.target.value)}
+                                placeholder="Write a comment..."
+                                className="flex-1 bg-muted/50 rounded-md px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring"
+                            />
+                            <Button type="submit" size="sm" disabled={isSubmitting}>
+                                {isSubmitting ? '...' : 'Reply'}
+                            </Button>
+                        </form>
+                    ) : (
+                        <p className="text-sm text-muted-foreground">
+                            <Link href="/handler/sign-in" className="text-primary hover:underline underline-offset-4">
+                                Sign in
+                            </Link>{' '}
+                            to join the conversation.
+                        </p>
+                    )}
                     {error && <p className="text-sm text-destructive">{error}</p>}
                 </div>
             )}

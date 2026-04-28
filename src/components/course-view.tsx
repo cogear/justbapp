@@ -5,7 +5,9 @@ import { useSearchParams } from 'next/navigation';
 import { CheckCircle, BookOpen, ArrowLeft, FileText } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { getCourseData, getLessonContent, getModuleLessons, markLessonComplete } from '@/app/community/course-actions';
+import { getLessonComments } from '@/app/community/actions';
 import { courseLandingContent } from '@/lib/course-landing-content';
+import { CommentThread } from '@/components/comment-thread';
 import { toast } from 'sonner';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -15,6 +17,13 @@ interface LessonCard {
     title: string;
     summary: string;
     order: number;
+}
+
+interface LessonComment {
+    id: string;
+    content: string;
+    createdAt: Date;
+    author: { displayName: string | null; email: string };
 }
 
 interface ModuleView {
@@ -39,6 +48,15 @@ export function CourseView({ spaceId, initialLessonId }: { spaceId: string; init
     const [spaceSlug, setSpaceSlug] = useState<string>('');
     const [loading, setLoading] = useState(true);
     const [isComplete, setIsComplete] = useState(false);
+    const [comments, setComments] = useState<LessonComment[]>([]);
+    const [canComment, setCanComment] = useState(false);
+
+    const refreshComments = async () => {
+        if (!lessonParam) return;
+        const data = await getLessonComments(lessonParam);
+        setComments(data.comments);
+        setCanComment(data.isAuthenticated);
+    };
 
     useEffect(() => {
         getCourseData(spaceId).then(data => {
@@ -59,11 +77,16 @@ export function CourseView({ spaceId, initialLessonId }: { spaceId: string; init
         if (lessonParam) {
             setModuleData(null);
             setLessonContent(null);
+            setComments([]);
             getLessonContent(lessonParam).then(lesson => {
                 if (lesson) {
                     setLessonContent(lesson.content);
                     setLessonTitle(lesson.title);
                 }
+            });
+            getLessonComments(lessonParam).then(data => {
+                setComments(data.comments);
+                setCanComment(data.isAuthenticated);
             });
         }
     }, [lessonParam]);
@@ -134,6 +157,17 @@ export function CourseView({ spaceId, initialLessonId }: { spaceId: string; init
                             Completed
                         </span>
                     )}
+                </div>
+
+                <div className="mt-10 pt-6 border-t border-border">
+                    <h2 className="text-lg font-georgia mb-4">Discussion</h2>
+                    <CommentThread
+                        target={{ type: 'lesson', lessonId: lessonParam }}
+                        comments={comments}
+                        commentCount={comments.length}
+                        canComment={canComment}
+                        onCommentPosted={refreshComments}
+                    />
                 </div>
             </div>
         );

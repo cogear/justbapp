@@ -60,7 +60,7 @@ export async function SpaceFeed({ spaceId }: { spaceId: string }) {
                                         isLiked={Array.isArray(post.likes) && post.likes.length > 0}
                                     />
                                     <CommentThread
-                                        postId={post.id}
+                                        target={{ type: 'post', postId: post.id }}
                                         comments={post.comments}
                                         commentCount={post._count.comments}
                                     />
