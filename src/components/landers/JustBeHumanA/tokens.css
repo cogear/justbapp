@@ -1,0 +1,82 @@
+/* JustBeHumanA template tokens — scoped under .lander-justbehuman so they don't
+   leak into the egmarket admin shell. Mirrors docs/just-be-lander/project/styles.css. */
+
+.lander-justbehuman {
+  --b-sand: #F5F2EB;
+  --b-charcoal: #2D2D2D;
+  --b-sage: #8DA399;
+  --b-clay: #D4A59A;
+  --b-mist: #E0E6E6;
+  --b-night: #1A1A1A;
+  --b-paper: #EFEAE0;
+  --b-paper-warm: #E8E1D2;
+  --b-ink: #2D2D2D;
+  --b-ink-soft: #5A554D;
+  --b-ink-muted: #8A8579;
+  --b-line: rgba(45, 45, 45, 0.12);
+  --b-line-soft: rgba(45, 45, 45, 0.06);
+
+  /* Theme-aware atmospherics that used to be hardcoded in beats. */
+  --b-glow: rgba(245, 242, 235, 0.85);
+  --b-shadow: rgba(45, 45, 45, 0.25);
+  --b-stripe: rgba(45, 45, 45, 0.045);
+
+  font-family: Geist, "Geist Sans", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background: var(--b-sand);
+  color: var(--b-ink);
+}
+
+.lander-justbehuman[data-theme="dark"] {
+  --b-sand: #14110D;
+  --b-paper: #1F1B16;
+  --b-paper-warm: #28231C;
+  --b-mist: #1A2122;
+  --b-night: #0A0907;
+  --b-ink: #F0EBE0;
+  --b-ink-soft: #C8C0B2;
+  --b-ink-muted: #8E8678;
+  --b-line: rgba(240, 235, 224, 0.14);
+  --b-line-soft: rgba(240, 235, 224, 0.07);
+  --b-clay: #E0B5A8;
+  --b-sage: #A4BAB0;
+
+  --b-glow: rgba(20, 17, 13, 0.85);
+  --b-shadow: rgba(0, 0, 0, 0.55);
+  --b-stripe: rgba(240, 235, 224, 0.06);
+}
+
+.lander-justbehuman .b-img {
+  position: relative;
+  background:
+    repeating-linear-gradient(135deg, var(--b-stripe) 0 1px, transparent 1px 14px),
+    var(--bg, #E8E1D2);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--b-ink-muted);
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: lowercase;
+}
+
+.lander-justbehuman .b-img::after {
+  content: attr(data-label);
+  position: absolute;
+  bottom: 14px;
+  left: 14px;
+  opacity: 0.55;
+}
+
+.lander-justbehuman .b-serif {
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.lander-justbehuman .b-sans {
+  font-family: Geist, "Geist Sans", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.lander-justbehuman .b-mono {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+}
