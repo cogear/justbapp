@@ -12,6 +12,7 @@ export function MobileNav() {
         { href: '/blog', label: 'b.blog' },
         { href: '/principles', label: 'b.principles' },
         { href: '/book', label: 'b.book' },
+        { href: 'https://shop.thebilife.com', label: 'b.shop', external: true },
     ];
 
     return (
@@ -37,16 +38,29 @@ export function MobileNav() {
                     {/* Menu Panel */}
                     <div className="fixed top-14 left-0 right-0 bg-background border-b border-border/40 shadow-lg z-50 md:hidden animate-in slide-in-from-top-4 duration-300">
                         <nav className="flex flex-col p-6 space-y-4">
-                            {links.map((link) => (
-                                <Link
-                                    key={link.href}
-                                    href={link.href}
-                                    onClick={() => setIsOpen(false)}
-                                    className="text-lg font-georgia text-muted-foreground hover:text-foreground transition-colors py-2 border-b border-border/20 last:border-0"
-                                >
-                                    {link.label}
-                                </Link>
-                            ))}
+                            {links.map((link) =>
+                                link.external ? (
+                                    <a
+                                        key={link.href}
+                                        href={link.href}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        onClick={() => setIsOpen(false)}
+                                        className="text-lg font-georgia text-muted-foreground hover:text-foreground transition-colors py-2 border-b border-border/20 last:border-0"
+                                    >
+                                        {link.label}
+                                    </a>
+                                ) : (
+                                    <Link
+                                        key={link.href}
+                                        href={link.href}
+                                        onClick={() => setIsOpen(false)}
+                                        className="text-lg font-georgia text-muted-foreground hover:text-foreground transition-colors py-2 border-b border-border/20 last:border-0"
+                                    >
+                                        {link.label}
+                                    </Link>
+                                )
+                            )}
                             <Link
                                 href="/subscribe"
                                 onClick={() => setIsOpen(false)}

@@ -28,6 +28,14 @@ export async function Header() {
                         <Link href="/book" className="transition-colors hover:text-foreground font-georgia">
                             b.book
                         </Link>
+                        <a
+                            href="https://shop.thebilife.com"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="transition-colors hover:text-foreground font-georgia"
+                        >
+                            b.shop
+                        </a>
                         <Link
                             href="/subscribe"
                             className="ml-2 px-6 py-2 bg-primary text-primary-foreground hover:opacity-90 rounded-full transition-all text-sm font-medium shadow-sm"
