@@ -1,0 +1,156 @@
+{
+  "schema": 1,
+  "slug": "just-be-human",
+  "name": "Just Be Human Tee",
+  "template": "just-be-human-a",
+  "publishedAt": "2026-04-29T14:21:16.407Z",
+  "content": {
+    "why": {
+      "chapter": "Chapter Two",
+      "headline": "A shirt for people thinking carefully",
+      "headlineEm": " about what comes next.",
+      "dropCap": "W",
+      "paragraphs": [
+        "e wrote three words on a Tuesday and kept them for a year. The phrase didn't get smarter. It got truer.",
+        "The shirt is a small action — a way of telling the room, and yourself, that the human part of the conversation still belongs to humans. Not a cause. A reminder."
+      ],
+      "variantId": "mauve",
+      "callout": "\"reminder.\""
+    },
+    "hero": {
+      "caption": "Issue 04 · Spring 2026 · The Humani-T",
+      "poemLines": [
+        {
+          "text": "just"
+        },
+        {
+          "text": "be",
+          "italic": true,
+          "color": "var(--b-sage)"
+        },
+        {
+          "text": "human.",
+          "indent": 80
+        }
+      ],
+      "body": "Three words, soft-printed on the chest. A small thing to wear in a year that's asking large questions of all of us.",
+      "heroVariantId": "maroon",
+      "photoBriefs": [
+        {
+          "bg": "#A8786E",
+          "variantId": "maroon",
+          "label": "One person on a stoop, golden hour, Maroon tee. Eyes off-camera, half-smile.",
+          "sub": "hero portrait · frame a"
+        },
+        {
+          "bg": "#8C6E60",
+          "variantId": "slate",
+          "label": "Same person, mid-step, looking at someone off-frame. The shirt softening into the body.",
+          "sub": "hero portrait · frame b"
+        },
+        {
+          "variantId": "tan",
+          "label": "Lifestyle photo of someone wearing the Cream & Hot Pink shirt.",
+          "sub": "frame c",
+          "bg": "#A8786E"
+        },
+        {
+          "variantId": "emerald",
+          "label": "Lifestyle photo of someone wearing the Cream & Hot Pink shirt.",
+          "sub": "frame d",
+          "bg": "#A8786E"
+        }
+      ],
+      "plateLabel": "Plate i · humans",
+      "photoCaption": "just be human",
+      "pageNumber": "p. 04",
+      "plateNumeral": "no. 01"
+    },
+    "worn": {
+      "chapter": "Chapter Four · Worn",
+      "headline": "People we know.",
+      "pageNumber": "p. 22",
+      "variantId": "maroon",
+      "photoBriefs": [
+        {
+          "bg": "#C8B8A0",
+          "h": 300,
+          "variantId": "slate",
+          "label": "Two friends on a stoop, mid-laugh. Slate tee.",
+          "sub": "lifestyle · to be shot"
+        },
+        {
+          "bg": "#A89886",
+          "h": 260,
+          "variantId": "autumn",
+          "label": "Hand-off — folded shirt, passed.",
+          "sub": "lifestyle · to be shot"
+        }
+      ],
+      "quote": "The shirt does its quiet work. The room is the loud part."
+    },
+    "close": {
+      "sticky": {
+        "buyUrl": "https://shop.theblife.com/products/just-be-human"
+      }
+    }
+  },
+  "assets": [
+    {
+      "role": "variant-emerald",
+      "imageUrl": "https://justbblog.s3.amazonaws.com/landers/cmofytmeo0002ugg9thij2stc/edits/variant-emerald-1777224252276.png"
+    },
+    {
+      "role": "variant-brown",
+      "imageUrl": "https://justbblog.s3.amazonaws.com/landers/cmofytmeo0002ugg9thij2stc/edits/variant-brown-1777224259118.png"
+    },
+    {
+      "role": "hero-portrait-3",
+      "imageUrl": "https://justbblog.s3.amazonaws.com/landers/cmofytmeo0002ugg9thij2stc/edits/hero-portrait-3-1777303183977.png"
+    },
+    {
+      "role": "variant-tan",
+      "imageUrl": "https://justbblog.s3.amazonaws.com/landers/cmofytmeo0002ugg9thij2stc/edits/variant-tan-1777224198843.png"
+    },
+    {
+      "role": "hero-portrait-2",
+      "imageUrl": "https://justbblog.s3.amazonaws.com/landers/cmofytmeo0002ugg9thij2stc/edits/hero-portrait-2-1777302791690.png"
+    },
+    {
+      "role": "variant-maroon",
+      "imageUrl": "https://justbblog.s3.amazonaws.com/landers/cmofytmeo0002ugg9thij2stc/edits/variant-maroon-1777224037796.png"
+    },
+    {
+      "role": "variant-mauve",
+      "imageUrl": "https://justbblog.s3.amazonaws.com/landers/cmofytmeo0002ugg9thij2stc/edits/variant-mauve-1777224227756.png"
+    },
+    {
+      "role": "variant-slate",
+      "imageUrl": "https://justbblog.s3.amazonaws.com/landers/cmofytmeo0002ugg9thij2stc/edits/variant-slate-1777224254929.png"
+    },
+    {
+      "role": "variant-cream",
+      "imageUrl": "https://justbblog.s3.amazonaws.com/landers/cmofytmeo0002ugg9thij2stc/edits/variant-cream-1777224219567.png"
+    },
+    {
+      "role": "variant-autumn",
+      "imageUrl": "https://justbblog.s3.amazonaws.com/landers/cmofytmeo0002ugg9thij2stc/edits/variant-autumn-1777224254007.png"
+    },
+    {
+      "role": "hero-portrait-0",
+      "imageUrl": "https://justbblog.s3.amazonaws.com/landers/cmofytmeo0002ugg9thij2stc/edits/hero-portrait-0-1777301597416.png"
+    },
+    {
+      "role": "worn-portrait-0",
+      "imageUrl": "https://justbblog.s3.amazonaws.com/landers/cmofytmeo0002ugg9thij2stc/edits/worn-portrait-0-1777306742880.png"
+    },
+    {
+      "role": "worn-portrait-1",
+      "imageUrl": "https://justbblog.s3.amazonaws.com/landers/cmofytmeo0002ugg9thij2stc/edits/worn-portrait-1-1777306501482.png"
+    },
+    {
+      "role": "hero-portrait-1",
+      "imageUrl": "https://justbblog.s3.amazonaws.com/landers/cmofytmeo0002ugg9thij2stc/edits/hero-portrait-1-1777300793433.png"
+    }
+  ]
+}
