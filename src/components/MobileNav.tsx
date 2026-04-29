@@ -12,7 +12,7 @@ export function MobileNav() {
         { href: '/blog', label: 'b.blog' },
         { href: '/principles', label: 'b.principles' },
         { href: '/book', label: 'b.book' },
-        { href: 'https://shop.thebilife.com', label: 'b.shop', external: true },
+        { href: 'https://shop.theblife.com', label: 'b.shop', external: true },
     ];
 
     return (

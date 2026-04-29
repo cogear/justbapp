@@ -29,7 +29,7 @@ export async function Header() {
                             b.book
                         </Link>
                         <a
-                            href="https://shop.thebilife.com"
+                            href="https://shop.theblife.com"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="transition-colors hover:text-foreground font-georgia"
