@@ -11,10 +11,21 @@ import { notFound } from 'next/navigation'
 import { readFile, readdir } from 'fs/promises'
 import path from 'path'
 import { JustBeHumanA } from '@/components/landers/JustBeHumanA'
+import type { ComponentType } from 'react'
 
-const TEMPLATES = {
-  'just-be-human-a': JustBeHumanA,
-} as const
+// JustBeHumanA is a plain JS module; TypeScript infers its props as
+// `never` for assets/content, which collides with the rendered values.
+// The template's runtime contract is `{ content, assets, theme }` —
+// state that explicitly here so TS doesn't fight us.
+type LanderTemplateProps = {
+  content: any
+  assets: { role: string; imageUrl: string }[]
+  theme: string
+}
+
+const TEMPLATES: Record<string, ComponentType<LanderTemplateProps>> = {
+  'just-be-human-a': JustBeHumanA as ComponentType<LanderTemplateProps>,
+}
 
 const LANDERS_DIR = path.join(process.cwd(), 'src/data/landers')
 
