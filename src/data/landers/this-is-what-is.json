@@ -1,0 +1,160 @@
+{
+  "schema": 1,
+  "slug": "this-is-what-is",
+  "name": "this is \nwhat is",
+  "template": "just-be-human-a",
+  "publishedAt": "2026-04-29T14:13:25.379Z",
+  "content": {
+    "hero": {
+      "caption": "Issue 04 · Spring 2026 · The Humani-T",
+      "poemLines": [
+        {
+          "text": "this is"
+        },
+        {
+          "text": "what",
+          "italic": true,
+          "color": "var(--b-sage)"
+        },
+        {
+          "text": "is.",
+          "indent": 80
+        }
+      ],
+      "body": "Some days you don’t need a brighter thought, just an honest one. It’s a small reminder to stop arguing with the moment in your own head, to feel your feet on the floor, and to let the day be plain and real for a while, right against your chest.",
+      "heroVariantId": "maroon",
+      "photoBriefs": [
+        {
+          "bg": "#A8786E",
+          "variantId": "cream",
+          "label": "One person on a stoop, golden hour, Maroon tee. Eyes off-camera, half-smile.",
+          "sub": "hero portrait · frame a"
+        },
+        {
+          "bg": "#8C6E60",
+          "variantId": "autumn",
+          "label": "Same person, mid-step, looking at someone off-frame. The shirt softening into the body.",
+          "sub": "hero portrait · frame b"
+        },
+        {
+          "variantId": "brown",
+          "label": "Lifestyle photo of someone wearing the Tan & Wine shirt.",
+          "sub": "frame c",
+          "bg": "#A8786E"
+        },
+        {
+          "variantId": "brown",
+          "label": "Lifestyle photo of someone wearing the Tan & Wine shirt.",
+          "sub": "frame d",
+          "bg": "#A8786E"
+        }
+      ],
+      "plateLabel": "8 colors · XS – XXL",
+      "photoCaption": "soft-printed, tri-blend, made to last",
+      "pageNumber": "$29",
+      "plateNumeral": "no. 01"
+    },
+    "close": {
+      "sticky": {
+        "name": "this is what is",
+        "buyUrl": "https://shop.theblife.com/products/this-is-what-is"
+      }
+    },
+    "why": {
+      "chapter": "Chapter Two",
+      "headline": "A shirt for people thinking carefully",
+      "headlineEm": " about what comes next.",
+      "dropCap": "W",
+      "paragraphs": [
+        "ires keep thinning, screens keep brightening, and somehow the room feels quieter when someone sets their phone face down. A sleeve brushes a sleeve at the counter. Steam rises. We notice the small courtesies again: an offered chair, a held door, names remembered without searching.",
+        "Outside, the calendar fills itself, but the body still asks for simple proof. Eye contact that lasts a beat longer. A laugh that doesn’t perform. A hand on a shoulder, steady. Even a plain tee can feel like a pause you can wear, saying enough without speaking."
+      ],
+      "variantId": "mauve",
+      "callout": "\"enough\""
+    },
+    "worn": {
+      "chapter": "Chapter Four · Worn",
+      "headline": "People we know.",
+      "pageNumber": "p. 22",
+      "variantId": "maroon",
+      "photoBriefs": [
+        {
+          "bg": "#C8B8A0",
+          "h": 300,
+          "variantId": "emerald",
+          "label": "Two friends on a stoop, mid-laugh. Slate tee.",
+          "sub": "lifestyle · to be shot"
+        },
+        {
+          "bg": "#A89886",
+          "h": 260,
+          "variantId": "slate",
+          "label": "Hand-off — folded shirt, passed.",
+          "sub": "lifestyle · to be shot"
+        }
+      ],
+      "quote": "The shirt does its quiet work. The room is the loud part."
+    },
+    "shopify": {
+      "description": "A soft, everyday tee with a small reminder on the chest, the kind you notice mid-sentence and feel your shoulders drop. Made on the Bella+Canvas 3001 unisex staple, it sits easy through errands, long drives, quiet mornings, and the hour you finally stop checking the time. Left-chest print with our mark on the right sleeve.\n\nNot a slogan for fixing anything. Just a steady phrase to come back to when the day gets loud. Wear it like choosing comfort on purpose, and letting the moment be as it is."
+    }
+  },
+  "assets": [
+    {
+      "role": "variant-cream",
+      "imageUrl": "https://justbblog.s3.amazonaws.com/landers/cmoj1oehq0001it51uk1rw48q/edits/variant-cream-1777407029792.png"
+    },
+    {
+      "role": "variant-brown",
+      "imageUrl": "https://justbblog.s3.amazonaws.com/landers/cmoj1oehq0001it51uk1rw48q/edits/variant-brown-1777406993400.png"
+    },
+    {
+      "role": "variant-emerald",
+      "imageUrl": "https://justbblog.s3.amazonaws.com/landers/cmoj1oehq0001it51uk1rw48q/edits/variant-emerald-1777406998908.png"
+    },
+    {
+      "role": "variant-autumn",
+      "imageUrl": "https://justbblog.s3.amazonaws.com/landers/cmoj1oehq0001it51uk1rw48q/edits/variant-autumn-1777407000319.png"
+    },
+    {
+      "role": "variant-tan",
+      "imageUrl": "https://justbblog.s3.amazonaws.com/landers/cmoj1oehq0001it51uk1rw48q/edits/variant-tan-1777407023771.png"
+    },
+    {
+      "role": "variant-maroon",
+      "imageUrl": "https://justbblog.s3.amazonaws.com/landers/cmoj1oehq0001it51uk1rw48q/edits/variant-maroon-1777407017767.png"
+    },
+    {
+      "role": "variant-slate",
+      "imageUrl": "https://justbblog.s3.amazonaws.com/landers/cmoj1oehq0001it51uk1rw48q/edits/variant-slate-1777407022351.png"
+    },
+    {
+      "role": "variant-mauve",
+      "imageUrl": "https://justbblog.s3.amazonaws.com/landers/cmoj1oehq0001it51uk1rw48q/edits/variant-mauve-1777407135526.png"
+    },
+    {
+      "role": "hero-portrait-0",
+      "imageUrl": "https://justbblog.s3.amazonaws.com/landers/cmoj1oehq0001it51uk1rw48q/edits/hero-portrait-0-1777408393867.png"
+    },
+    {
+      "role": "hero-portrait-1",
+      "imageUrl": "https://justbblog.s3.amazonaws.com/landers/cmoj1oehq0001it51uk1rw48q/edits/hero-portrait-1-1777408529202.png"
+    },
+    {
+      "role": "hero-portrait-2",
+      "imageUrl": "https://justbblog.s3.amazonaws.com/landers/cmoj1oehq0001it51uk1rw48q/edits/hero-portrait-2-1777409462136.png"
+    },
+    {
+      "role": "worn-portrait-0",
+      "imageUrl": "https://justbblog.s3.amazonaws.com/landers/cmoj1oehq0001it51uk1rw48q/edits/worn-portrait-0-1777409829234.png"
+    },
+    {
+      "role": "worn-portrait-1",
+      "imageUrl": "https://justbblog.s3.amazonaws.com/landers/cmoj1oehq0001it51uk1rw48q/edits/worn-portrait-1-1777410075072.png"
+    },
+    {
+      "role": "hero-portrait-3",
+      "imageUrl": "https://justbblog.s3.amazonaws.com/landers/cmoj1oehq0001it51uk1rw48q/edits/hero-portrait-3-1777415369126.png"
+    }
+  ]
+}
