@@ -21,7 +21,7 @@ export default function PrivacyPage() {
                     <section className="space-y-6">
                         <h2 className="text-2xl font-georgia text-foreground">1. Your Sanctuary</h2>
                         <p className="text-muted-foreground leading-relaxed font-light text-lg">
-                            At b., we believe in the sanctity of your digital life. Our mission is to provide a sanctuary, not an surveillance engine. We collect only what is necessary to refine your experience.
+                            At b., we believe in the sanctity of your digital life. Our mission is to provide a sanctuary, not a surveillance engine. We collect only what is necessary to refine your experience. This Privacy Policy applies to the b. website at theblife.com and to our TikTok application, blife-social.
                         </p>
                     </section>
 

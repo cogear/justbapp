@@ -21,14 +21,14 @@ export default function TermsPage() {
                     <section className="space-y-6">
                         <h2 className="text-2xl font-georgia text-foreground">1. Acceptance</h2>
                         <p className="text-muted-foreground leading-relaxed font-light text-lg">
-                            By accessing or using b. (&ldquo;the Service&rdquo;), you agree to be bound by these Terms. If you do not agree, please refrain from using the Service. We may update these Terms from time to time, and continued use after changes constitutes acceptance.
+                            By accessing or using b., including our TikTok application blife-social (collectively, &ldquo;the Service&rdquo;), you agree to be bound by these Terms. If you do not agree, please refrain from using the Service. We may update these Terms from time to time, and continued use after changes constitutes acceptance.
                         </p>
                     </section>
 
                     <section className="space-y-6">
                         <h2 className="text-2xl font-georgia text-foreground">2. The Sanctuary</h2>
                         <p className="text-muted-foreground leading-relaxed font-light text-lg">
-                            b. is a digital sanctuary offering writing, courses, community spaces, and tools designed to help you slow down intentionally. The Service is provided for personal, non-commercial use unless otherwise agreed in writing.
+                            b. is a digital sanctuary offering writing, courses, community spaces, and tools designed to help you slow down intentionally &mdash; available through the b. website at theblife.com and our TikTok application, blife-social. The Service is provided for personal, non-commercial use unless otherwise agreed in writing.
                         </p>
                     </section>
 
