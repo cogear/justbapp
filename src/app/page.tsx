@@ -160,17 +160,6 @@ export default async function Home() {
                 &ldquo;Simplicity is the ultimate sophistication.&rdquo;
               </p>
             </div>
-            <Link
-              href="/handler/onboarding"
-              className="
-                inline-block px-16 py-5 bg-primary text-primary-foreground rounded-full
-                font-medium tracking-wide shadow-xl hover:shadow-2xl
-                transition-all duration-500 hover:-translate-y-1 hover:scale-105
-                text-xl
-              "
-            >
-              Check In
-            </Link>
             <div className="flex flex-col sm:flex-row gap-6 pt-4">
               <Link
                 href="/community/ai-for-humans"
