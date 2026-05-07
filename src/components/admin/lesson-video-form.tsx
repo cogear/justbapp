@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { ExternalLink, Save, Check } from 'lucide-react';
+import { ExternalLink, Save, Check, Eye } from 'lucide-react';
 import { setLessonVideoUrl } from '@/app/admin/courses/actions';
 import { toast } from 'sonner';
 
@@ -11,9 +11,10 @@ interface Props {
     initialVideoUrl: string | null;
     courseSlug: string;
     moduleId: string;
+    viewCount: number;
 }
 
-export function LessonVideoForm({ lessonId, title, initialVideoUrl, courseSlug, moduleId }: Props) {
+export function LessonVideoForm({ lessonId, title, initialVideoUrl, courseSlug, moduleId, viewCount }: Props) {
     const [value, setValue] = useState(initialVideoUrl ?? '');
     const [saved, setSaved] = useState<string | null>(initialVideoUrl);
     const [isPending, startTransition] = useTransition();
@@ -47,6 +48,10 @@ export function LessonVideoForm({ lessonId, title, initialVideoUrl, courseSlug, 
                 >
                     {title}
                 </a>
+            </div>
+            <div className="flex items-center gap-1 text-xs text-muted-foreground tabular-nums w-16 shrink-0" title={`${viewCount} ${viewCount === 1 ? 'view' : 'views'}`}>
+                <Eye size={12} />
+                {viewCount.toLocaleString()}
             </div>
             <input
                 type="text"

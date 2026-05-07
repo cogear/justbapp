@@ -125,6 +125,11 @@ export async function getLessonContent(lessonId: string) {
         where: { id: lessonId },
         select: { id: true, title: true, content: true, videoUrl: true },
     });
+    if (lesson) {
+        prisma.lesson
+            .update({ where: { id: lessonId }, data: { viewCount: { increment: 1 } } })
+            .catch(err => console.error('Failed to increment lesson viewCount:', err));
+    }
     return lesson;
 }
 

@@ -18,6 +18,7 @@ export async function getCoursesWithLessons() {
                             title: true,
                             order: true,
                             videoUrl: true,
+                            viewCount: true,
                         },
                     },
                 },
