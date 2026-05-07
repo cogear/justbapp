@@ -55,8 +55,8 @@ export default async function Home() {
               <div className="group bg-secondary/10 backdrop-blur-md rounded-[3rem] border border-white/10 overflow-hidden hover:shadow-2xl transition-all duration-700">
                 <div className="h-64 relative">
                   <Image
-                    src="/images/connection.png"
-                    alt="Integrating AI into daily life"
+                    src="/images/learn-ai-card.jpg"
+                    alt="Two friends learning at a sunlit kitchen table"
                     fill
                     className="object-cover transition-transform duration-1000 group-hover:scale-105"
                   />
