@@ -114,7 +114,8 @@ async function seedCourse(courseDef: typeof COURSES[0]) {
             const title = extractTitle(content);
             const lessonOrder = j + 1;
 
-            // Find or create Lesson
+            // Find or create Lesson. videoUrl is owned by the admin UI, so we
+            // leave it alone here — never touch it on update, default to null on create.
             const existing = await prisma.lesson.findFirst({
                 where: { moduleId: mod.id, title },
             });

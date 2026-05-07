@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { Mail, Newspaper, Users, Calendar } from 'lucide-react';
+import { Mail, Newspaper, Users, Calendar, Video } from 'lucide-react';
 
 export default function AdminDashboard() {
     const adminTools = [
@@ -35,6 +35,14 @@ export default function AdminDashboard() {
             icon: Calendar,
             color: 'text-orange-500',
             bgColor: 'bg-orange-500/10',
+        },
+        {
+            title: 'Course Videos',
+            description: 'Attach YouTube videos to course articles.',
+            href: '/admin/courses',
+            icon: Video,
+            color: 'text-rose-500',
+            bgColor: 'bg-rose-500/10',
         },
     ];
 

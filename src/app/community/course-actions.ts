@@ -123,7 +123,7 @@ export async function getModuleLessons(moduleId: string) {
 export async function getLessonContent(lessonId: string) {
     const lesson = await prisma.lesson.findUnique({
         where: { id: lessonId },
-        select: { id: true, title: true, content: true },
+        select: { id: true, title: true, content: true, videoUrl: true },
     });
     return lesson;
 }

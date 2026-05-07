@@ -8,6 +8,7 @@ import { getCourseData, getLessonContent, getModuleLessons, markLessonComplete }
 import { getLessonComments } from '@/app/community/actions';
 import { courseLandingContent } from '@/lib/course-landing-content';
 import { CommentThread } from '@/components/comment-thread';
+import { YouTubeEmbed } from '@/components/youtube-embed';
 import { toast } from 'sonner';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -42,6 +43,7 @@ export function CourseView({ spaceId, initialLessonId }: { spaceId: string; init
 
     const [lessonContent, setLessonContent] = useState<string | null>(null);
     const [lessonTitle, setLessonTitle] = useState<string>('');
+    const [lessonVideoUrl, setLessonVideoUrl] = useState<string | null>(null);
     const [moduleData, setModuleData] = useState<ModuleView | null>(null);
     const [courseTitle, setCourseTitle] = useState<string>('');
     const [courseDescription, setCourseDescription] = useState<string>('');
@@ -77,11 +79,13 @@ export function CourseView({ spaceId, initialLessonId }: { spaceId: string; init
         if (lessonParam) {
             setModuleData(null);
             setLessonContent(null);
+            setLessonVideoUrl(null);
             setComments([]);
             getLessonContent(lessonParam).then(lesson => {
                 if (lesson) {
                     setLessonContent(lesson.content);
                     setLessonTitle(lesson.title);
+                    setLessonVideoUrl(lesson.videoUrl);
                 }
             });
             getLessonComments(lessonParam).then(data => {
@@ -136,6 +140,12 @@ export function CourseView({ spaceId, initialLessonId }: { spaceId: string; init
                         <ArrowLeft size={14} />
                         Back to articles
                     </Link>
+                )}
+
+                {lessonVideoUrl && (
+                    <div className="mb-10">
+                        <YouTubeEmbed url={lessonVideoUrl} title={lessonTitle} />
+                    </div>
                 )}
 
                 <article className="prose prose-lg dark:prose-invert prose-headings:font-georgia prose-headings:tracking-tight prose-p:leading-relaxed prose-p:text-foreground/85 prose-li:text-foreground/85 prose-blockquote:border-primary/30 prose-blockquote:text-muted-foreground prose-em:text-foreground/70 max-w-none">
