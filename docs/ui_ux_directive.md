@@ -39,9 +39,9 @@ Typography should be readable, humanist, and airy.
 - **Scroll**: No infinite scroll. Content is paginated or finite lists.
 
 ## 5. Imagery (The Anchor)
-- **Style**: Abstract nature, macro photography, soft focus.
-- **Subject**: Textures (stone, water, leaf, fabric).
-- **Avoid**: People faces (triggers social comparison), busy cityscapes.
+- **Style**: Soft natural light, candid, editorial. Abstract nature and macro photography are still welcome where they fit (textures: stone, water, leaf, fabric).
+- **Subject for hero / community / course imagery**: Candid imagery of connection — small groups in conversation, hands and movement, shared meals, walking together. Faces are fine when they are in conversation with each other.
+- **Avoid**: Lone aspirational portraits (single subject, model gaze at camera, idealized lighting) — that specific failure mode is what triggers social comparison. Also avoid busy cityscapes and saturated stock-photo aesthetics.
 
 ## 6. Dark Mode (The Cave)
 - **Trigger**: Automatic based on time of day or user preference.

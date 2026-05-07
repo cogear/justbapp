@@ -14,7 +14,7 @@ Every pixel should reduce cognitive load. The interface should feel like a deep 
 - Soft, diffused shadows only. No sharp drop shadows.
 - Slow, fluid micro-interactions (~500ms).
 - No infinite scroll — paginated or finite lists only.
-- Imagery favors abstract nature and textures (stone, water, leaf, fabric). Avoid faces and busy cityscapes.
+- Imagery: candid imagery of connection (small groups, hands, shared moments) for hero / community / course surfaces; abstract nature and textures (stone, water, leaf, fabric) for editorial breaks. Avoid lone aspirational portraits (single subject, model gaze, idealized lighting) — that specific framing triggers social comparison. Also avoid busy cityscapes and saturated stock-photo aesthetics.
 
 ---
 
@@ -227,7 +227,7 @@ Newsletter CTA pill:
 - **No dialog boxes** — they misbehave in Next.js. Use drawers, sheets, or inline patterns.
 - **No alert()** — use toast (sonner-style) for feedback.
 - **Server functions over API routes** for database work (Next.js 15 / App Router).
-- **No face-forward stock photography** in imagery choices (social-comparison trigger). Favor texture and abstract nature.
+- **No lone aspirational portraits** — single subject, model gaze at camera, idealized lighting (that's the specific framing that triggers social comparison). Candid imagery of connection — small groups, hands meeting hands, shared meals, no one looking at the camera — is encouraged because it models what the product is for. Abstract nature and textures still welcome for editorial surfaces.
 - **Haptic feedback** (mobile) for grounding interactions like pulse selection — see `PulseSlider.tsx`.
 - **Paginated over infinite** — content is finite and respects attention.
 
