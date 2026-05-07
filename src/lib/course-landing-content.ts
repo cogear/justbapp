@@ -50,7 +50,7 @@ export const courseLandingContent: Record<string, CourseLandingContent> = {
     },
     'living-with-ai': {
         heroSubtitle: 'Intentional living in an AI-forward world.',
-        heroImage: { src: '/images/connection.png', alt: 'Quiet connection in an intentional life' },
+        heroImage: { src: '/images/living-with-ai-hero.jpg', alt: 'A couple walking together in autumn light' },
         intro: {
             paragraphs: [
                 'The pace of the world is changing faster than our nervous systems were built for. Every day brings a new tool, a new pressure to optimize, a new reason to feel behind. It is easy, in a moment like this, to hand over the parts of life that were never meant to be outsourced.',
