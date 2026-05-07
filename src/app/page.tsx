@@ -18,8 +18,8 @@ export default async function Home() {
       {/* Hero Section */}
       <section className="relative w-full h-[55vh] flex items-center justify-center overflow-hidden">
         <Image
-          src="/images/hero-human.png"
-          alt="Human presence and contemplation"
+          src="/images/hero-community.jpg"
+          alt="Friends sharing a meal together"
           fill
           className="object-cover brightness-[0.85] contrast-[1.05]"
           priority

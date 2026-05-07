@@ -40,13 +40,13 @@ export const metadata: Metadata = {
     siteName: "b. Just Be",
     title: "b. | Just Be - Intentional Living in the Modern World",
     description: "A digital sanctuary for intentional living. Explore wellness principles, AI-informed perspectives, and community courses.",
-    images: [{ url: "/images/hero-human.png", width: 1200, height: 630, alt: "b. Just Be" }],
+    images: [{ url: "/images/hero-community.jpg", width: 1200, height: 630, alt: "b. — a community for intentional living" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "b. | Just Be",
     description: "A digital sanctuary for intentional living in the modern world.",
-    images: ["/images/hero-human.png"],
+    images: ["/images/hero-community.jpg"],
   },
   robots: {
     index: true,

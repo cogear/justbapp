@@ -54,8 +54,8 @@ export function VisualProfiler() {
                     {/* Visual Side */}
                     <div className="relative hidden md:block h-full min-h-[500px]">
                         <Image
-                            src="/images/hero-human.png"
-                            alt="A moment of deep presence"
+                            src="/images/hero-community.jpg"
+                            alt="A moment of shared presence"
                             fill
                             className="object-cover"
                         />

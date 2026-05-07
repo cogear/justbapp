@@ -11,7 +11,7 @@ export type CourseLandingContent = {
 export const courseLandingContent: Record<string, CourseLandingContent> = {
     'ai-for-humans': {
         heroSubtitle: 'A human-centered guide to understanding and working with AI.',
-        heroImage: { src: '/images/hero-human.png', alt: 'Human presence and contemplation' },
+        heroImage: { src: '/images/hero-community.jpg', alt: 'A community gathered, present together' },
         intro: {
             paragraphs: [
                 'AI is no longer on the horizon. It is already shaping how we write, how we learn, how we parent, how we work, and how we make sense of the news. Most of us never chose a moment to sit down and learn what this thing actually is, or how to talk to it without feeling awkward about it.',
@@ -44,7 +44,7 @@ export const courseLandingContent: Record<string, CourseLandingContent> = {
             8: { src: '/images/connection.png', alt: 'Honest connection in words' },
             9: { src: '/images/principles/acceptance.png', alt: 'Quiet space for the inner life' },
             10: { src: '/images/archetypes/ego-resilient.png', alt: 'Thinking honestly about hard questions' },
-            11: { src: '/images/hero-human.png', alt: 'Staying human in an AI world' },
+            11: { src: '/images/hero-community.jpg', alt: 'Staying human in an AI world' },
             12: { src: '/images/archetypes/explorer.png', alt: 'The technical language, made human' },
         },
     },
