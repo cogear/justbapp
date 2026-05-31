@@ -16,7 +16,7 @@ async function getBlogContent(date: Date) {
     const url = `https://justbblog.s3.amazonaws.com/blog/${year}/${month}/${day}/index.html`;
 
     try {
-        const response = await fetch(url, { next: { revalidate: 3600 } });
+        const response = await fetch(url, { next: { revalidate: 60 } });
         if (!response.ok) return null;
 
         const rawHtml = await response.text();
