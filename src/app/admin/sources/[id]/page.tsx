@@ -4,6 +4,8 @@ import { Loader2, Save, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
+export const dynamic = 'force-dynamic';
+
 export default async function EditSourcePage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
     const source = await prisma.eventSource.findUnique({

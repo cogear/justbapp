@@ -5,6 +5,8 @@ import { CourseView } from "@/components/course-view"
 import { CourseLanding } from "@/components/course-landing"
 import type { Metadata } from "next"
 
+export const dynamic = 'force-dynamic';
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { spaceSlug } = await params;
     const space = await prisma.space.findUnique({ where: { slug: spaceSlug } });

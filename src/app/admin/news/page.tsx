@@ -3,6 +3,8 @@ import { format } from 'date-fns';
 import { Mail, Calendar, ExternalLink, Share2, Eye, LayoutGrid } from 'lucide-react';
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminNewsPage() {
     const articles = await prisma.newsArticle.findMany({
         orderBy: { publishedAt: 'desc' },

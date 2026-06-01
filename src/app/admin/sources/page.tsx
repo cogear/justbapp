@@ -4,6 +4,8 @@ import { format } from 'date-fns';
 import { Play, Trash2, Plus, ExternalLink, Search, Pencil } from 'lucide-react';
 import { deleteSource, triggerScrape, runBatchScrape, runBatchDiscovery } from './actions';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminSourcesPage() {
     const sources = await prisma.eventSource.findMany({
         orderBy: { updatedAt: 'desc' },

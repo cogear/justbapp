@@ -3,6 +3,8 @@ import prisma from '@/lib/prisma';
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
     title: "Community - Courses & Discussions",
     description: "Join The b. Life community. Access free courses on AI for Humans and Living with AI, plus community discussions on intentional living.",

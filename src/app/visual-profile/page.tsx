@@ -6,6 +6,8 @@ import { CLUSTERS } from '@/lib/personality/clustering';
 
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic';
+
 export default async function VisualProfilePage({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
     const stackUser = await stackServerApp.getUser();
 

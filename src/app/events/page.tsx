@@ -12,6 +12,8 @@ export const metadata: Metadata = {
 
 import { geocodeAddress, getDistanceInMiles } from '@/lib/events/geocoding';
 
+export const dynamic = 'force-dynamic';
+
 export default async function EventsPage({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
     const { category, search } = await searchParams;
 
