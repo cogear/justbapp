@@ -16,7 +16,11 @@ async function getBlogContent(date: Date) {
     const url = `https://justbblog.s3.amazonaws.com/blog/${year}/${month}/${day}/index.html`;
 
     try {
-        const response = await fetch(url, { next: { revalidate: 60 } });
+        // no-store: the /blog page is already rendered per-request, and the
+        // published blog HTML changes in place under a stable S3 key. Caching
+        // the fetch (even with a short revalidate) left stale data-cache entries
+        // that persisted across deploys, so updates didn't appear. Fetch fresh.
+        const response = await fetch(url, { cache: 'no-store' });
         if (!response.ok) return null;
 
         const rawHtml = await response.text();
