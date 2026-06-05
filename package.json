@@ -8,6 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "email": "email dev",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "seed:courses": "tsx scripts/seed-courses.ts"
   },
   "dependencies": {
@@ -24,6 +26,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
     "dotenv": "^17.2.3",
     "framer-motion": "^12.23.25",
     "jsdom": "^27.2.0",
@@ -63,6 +66,7 @@
     "prisma": "^5.22.0",
     "react-email": "^5.1.0",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.8"
   }
 }

@@ -307,3 +307,125 @@ model LessonProgress {
 
   @@unique([userId, lessonId])
 }
+
+// ─── Circles — recurring group engine ────────────────────────────────────────
+// Bounded context. Tables carry a `circles_` prefix (via @@map) and live in the
+// public schema. user-id fields are OPAQUE host ids (the DB User.id) and have
+// DELIBERATELY no relation/FK to User — do not "fix" this; it is what makes the
+// engine extractable behind a different auth. See src/lib/circles/ARCHITECTURE.md.
+
+model CirclesGroup {
+  id             String          @id @default(uuid())
+  name           String
+  kind           String          @default("generic") // GroupKind: dinner|sport|boardgames|coffee|generic
+  visibility     String          @default("invite_only")
+  ownerUserId    String /// opaque host User.id — no relation/FK
+  timezone       String // IANA tz, e.g. America/New_York
+  defaultCadence Json
+  createdAt      DateTime        @default(now())
+
+  members        CirclesMember[]
+  meetups        CirclesMeetup[]
+
+  @@map("circles_groups")
+}
+
+model CirclesMember {
+  id       String       @id @default(uuid())
+  groupId  String
+  userId   String /// opaque host User.id — no relation/FK
+  role     String       @default("member") // owner|co_organizer|member
+  status   String       @default("invited") // invited|active|left
+  joinedAt DateTime     @default(now())
+
+  group    CirclesGroup @relation(fields: [groupId], references: [id])
+
+  @@unique([groupId, userId])
+  @@map("circles_members")
+}
+
+model CirclesMeetup {
+  id           String        @id @default(uuid())
+  groupId      String
+  startsAt     DateTime
+  locationText String?
+  rsvpCutoffAt DateTime?
+  status       String        @default("scheduled") // scheduled|deciding|confirmed|done|cancelled
+
+  group        CirclesGroup     @relation(fields: [groupId], references: [id])
+  rsvps        CirclesRsvp[]
+  reminders    CirclesReminder[]
+  decision     CirclesDecision?
+  photos       CirclesPhoto[]
+
+  @@unique([groupId, startsAt]) // idempotent meetup generation
+  @@map("circles_meetups")
+}
+
+model CirclesRsvp {
+  id        String        @id @default(uuid())
+  meetupId  String
+  userId    String /// opaque host User.id — no relation/FK
+  state     String        @default("none") // yes|no|maybe|none
+  updatedAt DateTime      @updatedAt
+
+  meetup    CirclesMeetup @relation(fields: [meetupId], references: [id])
+
+  @@unique([meetupId, userId]) // one rsvp row per user per meetup
+  @@map("circles_rsvps")
+}
+
+model CirclesReminder {
+  id       String        @id @default(uuid())
+  meetupId String
+  userId   String /// opaque host User.id — no relation/FK
+  kind     String // pre_meetup | rsvp_cutoff
+  sentAt   DateTime      @default(now())
+
+  meetup   CirclesMeetup @relation(fields: [meetupId], references: [id])
+
+  @@unique([meetupId, userId, kind]) // send-once idempotency
+  @@map("circles_reminders")
+}
+
+model CirclesDecision {
+  id               String        @id @default(uuid())
+  meetupId         String        @unique // one decision per meetup (v1)
+  type             String // venue_vote | host_pick | none
+  options          Json // [{ id, label, meta? }]
+  status           String        @default("open") // open | resolved | cancelled
+  closesAt         DateTime
+  resolvedOptionId String?
+  createdAt        DateTime      @default(now())
+
+  meetup           CirclesMeetup @relation(fields: [meetupId], references: [id])
+  votes            CirclesVote[]
+
+  @@map("circles_decisions")
+}
+
+model CirclesVote {
+  id         String          @id @default(uuid())
+  decisionId String
+  userId     String /// opaque host User.id — no relation/FK
+  optionId   String
+  updatedAt  DateTime        @updatedAt
+
+  decision   CirclesDecision @relation(fields: [decisionId], references: [id])
+
+  @@unique([decisionId, userId]) // one vote per user
+  @@map("circles_votes")
+}
+
+model CirclesPhoto {
+  id            String        @id @default(uuid())
+  meetupId      String
+  addedByUserId String /// opaque host User.id — no relation/FK
+  url           String // a reference; the host owns the actual upload (S3)
+  caption       String?
+  createdAt     DateTime      @default(now())
+
+  meetup        CirclesMeetup @relation(fields: [meetupId], references: [id])
+
+  @@map("circles_photos")
+}
