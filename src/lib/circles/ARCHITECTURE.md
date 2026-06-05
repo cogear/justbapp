@@ -54,6 +54,17 @@ reminder for members who haven't voted.
 - **Photos are references only.** `circles_photos.url` is an opaque URL; the engine
   never uploads. The actual S3 upload flow is host/UI work (deferred).
 
+## The agent surface (Phase 4)
+
+Circles exposes a **standalone MCP server** at `/api/circles/mcp` (built by
+`src/lib/circles/mcp/server.ts`, tools in `mcp/tools.ts`) so a connected agent
+can run a group — create/invite/schedule, open a vote, read the tally, list
+who hasn't responded, and summarize via `circles_group_overview`. The tools are
+host adapters over `service` (opaque ids only, never identity); the agent is
+Claude driving the rails, not a separate bot. It's a *separate* endpoint from the
+community MCP (`/api/mcp`) and lives inside `circles/`, so it travels with the
+engine on extraction.
+
 ## Reminders cross the seam as intents
 
 The engine holds only opaque `userId` text and cannot resolve an email. So

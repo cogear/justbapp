@@ -412,6 +412,16 @@ export async function findDecisionCloseCandidates(
 
 // ─── Phase 3: roles, timeline, photos ───────────────────────────────────────────
 
+export async function getGroup(groupId: string): Promise<core.Group | null> {
+  const row = await prisma.circlesGroup.findUnique({ where: { id: groupId } });
+  return row ? toGroup(row) : null;
+}
+
+export async function listMembers(groupId: string): Promise<core.Member[]> {
+  const rows = await prisma.circlesMember.findMany({ where: { groupId } });
+  return rows.map(toMember);
+}
+
 export async function getMember(groupId: string, userId: string): Promise<core.Member | null> {
   const row = await prisma.circlesMember.findUnique({
     where: { groupId_userId: { groupId, userId } },

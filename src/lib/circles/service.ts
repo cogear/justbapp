@@ -285,3 +285,58 @@ export async function getTimeline(groupId: string, now: Date = new Date()): Prom
 export async function markPastMeetupsDone(now: Date = new Date()): Promise<number> {
   return repo.markPastMeetupsDone(now);
 }
+
+// ─── Phase 4: agent-facing surface ──────────────────────────────────────────────
+
+/** Create a group (the caller becomes its owner). */
+export async function createGroup(input: repo.CreateGroupInput): Promise<core.Group> {
+  return repo.createGroup(input);
+}
+
+/** Set or change a user's RSVP for a meetup (member-level; trusts the caller's id). */
+export async function setRsvp(meetupId: string, userId: string, state: core.RsvpState) {
+  return repo.setRsvp(meetupId, userId, state);
+}
+
+/** A meetup with rsvps, headcount, decision, and photos. */
+export async function getMeetup(meetupId: string): Promise<repo.MeetupView | null> {
+  return repo.getMeetupView(meetupId);
+}
+
+/** Active members of a meetup's group who have not RSVP'd (for nudging no-replies). */
+export async function listNonResponders(meetupId: string): Promise<string[]> {
+  const view = await repo.getMeetupView(meetupId);
+  if (!view) throw new Error('meetup not found');
+  const responded = new Set(view.rsvps.filter((r) => r.state !== 'none').map((r) => r.userId));
+  const members = await repo.listMembers(view.meetup.groupId);
+  return members
+    .filter((m) => m.status === 'active' && !responded.has(m.userId))
+    .map((m) => m.userId);
+}
+
+export interface GroupOverview {
+  group: core.Group;
+  next: core.TimelineEntry | null;
+  last: core.TimelineEntry | null;
+  openDecision: repo.DecisionView | null;
+  nonResponders: string[];
+}
+
+/** An at-a-glance organizer summary of a group: what's next, who's missing, the vote. */
+export async function getGroupOverview(groupId: string): Promise<GroupOverview> {
+  const group = await repo.getGroup(groupId);
+  if (!group) throw new Error('group not found');
+
+  const timeline = await getTimeline(groupId);
+  const next = timeline.next;
+
+  let openDecision: repo.DecisionView | null = null;
+  let nonResponders: string[] = [];
+  if (next) {
+    const view = await repo.getMeetupView(next.meetup.id);
+    openDecision = view?.decision?.decision.status === 'open' ? view.decision : null;
+    nonResponders = await listNonResponders(next.meetup.id);
+  }
+
+  return { group, next, last: timeline.past[0] ?? null, openDecision, nonResponders };
+}
