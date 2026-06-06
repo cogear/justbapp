@@ -124,18 +124,7 @@ export default async function Home() {
               </div>
             </div>
 
-            {/* Secondary offer */}
-            <div className="mt-16 flex justify-center animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-500">
-              <Link
-                href="/subscribe"
-                className="group block w-full max-w-2xl rounded-3xl border border-border/60 bg-card p-8 hover:shadow-lg transition-all duration-500"
-              >
-                <h3 className="text-xl font-georgia text-foreground mb-3">The Daily Essence →</h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  A daily newsletter with AI-filtered news, grounded commentary, and reminders of the b. principles — delivered once a day, no noise.
-                </p>
-              </Link>
-            </div>
+            {/* Newsletter signup CTA removed — to be reintroduced differently. */}
 
             {/* Primary CTA */}
             <div className="flex justify-center pt-16">

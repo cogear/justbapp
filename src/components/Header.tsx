@@ -36,12 +36,7 @@ export async function Header() {
                         >
                             b.shop
                         </a>
-                        <Link
-                            href="/subscribe"
-                            className="ml-2 px-6 py-2 bg-primary text-primary-foreground hover:opacity-90 rounded-full transition-all text-sm font-medium shadow-sm"
-                        >
-                            Newsletter Signup.
-                        </Link>
+                        {/* Newsletter signup button removed — to be reintroduced differently. */}
                     </nav>
                 </div>
                 <div className="flex items-center gap-4">

@@ -61,13 +61,7 @@ export function MobileNav() {
                                     </Link>
                                 )
                             )}
-                            <Link
-                                href="/subscribe"
-                                onClick={() => setIsOpen(false)}
-                                className="mt-4 px-6 py-3 bg-primary text-primary-foreground hover:opacity-90 rounded-full transition-all text-sm font-medium shadow-sm text-center"
-                            >
-                                Newsletter Signup.
-                            </Link>
+                            {/* Newsletter signup button removed — to be reintroduced differently. */}
                         </nav>
                     </div>
                 </>
