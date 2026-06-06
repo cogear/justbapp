@@ -3,7 +3,20 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export function NewsletterSignup({ initialEmail }: { initialEmail?: string }) {
+export function NewsletterSignup({
+    initialEmail,
+    heading = 'Stay Connected',
+    blurb = 'Join our intentional mailing list for quiet updates, small joys, and the release of the "b" life manifesto.',
+    note = 'No noise. just b.',
+}: {
+    initialEmail?: string;
+    /** Section heading; pass null to hide (e.g. when the page already has the hero). */
+    heading?: string | null;
+    /** Supporting blurb under the heading; pass null to hide. */
+    blurb?: string | null;
+    /** Small line near the button — cadence/boundary microcopy. */
+    note?: string;
+}) {
     const [email, setEmail] = useState(initialEmail || '');
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [message, setMessage] = useState('');
@@ -51,20 +64,20 @@ export function NewsletterSignup({ initialEmail }: { initialEmail?: string }) {
             setStatus('success');
             setMessage(data.message || 'Please check your email to confirm your subscription.');
             if (!initialEmail) setEmail('');
-        } catch (err: any) {
+        } catch (err) {
             setStatus('error');
-            setMessage(err.message);
+            setMessage(err instanceof Error ? err.message : 'Something went wrong');
         }
     };
 
     return (
         <section className="bg-primary/5 py-16 px-6 rounded-3xl border border-primary/10 max-w-2xl mx-auto my-12">
-            <div className="text-center space-y-4 mb-8">
-                <h3 className="text-3xl font-serif font-bold text-foreground">Stay Connected</h3>
-                <p className="text-muted-foreground leading-relaxed">
-                    Join our intentional mailing list for quiet updates, small joys, and the release of the "b" life manifesto.
-                </p>
-            </div>
+            {(heading || blurb) && (
+                <div className="text-center space-y-4 mb-8">
+                    {heading && <h3 className="text-3xl font-serif font-bold text-foreground">{heading}</h3>}
+                    {blurb && <p className="text-muted-foreground leading-relaxed">{blurb}</p>}
+                </div>
+            )}
 
             <form onSubmit={handleSubmit} className="relative max-w-md mx-auto">
                 {initialEmail ? (
@@ -81,7 +94,7 @@ export function NewsletterSignup({ initialEmail }: { initialEmail?: string }) {
                                     className="w-5 h-5 rounded border-border text-primary focus:ring-primary/20 accent-primary"
                                 />
                                 <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
-                                    Sign me up for the daily essence
+                                    Sign me up for the Daily Anchor
                                 </span>
                             </label>
                             <button
@@ -130,7 +143,7 @@ export function NewsletterSignup({ initialEmail }: { initialEmail?: string }) {
             </form>
 
             <p className="text-[10px] text-center text-muted-foreground/60 mt-8 uppercase tracking-widest italic">
-                No noise. just b.
+                {note}
             </p>
         </section>
     );
