@@ -4,6 +4,11 @@ import React from 'react';
 export function Footer() {
     return (
         <footer className="w-full border-t border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 py-12">
+            <div className="b-nav-content mb-10 text-center">
+                <p className="font-georgia text-lg md:text-3xl text-foreground/80 tracking-wide">
+                    breathe&nbsp;… you&rsquo;re here
+                </p>
+            </div>
             <div className="b-nav-content flex flex-col md:flex-row items-center justify-between gap-8">
                 <div className="flex flex-col items-center md:items-start gap-2">
                     <Link href="/" className="font-georgia text-xl font-bold">b.</Link>
