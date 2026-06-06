@@ -7,7 +7,7 @@ import { stackServerApp } from '@/lib/stack';
  * first sight. Returns null when no one is signed in.
  *
  * The DB `User.id` is the canonical opaque token handed to bounded contexts such
- * as Circles — they store it as plain text and never resolve it back to a person.
+ * as Gatherings — they store it as plain text and never resolve it back to a person.
  */
 export async function getOrCreateUser() {
   const stackUser = await stackServerApp.getUser();

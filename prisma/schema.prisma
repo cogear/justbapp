@@ -308,29 +308,30 @@ model LessonProgress {
   @@unique([userId, lessonId])
 }
 
-// ─── Circles — recurring group engine ────────────────────────────────────────
-// Bounded context. Tables carry a `circles_` prefix (via @@map) and live in the
+// ─── Gatherings — recurring group engine ────────────────────────────────────────
+// Bounded context. Tables carry a `gatherings_` prefix (via @@map) and live in the
 // public schema. user-id fields are OPAQUE host ids (the DB User.id) and have
 // DELIBERATELY no relation/FK to User — do not "fix" this; it is what makes the
-// engine extractable behind a different auth. See src/lib/circles/ARCHITECTURE.md.
+// engine extractable behind a different auth. See src/lib/gatherings/ARCHITECTURE.md.
 
-model CirclesGroup {
+model GatheringsGroup {
   id             String          @id @default(uuid())
   name           String
   kind           String          @default("generic") // GroupKind: dinner|sport|boardgames|coffee|generic
   visibility     String          @default("invite_only")
   ownerUserId    String /// opaque host User.id — no relation/FK
   timezone       String // IANA tz, e.g. America/New_York
+  scheduleType   String          @default("single") // single | recurring_static | recurring_flexible
   defaultCadence Json
   createdAt      DateTime        @default(now())
 
-  members        CirclesMember[]
-  meetups        CirclesMeetup[]
+  members        GatheringsMember[]
+  meetups        GatheringsMeetup[]
 
-  @@map("circles_groups")
+  @@map("gatherings_groups")
 }
 
-model CirclesMember {
+model GatheringsMember {
   id       String       @id @default(uuid())
   groupId  String
   userId   String /// opaque host User.id — no relation/FK
@@ -338,57 +339,58 @@ model CirclesMember {
   status   String       @default("invited") // invited|active|left
   joinedAt DateTime     @default(now())
 
-  group    CirclesGroup @relation(fields: [groupId], references: [id])
+  group    GatheringsGroup @relation(fields: [groupId], references: [id])
 
   @@unique([groupId, userId])
-  @@map("circles_members")
+  @@map("gatherings_members")
 }
 
-model CirclesMeetup {
+model GatheringsMeetup {
   id           String        @id @default(uuid())
   groupId      String
-  startsAt     DateTime
-  locationText String?
-  rsvpCutoffAt DateTime?
+  startsAt       DateTime
+  locationText   String?
+  locationPlaceId String?
+  rsvpCutoffAt   DateTime?
   status       String        @default("scheduled") // scheduled|deciding|confirmed|done|cancelled
 
-  group        CirclesGroup     @relation(fields: [groupId], references: [id])
-  rsvps        CirclesRsvp[]
-  reminders    CirclesReminder[]
-  decision     CirclesDecision?
-  photos       CirclesPhoto[]
+  group        GatheringsGroup     @relation(fields: [groupId], references: [id])
+  rsvps        GatheringsRsvp[]
+  reminders    GatheringsReminder[]
+  decision     GatheringsDecision?
+  photos       GatheringsPhoto[]
 
   @@unique([groupId, startsAt]) // idempotent meetup generation
-  @@map("circles_meetups")
+  @@map("gatherings_meetups")
 }
 
-model CirclesRsvp {
+model GatheringsRsvp {
   id        String        @id @default(uuid())
   meetupId  String
   userId    String /// opaque host User.id — no relation/FK
   state     String        @default("none") // yes|no|maybe|none
   updatedAt DateTime      @updatedAt
 
-  meetup    CirclesMeetup @relation(fields: [meetupId], references: [id])
+  meetup    GatheringsMeetup @relation(fields: [meetupId], references: [id])
 
   @@unique([meetupId, userId]) // one rsvp row per user per meetup
-  @@map("circles_rsvps")
+  @@map("gatherings_rsvps")
 }
 
-model CirclesReminder {
+model GatheringsReminder {
   id       String        @id @default(uuid())
   meetupId String
   userId   String /// opaque host User.id — no relation/FK
   kind     String // pre_meetup | rsvp_cutoff
   sentAt   DateTime      @default(now())
 
-  meetup   CirclesMeetup @relation(fields: [meetupId], references: [id])
+  meetup   GatheringsMeetup @relation(fields: [meetupId], references: [id])
 
   @@unique([meetupId, userId, kind]) // send-once idempotency
-  @@map("circles_reminders")
+  @@map("gatherings_reminders")
 }
 
-model CirclesDecision {
+model GatheringsDecision {
   id               String        @id @default(uuid())
   meetupId         String        @unique // one decision per meetup (v1)
   type             String // venue_vote | host_pick | none
@@ -398,26 +400,26 @@ model CirclesDecision {
   resolvedOptionId String?
   createdAt        DateTime      @default(now())
 
-  meetup           CirclesMeetup @relation(fields: [meetupId], references: [id])
-  votes            CirclesVote[]
+  meetup           GatheringsMeetup @relation(fields: [meetupId], references: [id])
+  votes            GatheringsVote[]
 
-  @@map("circles_decisions")
+  @@map("gatherings_decisions")
 }
 
-model CirclesVote {
+model GatheringsVote {
   id         String          @id @default(uuid())
   decisionId String
   userId     String /// opaque host User.id — no relation/FK
   optionId   String
   updatedAt  DateTime        @updatedAt
 
-  decision   CirclesDecision @relation(fields: [decisionId], references: [id])
+  decision   GatheringsDecision @relation(fields: [decisionId], references: [id])
 
   @@unique([decisionId, userId]) // one vote per user
-  @@map("circles_votes")
+  @@map("gatherings_votes")
 }
 
-model CirclesPhoto {
+model GatheringsPhoto {
   id            String        @id @default(uuid())
   meetupId      String
   addedByUserId String /// opaque host User.id — no relation/FK
@@ -425,7 +427,7 @@ model CirclesPhoto {
   caption       String?
   createdAt     DateTime      @default(now())
 
-  meetup        CirclesMeetup @relation(fields: [meetupId], references: [id])
+  meetup        GatheringsMeetup @relation(fields: [meetupId], references: [id])
 
-  @@map("circles_photos")
+  @@map("gatherings_photos")
 }

@@ -3,13 +3,13 @@
         "src/app/api/cron/news/route.ts": {
             "maxDuration": 30
         },
-        "src/app/api/cron/circles-reminders/route.ts": {
+        "src/app/api/cron/gatherings-reminders/route.ts": {
             "maxDuration": 60
         }
     },
     "crons": [
         {
-            "path": "/api/cron/circles-reminders",
+            "path": "/api/cron/gatherings-reminders",
             "schedule": "0 * * * *"
         }
     ]
