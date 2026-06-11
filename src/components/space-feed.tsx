@@ -4,6 +4,7 @@ import { CreatePostForm } from './create-post-form';
 import { CommentThread } from './comment-thread';
 import { LikeButton } from './like-button';
 import { MessageUserButton } from './messages/message-user-button';
+import { InviteMemberForm } from './messages/invite-member-form';
 
 export async function SpaceFeed({ spaceId }: { spaceId: string }) {
     const stackUser = await stackServerApp.getUser();
@@ -36,6 +37,11 @@ export async function SpaceFeed({ spaceId }: { spaceId: string }) {
     return (
         <div className="p-6">
             <div className="max-w-2xl mx-auto">
+                {currentUserId && (
+                    <div className="mb-4 flex justify-end">
+                        <InviteMemberForm spaceId={spaceId} />
+                    </div>
+                )}
                 <CreatePostForm spaceId={spaceId} />
 
                 <div className="space-y-4">
