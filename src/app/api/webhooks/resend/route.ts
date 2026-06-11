@@ -46,9 +46,13 @@ export async function POST(req: Request) {
     switch (type) {
         case 'email.bounced':
             await handleBounce(data);
+            await correlateDelivery(data, 'FAILED');
             break;
         case 'email.complained':
             await handleComplaint(data);
+            break;
+        case 'email.delivered':
+            await correlateDelivery(data, 'DELIVERED');
             break;
         case 'email.delivery_delayed':
             console.log(`Email delivery delayed: ${data.email}`);
@@ -58,6 +62,21 @@ export async function POST(req: Request) {
     }
 
     return new Response('Webhook processed', { status: 200 });
+}
+
+/** Update messaging-hub delivery records when Resend reports on a DM email. */
+async function correlateDelivery(data: any, status: 'DELIVERED' | 'FAILED') {
+    const providerMessageId = data?.email_id || data?.id;
+    if (!providerMessageId) return;
+
+    try {
+        await prisma.messageDelivery.updateMany({
+            where: { providerMessageId },
+            data: { status, ...(status === 'FAILED' ? { error: 'bounced' } : {}) },
+        });
+    } catch (error) {
+        console.error(`Failed to correlate delivery ${providerMessageId}:`, error);
+    }
 }
 
 async function handleBounce(data: any) {

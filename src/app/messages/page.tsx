@@ -1,7 +1,7 @@
 import prisma from '@/lib/prisma';
 import { stackServerApp } from '@/lib/stack';
 import Link from 'next/link';
-import { MessageCircle } from 'lucide-react';
+import { MessageCircle, Settings } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -33,11 +33,21 @@ export default async function MessagesPage() {
     return (
         <main className="min-h-screen bg-background py-12 px-6">
             <div className="max-w-2xl mx-auto space-y-8">
-                <header className="space-y-2">
-                    <h1 className="text-3xl font-serif font-bold text-foreground">Messages</h1>
-                    <p className="text-muted-foreground">
-                        Quiet conversations with members of the community.
-                    </p>
+                <header className="flex items-start justify-between gap-4">
+                    <div className="space-y-2">
+                        <h1 className="text-3xl font-serif font-bold text-foreground">Messages</h1>
+                        <p className="text-muted-foreground">
+                            Quiet conversations with members of the community.
+                        </p>
+                    </div>
+                    <Link
+                        href="/messages/settings"
+                        className="p-2 text-muted-foreground hover:text-primary hover:bg-secondary/50 rounded-full transition-colors"
+                        aria-label="Notification settings"
+                        title="Settings"
+                    >
+                        <Settings size={20} />
+                    </Link>
                 </header>
 
                 {conversations.length === 0 ? (
