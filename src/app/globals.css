@@ -236,4 +236,18 @@ h6,
   .drift-a { animation: drift-a 14s ease-in-out infinite alternate; }
   .drift-b { animation: drift-b 18s ease-in-out infinite alternate; }
   .drift-c { animation: drift-c 22s ease-in-out infinite alternate; }
+
+  /* The breathing wordmark — 8s full cycle, felt more than seen. */
+  @keyframes breathe-slow {
+    from { transform: scale(1); }
+    to { transform: scale(1.025); }
+  }
+  .breathe-slow { animation: breathe-slow 4s ease-in-out infinite alternate; }
+
+  /* Soft pulsing halo for the daily-essence spotlight. */
+  @keyframes halo-breathe {
+    from { opacity: 0.5; }
+    to { opacity: 1; }
+  }
+  .halo-breathe { animation: halo-breathe 4s ease-in-out infinite alternate; }
 }

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
-import type { AmbientVariant, AmbientMode } from './ambient-backdrop';
+import type { AmbientVariant, AmbientMode } from './ambient-scene';
 
 /**
  * The ambient living layer: one THREE.Points field rendered as sprites.
@@ -17,6 +17,7 @@ const MAX_POINTS = 90;
 
 const VARIANTS: Record<AmbientVariant, { count: number; opacity: number; speed: number }> = {
     portal: { count: 90, opacity: 0.85, speed: 1.0 },
+    hero: { count: 70, opacity: 0.9, speed: 0.85 },
     feed: { count: 60, opacity: 0.7, speed: 0.7 },
     course: { count: 45, opacity: 0.6, speed: 0.5 },
     lesson: { count: 24, opacity: 0.45, speed: 0.25 },
@@ -24,13 +25,21 @@ const VARIANTS: Record<AmbientVariant, { count: number; opacity: number; speed: 
 
 const MODES: Record<
     AmbientMode,
-    { palette: string[]; countScale: number; sizeScale: number; blending: THREE.Blending }
+    {
+        palette: string[];
+        countScale: number;
+        sizeScale: number;
+        maxSize: number;
+        blending: THREE.Blending;
+    }
 > = {
-    // Cream/white seeds, fewer and larger, normal blending over the bright meadow
+    // Cream/white seeds, fewer and larger (but capped — no monster seeds),
+    // normal blending over the bright meadow
     day: {
         palette: ['#FFFFFF', '#F5F2EB', '#F0EEE4'],
         countScale: 0.55,
         sizeScale: 2.4,
+        maxSize: 2.6,
         blending: THREE.NormalBlending,
     },
     // Warm amber-green fireflies, additive glow over the dark field
@@ -38,6 +47,7 @@ const MODES: Record<
         palette: ['#FFE9A8', '#E8E3A0', '#FFD37A'],
         countScale: 1.0,
         sizeScale: 1.1,
+        maxSize: 5.0,
         blending: THREE.AdditiveBlending,
     },
 };
@@ -53,6 +63,7 @@ const VERTEX = /* glsl */ `
     uniform float uScrollY;
     uniform float uMode;      // 0 = day (seeds), 1 = night (fireflies)
     uniform float uSizeScale;
+    uniform float uMaxSize;
     varying vec3 vColor;
     varying float vAngle;
     varying float vBlink;
@@ -79,7 +90,7 @@ const VERTEX = /* glsl */ `
         pos.y += uScrollY * 0.0006;
 
         vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
-        gl_PointSize = aSize * uSizeScale * (1.0 + 0.06 * uBreath) * (300.0 / -mvPosition.z);
+        gl_PointSize = min(aSize, uMaxSize) * uSizeScale * (1.0 + 0.06 * uBreath) * (300.0 / -mvPosition.z);
         gl_Position = projectionMatrix * mvPosition;
     }
 `;
@@ -208,24 +219,23 @@ export function AmbientField({
         const container = containerRef.current;
         if (!container) return;
 
-        // ── Renderer / scene ──
+        // ── Renderer / scene — sized to the CONTAINER so the field can live
+        //     full-viewport (community) or inside a hero section (homepage) ──
+        const width = () => container.clientWidth || window.innerWidth;
+        const height = () => container.clientHeight || window.innerHeight;
+
         const renderer = new THREE.WebGLRenderer({
             alpha: true,
             antialias: false,
             powerPreference: 'low-power',
         });
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
-        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setSize(width(), height());
         renderer.setClearColor(0x000000, 0);
         container.appendChild(renderer.domElement);
 
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(
-            55,
-            window.innerWidth / window.innerHeight,
-            0.1,
-            100
-        );
+        const camera = new THREE.PerspectiveCamera(55, width() / height(), 0.1, 100);
         camera.position.z = 1;
 
         // ── Deterministic scattered field ──
@@ -271,6 +281,7 @@ export function AmbientField({
                 uScrollY: { value: 0 },
                 uMode: { value: 0 },
                 uSizeScale: { value: 1 },
+                uMaxSize: { value: 99 },
                 uTexture: { value: textures.day },
             },
         });
@@ -291,6 +302,7 @@ export function AmbientField({
             colorAttr.needsUpdate = true;
             material.uniforms.uMode.value = m === 'day' ? 0 : 1;
             material.uniforms.uSizeScale.value = config.sizeScale;
+            material.uniforms.uMaxSize.value = config.maxSize;
             material.uniforms.uTexture.value = textures[m];
             material.blending = config.blending;
             material.needsUpdate = true;
@@ -315,15 +327,15 @@ export function AmbientField({
         window.addEventListener('scroll', onScroll, { passive: true });
 
         let resizeTimer: ReturnType<typeof setTimeout>;
-        const onResize = () => {
+        const resizeObserver = new ResizeObserver(() => {
             clearTimeout(resizeTimer);
             resizeTimer = setTimeout(() => {
-                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.aspect = width() / height();
                 camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setSize(width(), height());
             }, 150);
-        };
-        window.addEventListener('resize', onResize);
+        });
+        resizeObserver.observe(container);
 
         // ── Frame loop ──
         const clock = new THREE.Clock();
@@ -384,8 +396,8 @@ export function AmbientField({
             running = false;
             cancelAnimationFrame(rafId);
             clearTimeout(resizeTimer);
+            resizeObserver.disconnect();
             document.removeEventListener('visibilitychange', onVisibility);
-            window.removeEventListener('resize', onResize);
             window.removeEventListener('scroll', onScroll);
             if (finePointer) window.removeEventListener('pointermove', onPointerMove);
             sceneRefs.current = null;
