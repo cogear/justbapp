@@ -33,7 +33,7 @@ export function PortalCard({
     return (
         <Link
             href={`/community/${space.slug}`}
-            className={`group block w-full ${SIZE_CLASSES[size]} rounded-[2.5rem] bg-secondary/10 backdrop-blur-md border border-border/40 shadow-sm hover:shadow-xl hover:scale-[1.02] hover:bg-secondary/20 transition-all duration-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40`}
+            className={`group block w-full ${SIZE_CLASSES[size]} rounded-[2.5rem] bg-background/75 backdrop-blur-xl border border-border/60 shadow-md hover:shadow-xl hover:scale-[1.02] hover:bg-background/90 transition-all duration-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40`}
         >
             {space.imageUrl && size !== 'sm' && (
                 <div className="relative w-full aspect-[5/2] mb-5 rounded-[1.5rem] overflow-hidden">
@@ -46,14 +46,14 @@ export function PortalCard({
                     />
                 </div>
             )}
-            <p className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground/70 mb-2">
+            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-2">
                 {typeLine}
             </p>
-            <h2 className="font-georgia text-2xl md:text-3xl text-foreground mb-2 group-hover:text-primary transition-colors duration-500">
+            <h2 className="font-georgia text-3xl md:text-4xl text-foreground mb-3 group-hover:text-primary transition-colors duration-500">
                 {space.name}
             </h2>
             {space.description && (
-                <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">
+                <p className="text-base text-foreground/75 leading-relaxed line-clamp-3">
                     {space.description}
                 </p>
             )}
