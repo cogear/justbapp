@@ -35,23 +35,32 @@ export async function SpaceFeed({ spaceId }: { spaceId: string }) {
     });
 
     return (
-        <div className="p-6">
+        <div className="px-6 pb-20">
             <div className="max-w-2xl mx-auto">
                 {currentUserId && (
-                    <div className="mb-4 flex justify-end">
+                    <div className="mb-6 flex justify-center">
                         <InviteMemberForm spaceId={spaceId} />
                     </div>
                 )}
                 <CreatePostForm spaceId={spaceId} />
 
-                <div className="space-y-4">
+                <div className="space-y-5">
                     {posts.length === 0 ? (
-                        <div className="text-center text-muted-foreground py-10">No posts yet. Be the first!</div>
+                        <div className="text-center text-muted-foreground italic font-light py-16">
+                            nothing here yet. say something unhurried.
+                        </div>
                     ) : (
-                        posts.map(post => (
-                            <div key={post.id} className="bg-card rounded-lg border p-6 shadow-sm">
+                        posts.map((post, i) => (
+                            <div
+                                key={post.id}
+                                className="rounded-[2rem] bg-secondary/15 backdrop-blur-md border border-border/30 p-6 md:p-7 shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-700"
+                                style={{
+                                    animationDelay: `${Math.min(i, 6) * 100}ms`,
+                                    animationFillMode: 'backwards',
+                                }}
+                            >
                                 <div className="flex items-center gap-3 mb-4">
-                                    <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground font-semibold">
+                                    <div className="h-10 w-10 rounded-full bg-b-sage/20 flex items-center justify-center text-b-sage font-georgia">
                                         {(post.author.displayName || post.author.email)?.[0]?.toUpperCase() || '?'}
                                     </div>
                                     <div>
@@ -64,8 +73,8 @@ export async function SpaceFeed({ spaceId }: { spaceId: string }) {
                                         <div className="text-xs text-muted-foreground">{new Date(post.createdAt).toLocaleDateString()}</div>
                                     </div>
                                 </div>
-                                <p className="text-card-foreground whitespace-pre-wrap">{post.content}</p>
-                                <div className="flex items-center gap-4 mt-4">
+                                <p className="text-foreground whitespace-pre-wrap leading-relaxed">{post.content}</p>
+                                <div className="flex items-center gap-4 mt-5">
                                     <LikeButton
                                         postId={post.id}
                                         likeCount={post._count.likes}

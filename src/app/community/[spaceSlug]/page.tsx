@@ -54,11 +54,15 @@ export default async function SpacePage({ params, searchParams }: PageProps) {
     }
 
     return (
-        <div>
-            <div className="border-b p-4">
-                <h1 className="text-2xl font-bold">{space.name}</h1>
-                {space.description && <p className="text-muted-foreground">{space.description}</p>}
-            </div>
+        <div className="pt-24">
+            <header className="text-center px-6 mb-8 animate-in fade-in duration-1000">
+                <h1 className="font-georgia text-4xl md:text-5xl text-foreground mb-3">{space.name}</h1>
+                {space.description && (
+                    <p className="text-muted-foreground italic font-light max-w-xl mx-auto">
+                        {space.description}
+                    </p>
+                )}
+            </header>
             <SpaceFeed spaceId={space.id} />
         </div>
     )

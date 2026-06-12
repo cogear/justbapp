@@ -1,7 +1,8 @@
-import { CommunitySidebar } from '@/components/community-sidebar';
 import prisma from '@/lib/prisma';
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
+import { AmbientBackdrop } from '@/components/community/ambient-backdrop';
+import { CommunityBreadcrumb } from '@/components/community/community-breadcrumb';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,15 +24,7 @@ async function getSpaces() {
                     id: true,
                     modules: {
                         orderBy: { order: 'asc' },
-                        select: {
-                            id: true,
-                            title: true,
-                            order: true,
-                            lessons: {
-                                orderBy: { order: 'asc' },
-                                select: { id: true, title: true, order: true },
-                            },
-                        },
+                        select: { id: true, title: true, order: true },
                     },
                 },
             },
@@ -47,15 +40,23 @@ export default async function CommunityLayout({
 }) {
     const spaces = await getSpaces();
 
+    const spaceTypes = Object.fromEntries(spaces.map((s) => [s.slug, s.type]));
+    const breadcrumbSpaces = spaces.map((s) => ({
+        name: s.name,
+        slug: s.slug,
+        type: s.type,
+        modules: s.courses.flatMap((c) => c.modules.map((m) => ({ id: m.id, title: m.title }))),
+    }));
+
     return (
-        <div className="flex min-h-screen">
+        <div className="relative min-h-screen">
             <Suspense>
-                <CommunitySidebar spaces={spaces} />
+                <AmbientBackdrop spaceTypes={spaceTypes} />
             </Suspense>
-            <main className="flex-1 overflow-y-auto">
-                {/* Mobile Header would go here */}
-                {children}
-            </main>
+            <Suspense>
+                <CommunityBreadcrumb spaces={breadcrumbSpaces} />
+            </Suspense>
+            <main className="relative">{children}</main>
         </div>
     );
 }

@@ -1,6 +1,12 @@
 export type CourseLandingContent = {
+    /** Short emotional headline for the hero (falls back to the course title). */
+    heroHeadline?: string;
     heroSubtitle?: string;
     heroImage?: { src: string; alt: string };
+    /** Three short value props about the lesson format, shown as chips under the hero. */
+    formatPromise?: { title: string; body: string }[];
+    /** Primary CTA label, links to the first module. */
+    ctaLabel?: string;
     intro: {
         paragraphs: string[];
     };
@@ -10,7 +16,24 @@ export type CourseLandingContent = {
 
 export const courseLandingContent: Record<string, CourseLandingContent> = {
     'ai-for-humans': {
-        heroSubtitle: 'A human-centered guide to understanding and working with AI.',
+        heroHeadline: 'You don’t need to become technical. You just need a good explanation.',
+        heroSubtitle:
+            'Short, story-driven videos and essays that explain AI in plain language — what it actually is, how to talk to it, and how to fold it into a life that still feels like yours.',
+        formatPromise: [
+            {
+                title: 'Told as stories',
+                body: 'Every lesson starts with a person and a moment — not a diagram. You remember it because it felt like something.',
+            },
+            {
+                title: 'Plain language, always',
+                body: 'No jargon, no prerequisites, no homework. If a term matters, we explain it the way a friend would over coffee.',
+            },
+            {
+                title: 'Minutes, not semesters',
+                body: 'Each lesson is a few unhurried minutes. One with your morning coffee is the whole curriculum for today.',
+            },
+        ],
+        ctaLabel: 'Begin with the first story',
         heroImage: { src: '/images/hero-community.jpg', alt: 'A community gathered, present together' },
         intro: {
             paragraphs: [
@@ -49,7 +72,24 @@ export const courseLandingContent: Record<string, CourseLandingContent> = {
         },
     },
     'living-with-ai': {
-        heroSubtitle: 'Intentional living in an AI-forward world.',
+        heroHeadline: 'A slower way to live in a faster world.',
+        heroSubtitle:
+            'Seven b. life principles, told through short videos and quiet essays — not about rejecting AI, and not about chasing it. About staying rooted.',
+        formatPromise: [
+            {
+                title: 'Gentle, not preachy',
+                body: 'These are conversations, not lectures. Take what helps, leave the rest.',
+            },
+            {
+                title: 'Written for real weeks',
+                body: 'Small practices that fit inside an ordinary Tuesday, not a retreat schedule.',
+            },
+            {
+                title: 'A few minutes at a time',
+                body: 'Each lesson is short on purpose. Slowness is the point.',
+            },
+        ],
+        ctaLabel: 'Begin with module one',
         heroImage: { src: '/images/living-with-ai-hero.jpg', alt: 'A couple walking together in autumn light' },
         intro: {
             paragraphs: [
