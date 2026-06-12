@@ -199,3 +199,41 @@ h6,
     @apply bg-background text-foreground;
   }
 }
+
+/* ── Community ambient layer ─────────────────────────────────────────── */
+
+/* Static gradient floor: always present beneath the WebGL canvas, and the
+   final state for reduced-motion / no-WebGL visitors. */
+@utility ambient-gradient {
+  background:
+    radial-gradient(ellipse 80% 60% at 18% 12%, color-mix(in oklab, #8DA399 14%, transparent), transparent 70%),
+    radial-gradient(ellipse 70% 55% at 85% 80%, color-mix(in oklab, #D4A59A 12%, transparent), transparent 70%),
+    radial-gradient(ellipse 60% 50% at 60% 35%, color-mix(in oklab, #E0E6E6 18%, transparent), transparent 75%),
+    var(--background);
+}
+
+.dark .ambient-gradient {
+  background:
+    radial-gradient(ellipse 80% 60% at 18% 12%, color-mix(in oklab, #8DA399 7%, transparent), transparent 70%),
+    radial-gradient(ellipse 70% 55% at 85% 80%, color-mix(in oklab, #D4A59A 6%, transparent), transparent 70%),
+    var(--background);
+}
+
+/* Slow positional drift for portal cards — three phases assigned by seed. */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes drift-a {
+    from { transform: translate(0, 0); }
+    to { transform: translate(8px, -10px); }
+  }
+  @keyframes drift-b {
+    from { transform: translate(0, 0); }
+    to { transform: translate(-10px, 7px); }
+  }
+  @keyframes drift-c {
+    from { transform: translate(0, 0); }
+    to { transform: translate(6px, 9px); }
+  }
+  .drift-a { animation: drift-a 14s ease-in-out infinite alternate; }
+  .drift-b { animation: drift-b 18s ease-in-out infinite alternate; }
+  .drift-c { animation: drift-c 22s ease-in-out infinite alternate; }
+}
