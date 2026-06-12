@@ -2,9 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
+import Image from 'next/image';
 import { usePathname, useSearchParams } from 'next/navigation';
+import { useTheme } from 'next-themes';
 
 export type AmbientVariant = 'portal' | 'feed' | 'course' | 'lesson';
+export type AmbientMode = 'day' | 'night';
 
 // The three.js chunk is only fetched if this component decides to mount it.
 const AmbientField = dynamic(
@@ -13,10 +16,12 @@ const AmbientField = dynamic(
 );
 
 /**
- * Client gate for the ambient WebGL layer.
- * - Always renders the static gradient floor (zero layout shift, dark-mode aware).
+ * Client gate for the ambient layer.
+ * - Nature-scene floor: sunlit dandelion meadow (light) / dusk meadow (dark),
+ *   CSS-toggled so there's no hydration dependency, with a readability wash.
  * - Only dynamic-imports three.js when motion is allowed AND WebGL exists,
  *   so reduced-motion visitors never download the chunk.
+ * - Day mode floats dandelion seeds; night mode, fireflies.
  */
 export function AmbientBackdrop({
     spaceTypes,
@@ -27,10 +32,11 @@ export function AmbientBackdrop({
     const [ready, setReady] = useState(false);
     const pathname = usePathname();
     const searchParams = useSearchParams();
+    const { resolvedTheme } = useTheme();
 
     useEffect(() => {
         // Probe after paint — keeps the effect body free of sync setState
-        // and lets the gradient floor render first.
+        // and lets the scene floor render first.
         const raf = requestAnimationFrame(() => {
             if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
             const canvas = document.createElement('canvas');
@@ -53,10 +59,33 @@ export function AmbientBackdrop({
               : 'course'
           : 'feed';
 
+    const mode: AmbientMode = resolvedTheme === 'dark' ? 'night' : 'day';
+
     return (
         <>
-            {/* Permanent gradient floor */}
-            <div aria-hidden className="ambient-gradient fixed inset-0 -z-20 pointer-events-none" />
+            {/* Nature floor — gradient base, then the theme's scene, then a wash */}
+            <div aria-hidden className="fixed inset-0 -z-20 pointer-events-none overflow-hidden">
+                <div className="ambient-gradient absolute inset-0" />
+                <Image
+                    src="/images/community/meadow-day.png"
+                    alt=""
+                    fill
+                    sizes="100vw"
+                    className="object-cover block dark:hidden"
+                    priority={false}
+                />
+                <Image
+                    src="/images/community/meadow-dusk.png"
+                    alt=""
+                    fill
+                    sizes="100vw"
+                    className="object-cover hidden dark:block"
+                    priority={false}
+                />
+                {/* Readability wash over the scene */}
+                <div className="absolute inset-0 bg-background/50 dark:bg-background/40" />
+            </div>
+
             {enabled && (
                 <div
                     aria-hidden
@@ -64,7 +93,7 @@ export function AmbientBackdrop({
                         ready ? 'opacity-100' : 'opacity-0'
                     }`}
                 >
-                    <AmbientField variant={variant} onReady={() => setReady(true)} />
+                    <AmbientField variant={variant} mode={mode} onReady={() => setReady(true)} />
                 </div>
             )}
         </>
