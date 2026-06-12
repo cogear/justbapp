@@ -2,6 +2,7 @@ import prisma from '@/lib/prisma';
 import { resend } from '@/lib/resend';
 import { WelcomeEmail } from '@/emails/WelcomeEmail';
 import Link from 'next/link';
+import { ConfirmTracker } from './ConfirmTracker';
 
 export const dynamic = 'force-dynamic';
 
@@ -66,6 +67,7 @@ export default async function VerifyNewsletterPage({
     return (
         <main className="min-h-screen bg-background flex items-center justify-center p-6">
             <div className="max-w-md w-full text-center space-y-6">
+                {status === 'success' && <ConfirmTracker />}
                 <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full ${status === 'success' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>
                     {status === 'success' ? (
                         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>

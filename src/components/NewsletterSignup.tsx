@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { trackEvent } from '@/lib/gtag';
 
 export function NewsletterSignup({
     initialEmail,
@@ -64,6 +65,9 @@ export function NewsletterSignup({
             setStatus('success');
             setMessage(data.message || 'Please check your email to confirm your subscription.');
             if (!initialEmail) setEmail('');
+
+            // GA4: lead captured (email submitted, pending double opt-in confirmation)
+            trackEvent('generate_lead', { method: 'newsletter' });
         } catch (err) {
             setStatus('error');
             setMessage(err instanceof Error ? err.message : 'Something went wrong');
