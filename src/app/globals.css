@@ -250,4 +250,11 @@ h6,
     to { opacity: 1; }
   }
   .halo-breathe { animation: halo-breathe 4s ease-in-out infinite alternate; }
+
+  /* Gentle vertical bob — the book resting on the meadow air. */
+  @keyframes float-gentle {
+    from { transform: translateY(-8px); }
+    to { transform: translateY(8px); }
+  }
+  .float-gentle { animation: float-gentle 4s ease-in-out infinite alternate; }
 }

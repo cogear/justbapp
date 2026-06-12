@@ -1,20 +1,58 @@
 'use client';
 
-import React, { useState } from 'react';
-import Image from 'next/image';
+import React, { useEffect, useRef } from 'react';
 
 interface ThreeDBookProps {
     coverImage: string;
+    /** Tilt toward the pointer on fine-pointer devices (reduced-motion aware). */
+    interactive?: boolean;
 }
 
-export function ThreeDBook({ coverImage }: ThreeDBookProps) {
+export function ThreeDBook({ coverImage, interactive = false }: ThreeDBookProps) {
+    const bookRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!interactive) return;
+        if (!window.matchMedia('(pointer: fine)').matches) return;
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        const book = bookRef.current;
+        if (!book) return;
+
+        let targetY = 35;
+        let targetX = 0;
+        let currentY = 35;
+        let currentX = 0;
+        let rafId = 0;
+
+        const onPointerMove = (e: PointerEvent) => {
+            const nx = (e.clientX / window.innerWidth) * 2 - 1;
+            const ny = (e.clientY / window.innerHeight) * 2 - 1;
+            targetY = 35 + nx * 8;
+            targetX = -ny * 4;
+        };
+        window.addEventListener('pointermove', onPointerMove, { passive: true });
+
+        const tick = () => {
+            rafId = requestAnimationFrame(tick);
+            currentY += (targetY - currentY) * 0.05;
+            currentX += (targetX - currentX) * 0.05;
+            book.style.transform = `rotateY(${currentY}deg) rotateX(${currentX}deg)`;
+        };
+        rafId = requestAnimationFrame(tick);
+
+        return () => {
+            cancelAnimationFrame(rafId);
+            window.removeEventListener('pointermove', onPointerMove);
+        };
+    }, [interactive]);
 
     return (
         <div
             className="relative perspective-2000 w-[300px] h-[480px] group"
         >
             <div
-                className="relative w-full h-full preserve-3d transition-transform duration-700 ease-in-out"
+                ref={bookRef}
+                className="relative w-full h-full preserve-3d"
                 style={{
                     transform: `rotateY(35deg)`
                 }}
@@ -37,19 +75,17 @@ export function ThreeDBook({ coverImage }: ThreeDBookProps) {
                     <div className="absolute left-0 top-0 bottom-0 w-2 bg-gradient-to-r from-black/20 to-transparent"></div>
                 </div>
 
-                {/* Spine */}
+                {/* Spine — plain cloth, no stretched cover art */}
                 <div
-                    className="absolute left-0 top-0 bottom-0 w-[50px] bg-white backface-hidden"
+                    className="absolute left-0 top-0 bottom-0 w-[50px] backface-hidden"
                     style={{
                         transform: 'rotateY(-90deg) translateZ(25px)',
-                        backgroundImage: `url(${coverImage})`,
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center center', // Focus on the spine
+                        backgroundColor: '#FCFBF8',
                         width: '50px',
                         height: '100%'
                     }}
                 >
-                    <div className="absolute inset-0 bg-gradient-to-r from-black/10 via-white/10 to-black/10 pointer-events-none"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-black/15 via-transparent to-black/10 pointer-events-none"></div>
                 </div>
 
                 {/* Back Cover */}
@@ -68,13 +104,11 @@ export function ThreeDBook({ coverImage }: ThreeDBookProps) {
                     <div className="absolute right-0 top-0 bottom-0 w-2 bg-gradient-to-l from-black/20 to-transparent"></div>
                 </div>
 
-                {/* Pages (Right Side) */}
+                {/* Pages (Right Side) — mirrors the spine placement so it hugs the cover edge */}
                 <div
                     className="absolute right-0 top-2 bottom-2 w-[48px] bg-[#F5F2EB]"
                     style={{
-                        // Let's approximate: 300px width. rotateY(90) puts it at right edge.
-                        // We want it recessed slightly. 
-                        transform: 'rotateY(90deg) translateZ(274px)',
+                        transform: 'rotateY(90deg) translateZ(24px)',
                         boxShadow: 'inset 0 0 10px rgba(0,0,0,0.05)',
                         backgroundImage: 'linear-gradient(90deg, #e3e3e3 1px, transparent 1px)',
                         backgroundSize: '4px 100%'
@@ -92,12 +126,11 @@ export function ThreeDBook({ coverImage }: ThreeDBookProps) {
                     }}
                 />
 
-                {/* Pages (Bottom) */}
+                {/* Pages (Bottom) — mirrors the top placement */}
                 <div
                     className="absolute bottom-0 left-0 right-0 h-[48px] bg-[#F5F2EB]"
                     style={{
-                        // Height is 480. rotateX(-90) at bottom.
-                        transform: 'rotateX(-90deg) translateZ(454px)',
+                        transform: 'rotateX(-90deg) translateZ(24px)',
                         width: '298px',
                         left: '1px',
                         boxShadow: 'inset 0 0 10px rgba(0,0,0,0.05)',
