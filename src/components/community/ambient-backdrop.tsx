@@ -29,14 +29,19 @@ export function AmbientBackdrop({
     const searchParams = useSearchParams();
 
     useEffect(() => {
-        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-        const canvas = document.createElement('canvas');
-        const gl =
-            canvas.getContext('webgl2') ||
-            canvas.getContext('webgl') ||
-            canvas.getContext('experimental-webgl');
-        if (!gl) return;
-        setEnabled(true);
+        // Probe after paint — keeps the effect body free of sync setState
+        // and lets the gradient floor render first.
+        const raf = requestAnimationFrame(() => {
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            const canvas = document.createElement('canvas');
+            const gl =
+                canvas.getContext('webgl2') ||
+                canvas.getContext('webgl') ||
+                canvas.getContext('experimental-webgl');
+            if (!gl) return;
+            setEnabled(true);
+        });
+        return () => cancelAnimationFrame(raf);
     }, []);
 
     const slug = pathname.split('/')[2];
