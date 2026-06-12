@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { NewsletterSignup } from '@/components/NewsletterSignup';
 import { AmbientScene } from '@/components/community/ambient-scene';
 import { ThreeDBook } from '@/components/ThreeDBook';
@@ -115,13 +116,24 @@ export default function BookPage() {
 
                     {/* Comfort */}
                     <Reveal>
-                        <div className="border-l-2 border-primary/20 pl-8 md:pl-12 py-2">
-                            <p className="text-xl md:text-2xl font-georgia text-foreground italic leading-relaxed">
-                                &ldquo;Creating genuine conditions of comfort is an achievement, not a sign of laziness.&rdquo;
-                            </p>
-                            <p className="mt-6 text-lg text-muted-foreground leading-relaxed">
-                                Our culture treats rest as suspicious—something you have to earn by exhausting yourself first. But the Danes know better. They built an entire concept, *hygge*, around the radical idea that comfort is a skill. It&rsquo;s the ability to settle your nervous system, to find the deep exhale that proves you&apos;ve actually arrived. You don&apos;t have to earn the right to be warm.
-                            </p>
+                        <div className="grid md:grid-cols-[1fr_15rem] gap-8 items-center">
+                            <div className="border-l-2 border-primary/20 pl-8 md:pl-12 py-2">
+                                <p className="text-xl md:text-2xl font-georgia text-foreground italic leading-relaxed">
+                                    &ldquo;Creating genuine conditions of comfort is an achievement, not a sign of laziness.&rdquo;
+                                </p>
+                                <p className="mt-6 text-lg text-muted-foreground leading-relaxed">
+                                    Our culture treats rest as suspicious—something you have to earn by exhausting yourself first. But the Danes know better. They built an entire concept, *hygge*, around the radical idea that comfort is a skill. It&rsquo;s the ability to settle your nervous system, to find the deep exhale that proves you&apos;ve actually arrived. You don&apos;t have to earn the right to be warm.
+                                </p>
+                            </div>
+                            <div className="relative aspect-[4/5] rounded-[2rem] overflow-hidden shadow-md hidden md:block">
+                                <Image
+                                    src="/images/principles/comfort.png"
+                                    alt="Wrapped in a blanket with a warm mug, morning light through the window"
+                                    fill
+                                    sizes="15rem"
+                                    className="object-cover brightness-[0.97]"
+                                />
+                            </div>
                         </div>
                     </Reveal>
 
@@ -145,6 +157,16 @@ export default function BookPage() {
                     </Reveal>
 
                     <Reveal>
+                        <div className="relative aspect-[21/9] rounded-[2.5rem] overflow-hidden shadow-md mb-12">
+                            <Image
+                                src="/images/principles/slow.png"
+                                alt="Pausing to rest a hand on an old mossy tree in a quiet, foggy forest"
+                                fill
+                                sizes="(max-width: 768px) 100vw, 48rem"
+                                className="object-cover brightness-[0.95]"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background/15" />
+                        </div>
                         <div className="prose prose-lg dark:prose-invert mx-auto">
                             <p className="text-muted-foreground leading-relaxed">
                                 We are time-poor not because we lack hours, but because we rush through the ones we have. We swallow meals without tasting them and have conversations while mentally dragging ourselves to the next task. But presence has a speed limit. The &ldquo;Slow Movement&rdquo; isn&apos;t about being slow—it&apos;s about being intentional. It&apos;s about recognizing that you can&apos;t efficiency-hack joy, and that a single hour lived fully is worth more than a week lived in a blur.
@@ -164,17 +186,37 @@ export default function BookPage() {
 
                     {/* Community */}
                     <Reveal>
-                        <div className="prose prose-lg dark:prose-invert mx-auto">
-                            <h4 className="font-georgia text-2xl font-bold mb-4 text-foreground">The Myth of the Self-Made</h4>
-                            <p className="text-muted-foreground leading-relaxed">
-                                In a digital age that promised connection, we find ourselves in a loneliness epidemic. We&apos;ve bought into the myth that we should be able to do it all alone. But humans are pack animals. We need &ldquo;Third Places&rdquo; where we can just be. We need to move from transaction to gift, from competition to community. Because ultimately, we cannot &ldquo;just be&rdquo; in isolation. We need others to reflect our humanity back to us.
-                            </p>
+                        <div className="grid md:grid-cols-[15rem_1fr] gap-8 items-center">
+                            <div className="relative aspect-[4/5] rounded-[2rem] overflow-hidden shadow-md hidden md:block">
+                                <Image
+                                    src="/images/principles/community.png"
+                                    alt="Friends gathered together, present with one another"
+                                    fill
+                                    sizes="15rem"
+                                    className="object-cover brightness-[0.97]"
+                                />
+                            </div>
+                            <div className="prose prose-lg dark:prose-invert mx-auto">
+                                <h4 className="font-georgia text-2xl font-bold mb-4 text-foreground">The Myth of the Self-Made</h4>
+                                <p className="text-muted-foreground leading-relaxed">
+                                    In a digital age that promised connection, we find ourselves in a loneliness epidemic. We&apos;ve bought into the myth that we should be able to do it all alone. But humans are pack animals. We need &ldquo;Third Places&rdquo; where we can just be. We need to move from transaction to gift, from competition to community. Because ultimately, we cannot &ldquo;just be&rdquo; in isolation. We need others to reflect our humanity back to us.
+                                </p>
+                            </div>
                         </div>
                     </Reveal>
 
                     {/* Gratitude */}
                     <Reveal>
                         <div className="text-center max-w-2xl mx-auto pt-12">
+                            <div className="relative w-48 h-48 mx-auto mb-10 rounded-full overflow-hidden shadow-md">
+                                <Image
+                                    src="/images/principles/gratitude.png"
+                                    alt="A lit candle and a warm coffee on a bedside table"
+                                    fill
+                                    sizes="12rem"
+                                    className="object-cover brightness-[0.97]"
+                                />
+                            </div>
                             <div className="w-16 h-1 bg-primary mx-auto mb-8 rounded-full"></div>
                             <h4 className="font-georgia text-3xl font-bold mb-6 text-foreground">The Ordinary Miraculous</h4>
                             <p className="text-xl text-muted-foreground leading-relaxed font-light">
