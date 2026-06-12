@@ -28,17 +28,20 @@ export function CreatePostForm({ spaceId }: { spaceId: string }) {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="bg-card rounded-lg border p-4 shadow-sm mb-6">
+        <form
+            onSubmit={handleSubmit}
+            className="rounded-[2rem] bg-secondary/10 backdrop-blur-md border border-border/30 p-6 shadow-sm mb-8 focus-within:bg-secondary/20 transition-colors duration-500"
+        >
             <textarea
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                placeholder="What's on your mind?"
-                className="w-full bg-transparent outline-none text-lg resize-none min-h-[80px]"
+                placeholder="share a thought…"
+                className="w-full bg-transparent outline-none text-lg resize-none min-h-[80px] placeholder:italic placeholder:font-light placeholder:text-muted-foreground/60"
             />
             {error && <p className="text-sm text-destructive mt-2">{error}</p>}
             <div className="flex justify-end mt-4">
-                <Button type="submit" disabled={isSubmitting}>
-                    {isSubmitting ? 'Posting...' : 'Post'}
+                <Button type="submit" disabled={isSubmitting} className="rounded-full px-6">
+                    {isSubmitting ? 'Sharing…' : 'Share'}
                 </Button>
             </div>
         </form>
