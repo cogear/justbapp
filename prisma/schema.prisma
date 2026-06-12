@@ -23,6 +23,12 @@ model User {
   isNewsletterSubscriber Boolean                @default(false)
   newsletterVerificationToken String?           @unique
   emailActive            Boolean                @default(true)
+  phone                  String?                @unique
+  phoneVerifiedAt        DateTime?
+  phoneOtpHash           String?
+  phoneOtpExpiresAt      DateTime?
+  smsConsentAt           DateTime?
+  smsActive              Boolean                @default(true)
   dailyPulses            DailyPulse[]
   journalEntries         JournalEntry[]
   visualProfiles         VisualProfile[]
@@ -31,6 +37,12 @@ model User {
   comments               Comment[]
   postLikes              PostLike[]
   lessonProgress         LessonProgress[]
+  notificationPreference NotificationPreference?
+  conversationParticipants ConversationParticipant[]
+  sentMessages           Message[]
+  messageDeliveries      MessageDelivery[]
+  sentInvitations        Invitation[]           @relation("InvitationInviter")
+  claimedInvitations     Invitation[]           @relation("InvitationAccepted")
 }
 
 model VisualProfile {
@@ -196,6 +208,8 @@ model Space {
   members     SpaceMember[]
   posts       Post[]
   courses     Course[]
+  messages    Message[]
+  invitations Invitation[]
 }
 
 model SpaceMember {
@@ -306,4 +320,154 @@ model LessonProgress {
   lesson      Lesson   @relation(fields: [lessonId], references: [id])
 
   @@unique([userId, lessonId])
+}
+
+// ─── Messaging / Communications Hub ─────────────────────────────────────────
+
+enum MessageChannel {
+  APP
+  EMAIL
+  SMS
+}
+
+enum DeliveryStatus {
+  QUEUED
+  SENT
+  DELIVERED
+  FAILED
+  SKIPPED
+}
+
+enum InboundStatus {
+  MATCHED
+  UNMATCHED
+  NEEDS_DISAMBIGUATION
+  REJECTED
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  EXPIRED
+  REVOKED
+}
+
+model NotificationPreference {
+  id            String  @id @default(uuid())
+  userId        String  @unique
+  dmEmail       Boolean @default(true)
+  dmSms         Boolean @default(false)
+  eventEmail    Boolean @default(true)
+  eventSms      Boolean @default(false)
+  announceEmail Boolean @default(true)
+  announceSms   Boolean @default(false)
+
+  user          User    @relation(fields: [userId], references: [id])
+}
+
+model Conversation {
+  id            String   @id @default(uuid())
+  pairKey       String?  @unique // sorted "userIdA:userIdB" for 1:1; null reserved for future group
+  createdAt     DateTime @default(now())
+  lastMessageAt DateTime @default(now())
+
+  participants  ConversationParticipant[]
+  messages      Message[]
+}
+
+model ConversationParticipant {
+  id             String    @id @default(uuid())
+  conversationId String
+  userId         String
+  lastReadAt     DateTime?
+  replyToken     String    @unique @default(cuid()) // t-<token>@reply.theblife.com
+
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id])
+
+  @@unique([conversationId, userId])
+  @@index([userId])
+}
+
+model Message {
+  id             String         @id @default(uuid())
+  content        String
+  authorId       String
+  conversationId String? // exactly one of conversationId / spaceId is set (app-level invariant)
+  spaceId        String? // reserved for space group chat (parked realtime plan)
+  sourceChannel  MessageChannel @default(APP)
+  createdAt      DateTime       @default(now())
+
+  author         User           @relation(fields: [authorId], references: [id])
+  conversation   Conversation?  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  space          Space?         @relation(fields: [spaceId], references: [id])
+  deliveries     MessageDelivery[]
+
+  @@index([conversationId, createdAt])
+  @@index([spaceId, createdAt])
+}
+
+model MessageDelivery {
+  id                String         @id @default(uuid())
+  messageId         String
+  recipientId       String
+  channel           MessageChannel
+  status            DeliveryStatus @default(QUEUED)
+  providerMessageId String?        @unique // Resend email id / EUM MessageId — webhook correlation
+  error             String?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  message           Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  recipient         User    @relation(fields: [recipientId], references: [id])
+
+  @@index([recipientId, channel, createdAt]) // powers SMS reply-routing heuristic
+}
+
+model InboundMessage {
+  id          String         @id @default(uuid())
+  channel     MessageChannel
+  fromAddress String // email address or E.164 phone
+  toAddress   String // t-<token>@reply.theblife.com or our 10DLC number
+  providerId  String?        @unique // svix message id / SNS MessageId — idempotency
+  rawPayload  Json
+  parsedText  String?
+  messageId   String? // resulting Message, if matched
+  status      InboundStatus
+  createdAt   DateTime       @default(now())
+
+  @@index([fromAddress, createdAt])
+}
+
+model Invitation {
+  id             String           @id @default(uuid())
+  token          String           @unique @default(cuid())
+  inviterId      String
+  spaceId        String
+  contactEmail   String?
+  contactPhone   String? // E.164
+  personalNote   String?
+  channel        MessageChannel
+  status         InvitationStatus @default(PENDING)
+  expiresAt      DateTime
+  acceptedUserId String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  inviter        User  @relation("InvitationInviter", fields: [inviterId], references: [id])
+  acceptedUser   User? @relation("InvitationAccepted", fields: [acceptedUserId], references: [id])
+  space          Space @relation(fields: [spaceId], references: [id])
+
+  @@index([inviterId, createdAt]) // rate limiting
+  @@index([contactEmail, spaceId])
+  @@index([contactPhone, spaceId])
+}
+
+model ContactSuppression {
+  id         String         @id @default(uuid())
+  identifier String         @unique // email address or E.164 phone
+  channel    MessageChannel
+  reason     String // STOP | DECLINED | BOUNCED | COMPLAINT | MANUAL
+  createdAt  DateTime       @default(now())
 }

@@ -4,9 +4,10 @@ import { stackServerApp } from '@/lib/stack';
 import { ThemeToggle } from './ThemeToggle';
 import { AuthButtons } from './AuthButtons';
 import { MobileNav } from './MobileNav';
-import { Youtube } from 'lucide-react';
+import { Youtube, MessageCircle } from 'lucide-react';
 
 export async function Header() {
+    const stackUser = await stackServerApp.getUser().catch(() => null);
     return (
         <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
             <div className="b-nav-content flex h-14 items-center justify-between">
@@ -40,6 +41,15 @@ export async function Header() {
                     </nav>
                 </div>
                 <div className="flex items-center gap-4">
+                    {stackUser && (
+                        <Link
+                            href="/messages"
+                            className="p-2 text-muted-foreground hover:text-primary transition-colors hover:bg-secondary/50 rounded-full"
+                            title="Messages"
+                        >
+                            <MessageCircle size={20} />
+                        </Link>
+                    )}
                     <React.Suspense fallback={<div className="w-20" />}>
                         <AuthButtons />
                     </React.Suspense>

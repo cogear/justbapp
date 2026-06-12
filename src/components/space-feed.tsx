@@ -3,6 +3,8 @@ import { stackServerApp } from '@/lib/stack';
 import { CreatePostForm } from './create-post-form';
 import { CommentThread } from './comment-thread';
 import { LikeButton } from './like-button';
+import { MessageUserButton } from './messages/message-user-button';
+import { InviteMemberForm } from './messages/invite-member-form';
 
 export async function SpaceFeed({ spaceId }: { spaceId: string }) {
     const stackUser = await stackServerApp.getUser();
@@ -35,6 +37,11 @@ export async function SpaceFeed({ spaceId }: { spaceId: string }) {
     return (
         <div className="p-6">
             <div className="max-w-2xl mx-auto">
+                {currentUserId && (
+                    <div className="mb-4 flex justify-end">
+                        <InviteMemberForm spaceId={spaceId} />
+                    </div>
+                )}
                 <CreatePostForm spaceId={spaceId} />
 
                 <div className="space-y-4">
@@ -48,7 +55,12 @@ export async function SpaceFeed({ spaceId }: { spaceId: string }) {
                                         {(post.author.displayName || post.author.email)?.[0]?.toUpperCase() || '?'}
                                     </div>
                                     <div>
-                                        <div className="font-medium">{post.author.displayName || post.author.email || 'User'}</div>
+                                        <div className="font-medium flex items-center gap-1.5">
+                                            {post.author.displayName || post.author.email || 'User'}
+                                            {currentUserId && post.author.id !== currentUserId && (
+                                                <MessageUserButton userId={post.author.id} />
+                                            )}
+                                        </div>
                                         <div className="text-xs text-muted-foreground">{new Date(post.createdAt).toLocaleDateString()}</div>
                                     </div>
                                 </div>
