@@ -20,6 +20,11 @@ export async function Header() {
                         <Link href="/community" className="transition-colors hover:text-foreground font-georgia">
                             b.community
                         </Link>
+                        {stackUser && (
+                            <Link href="/gatherings" className="transition-colors hover:text-foreground font-georgia">
+                                b.gatherings
+                            </Link>
+                        )}
                         <Link href="/blog" className="transition-colors hover:text-foreground font-georgia">
                             b.blog
                         </Link>
