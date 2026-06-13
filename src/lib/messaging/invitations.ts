@@ -2,6 +2,7 @@ import 'server-only';
 import prisma from '@/lib/prisma';
 import { sendEmail, MESSAGES_FROM_ADDRESS } from '@/lib/messaging/email';
 import { sendSms, smsEnabled, normalizePhone } from '@/lib/messaging/sms';
+import { SMS_TEMPLATES } from '@/lib/messaging/sms-templates';
 import {
     getOrCreatePairConversation,
     createConversationMessage,
@@ -177,12 +178,12 @@ export async function inviteToSpace({
         return { success: true, kind: 'email_sent' };
     }
 
-    // SMS invite: one-time, person-triggered, identified, with STOP language
-    const smsBody =
-        `${inviterName} invited you to join ${spaceName} on The B Life` +
-        `${sanitizedNote ? `: "${sanitizedNote}"` : ''}. ` +
-        `Accept: ${inviteUrl} — Reply STOP to opt out.`;
-    const result = await sendSms(phone!, smsBody);
+    // SMS invite: one-time, person-triggered, via an approved Sent template.
+    // (The personal note rides the email invite; SMS stays a clean notification.)
+    const result = await sendSms(phone!, {
+        template: SMS_TEMPLATES.invite,
+        variables: { var_1: inviterName, var_2: spaceName, var_3: inviteUrl },
+    });
     if ('error' in result) {
         await prisma.invitation.delete({ where: { id: invitation.id } }).catch(() => {});
         console.error('Invite SMS failed:', result.error);

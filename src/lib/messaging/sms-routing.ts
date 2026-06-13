@@ -1,27 +1,24 @@
 import 'server-only';
 import prisma from '@/lib/prisma';
 import { sendSms } from '@/lib/messaging/sms';
+import { SMS_TEMPLATES } from '@/lib/messaging/sms-templates';
 import { createConversationMessage } from '@/lib/messaging/conversations';
 import { notifyMessageRecipients } from '@/lib/messaging/notify';
 import type { Prisma } from '@prisma/client';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://theblife.com';
 const ROUTING_WINDOW_HOURS = 72;
-const DISAMBIGUATION_WINDOW_MS = 60 * 60 * 1000;
 
 const STOP_WORDS = new Set(['stop', 'stopall', 'unsubscribe', 'cancel', 'end', 'quit']);
 
-type DisambiguationOption = { index: number; conversationId: string; label: string };
-
 /**
- * Route an inbound SMS to the right conversation.
+ * Route an inbound SMS reply to the right conversation.
  *
- * Heuristic (single origination number — sender phone is all we have):
- *   1. STOP keywords → suppress and stop
- *   2. Numeric reply within 1h of a picker → resolve pending disambiguation
- *   3. Exactly one conversation with SMS deliveries in the last 72h → route
- *   4. None → text them a link to /messages
- *   5. Several → text a numeric picker, park as NEEDS_DISAMBIGUATION
+ * Sent is template-only, so we can't text back a free-form numeric picker.
+ * Heuristic (sender phone is all we have):
+ *   1. STOP keyword  → suppress and stop (Sent also auto-suppresses)
+ *   2. Exactly one conversation with an SMS notification in the last 72h → route the reply into it
+ *   3. Zero or several → point them back to the app (openApp template)
  */
 export async function routeInboundSms({
     fromPhone,
@@ -39,8 +36,8 @@ export async function routeInboundSms({
     const text = body.trim();
 
     const log = async (
-        status: 'MATCHED' | 'UNMATCHED' | 'NEEDS_DISAMBIGUATION' | 'REJECTED',
-        extras: { parsedText?: string; messageId?: string; payload?: Prisma.InputJsonValue } = {}
+        status: 'MATCHED' | 'UNMATCHED' | 'REJECTED',
+        extras: { parsedText?: string; messageId?: string } = {}
     ) =>
         prisma.inboundMessage.create({
             data: {
@@ -48,14 +45,17 @@ export async function routeInboundSms({
                 fromAddress: fromPhone,
                 toAddress: toNumber,
                 providerId,
-                rawPayload: extras.payload ?? rawPayload,
+                rawPayload,
                 parsedText: extras.parsedText,
                 messageId: extras.messageId,
                 status,
             },
         });
 
-    // 1. STOP — belt-and-braces alongside AWS-managed keywords
+    const openApp = () =>
+        sendSms(fromPhone, { template: SMS_TEMPLATES.openApp, variables: { var_1: `${SITE_URL}/messages` } });
+
+    // 1. STOP — belt-and-braces alongside Sent's automatic opt-out handling
     if (STOP_WORDS.has(text.toLowerCase())) {
         await prisma.contactSuppression
             .upsert({
@@ -78,50 +78,7 @@ export async function routeInboundSms({
         return;
     }
 
-    // 2. Numeric reply → pending picker?
-    if (/^[1-9]$/.test(text)) {
-        const pending = await prisma.inboundMessage.findFirst({
-            where: {
-                channel: 'SMS',
-                fromAddress: fromPhone,
-                status: 'NEEDS_DISAMBIGUATION',
-                createdAt: { gt: new Date(Date.now() - DISAMBIGUATION_WINDOW_MS) },
-            },
-            orderBy: { createdAt: 'desc' },
-        });
-
-        const options =
-            pending && typeof pending.rawPayload === 'object' && pending.rawPayload !== null
-                ? ((pending.rawPayload as { _disambiguation?: DisambiguationOption[] })
-                      ._disambiguation ?? null)
-                : null;
-        const choice = options?.find((option) => option.index === Number(text));
-
-        if (pending && choice) {
-            // The picker held the *original* reply text; deliver it now
-            const originalText = pending.parsedText || '';
-            const message = await createConversationMessage({
-                conversationId: choice.conversationId,
-                authorId: user.id,
-                content: originalText,
-                sourceChannel: 'SMS',
-            });
-            await prisma.inboundMessage.update({
-                where: { id: pending.id },
-                data: { status: 'MATCHED', messageId: message.id },
-            });
-            await log('MATCHED', { parsedText: text, messageId: message.id });
-            try {
-                await notifyMessageRecipients(message.id);
-            } catch (e) {
-                console.error('SMS disambiguation fan-out failed:', e);
-            }
-            return;
-        }
-        // No pending picker — fall through and treat the digit as a normal reply
-    }
-
-    // 3. Candidate conversations: SMS deliveries to this user in the window
+    // 2. Candidate conversations: SMS notifications sent to this user in the window
     const recentDeliveries = await prisma.messageDelivery.findMany({
         where: {
             recipientId: user.id,
@@ -131,53 +88,24 @@ export async function routeInboundSms({
             message: { conversationId: { not: null } },
         },
         orderBy: { createdAt: 'desc' },
-        include: {
-            message: {
-                select: {
-                    conversationId: true,
-                    conversation: {
-                        select: {
-                            participants: {
-                                select: {
-                                    userId: true,
-                                    user: { select: { displayName: true, email: true } },
-                                },
-                            },
-                        },
-                    },
-                },
-            },
-        },
+        include: { message: { select: { conversationId: true } } },
     });
 
-    const byConversation = new Map<string, { label: string }>();
-    for (const delivery of recentDeliveries) {
-        const conversationId = delivery.message.conversationId!;
-        if (byConversation.has(conversationId)) continue;
-        const other = delivery.message.conversation?.participants.find(
-            (p) => p.userId !== user.id
-        );
-        byConversation.set(conversationId, {
-            label: other?.user.displayName || other?.user.email?.split('@')[0] || 'Member',
-        });
-    }
-    const candidates = [...byConversation.entries()];
+    const conversationIds = [
+        ...new Set(recentDeliveries.map((d) => d.message.conversationId).filter(Boolean) as string[]),
+    ];
 
-    // 4. Nothing to route to
-    if (candidates.length === 0) {
+    // 3a. Nothing to route to → point them to the app
+    if (conversationIds.length === 0) {
         await log('UNMATCHED', { parsedText: text });
-        await sendSms(
-            fromPhone,
-            `The B Life: we couldn't match your reply to a conversation. View your messages: ${SITE_URL}/messages`
-        );
+        await openApp();
         return;
     }
 
-    // 3 (cont). Exactly one — route it
-    if (candidates.length === 1) {
-        const [conversationId] = candidates[0];
+    // 2 (cont). Exactly one — route the reply straight into that conversation
+    if (conversationIds.length === 1) {
         const message = await createConversationMessage({
-            conversationId,
+            conversationId: conversationIds[0],
             authorId: user.id,
             content: text,
             sourceChannel: 'SMS',
@@ -191,18 +119,8 @@ export async function routeInboundSms({
         return;
     }
 
-    // 5. Ambiguous — send a picker and park the reply text
-    const options: DisambiguationOption[] = candidates
-        .slice(0, 9)
-        .map(([conversationId, { label }], i) => ({ index: i + 1, conversationId, label }));
-
-    await log('NEEDS_DISAMBIGUATION', {
-        parsedText: text,
-        payload: { _disambiguation: options, sns: rawPayload } as Prisma.InputJsonValue,
-    });
-    const picker = options.map((option) => `${option.index} for ${option.label}`).join(', ');
-    await sendSms(
-        fromPhone,
-        `The B Life: who is that reply for? Reply ${picker} — or visit ${SITE_URL}/messages`
-    );
+    // 3b. Several active chats — we can't disambiguate over a templated channel,
+    //     so send them to the app to choose the thread.
+    await log('UNMATCHED', { parsedText: text });
+    await openApp();
 }

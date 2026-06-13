@@ -1,81 +1,93 @@
+import crypto from 'crypto';
 import prisma from '@/lib/prisma';
 import { routeInboundSms } from '@/lib/messaging/sms-routing';
+import type { DeliveryStatus, Prisma } from '@prisma/client';
 
 /**
- * AWS SNS HTTPS endpoint for two-way SMS (AWS End User Messaging).
- * Handles the SNS subscription handshake and inbound SMS notifications.
- * Configure: EUM two-way config → SNS topic → HTTPS subscription to this URL.
+ * Sent (sent.dm) webhook endpoint for two-way SMS.
+ * - Inbound replies arrive as `message.received` events → routed to a conversation.
+ * - Outbound status events correlate to MessageDelivery rows.
+ * Configure the webhook URL + signing secret in the Sent dashboard
+ * (see docs/sent-sms-setup.md). Verification: HMAC-SHA256 over
+ * `{id}.{timestamp}.{rawBody}` with the `whsec_`-stripped, base64-decoded secret.
  */
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const MessageValidator = require('sns-validator');
-const validator = new MessageValidator();
+const REPLAY_WINDOW_MS = 5 * 60 * 1000;
 
-function validateSnsMessage(message: Record<string, unknown>): Promise<void> {
-    return new Promise((resolve, reject) => {
-        validator.validate(message, (err: Error | null) => (err ? reject(err) : resolve()));
-    });
+function verifySignature(rawBody: string, id: string, timestamp: string, signature: string): boolean {
+    const secret = process.env.SENT_WEBHOOK_SECRET;
+    if (!secret || !id || !timestamp || !signature) return false;
+
+    const key = Buffer.from(secret.replace(/^whsec_/, ''), 'base64');
+    const signed = `${id}.${timestamp}.${rawBody}`;
+    const expected = 'v1,' + crypto.createHmac('sha256', key).update(signed).digest('base64');
+
+    const a = Buffer.from(signature);
+    const b = Buffer.from(expected);
+    return a.length === b.length && crypto.timingSafeEqual(a, b);
 }
 
+function timestampFresh(timestamp: string): boolean {
+    let ms: number;
+    if (/^\d+$/.test(timestamp)) {
+        ms = timestamp.length >= 13 ? Number(timestamp) : Number(timestamp) * 1000;
+    } else {
+        ms = Date.parse(timestamp);
+    }
+    if (Number.isNaN(ms)) return true; // unparseable → rely on the signature alone
+    return Math.abs(Date.now() - ms) <= REPLAY_WINDOW_MS;
+}
+
+const STATUS_MAP: Record<string, DeliveryStatus> = {
+    SENT: 'SENT',
+    DELIVERED: 'DELIVERED',
+    FAILED: 'FAILED',
+    UNDELIVERED: 'FAILED',
+};
+
 export async function POST(req: Request) {
-    let envelope: Record<string, unknown>;
+    const rawBody = await req.text();
+    const id = req.headers.get('x-webhook-id') || '';
+    const timestamp = req.headers.get('x-webhook-timestamp') || '';
+    const signature = req.headers.get('x-webhook-signature') || '';
+
+    if (!verifySignature(rawBody, id, timestamp, signature) || !timestampFresh(timestamp)) {
+        return new Response('Invalid signature', { status: 400 });
+    }
+
+    let evt: Record<string, unknown>;
     try {
-        envelope = JSON.parse(await req.text());
+        evt = JSON.parse(rawBody);
     } catch {
         return new Response('Invalid JSON', { status: 400 });
     }
 
-    // Verify the SNS signature before trusting anything in the payload
-    try {
-        await validateSnsMessage(envelope);
-    } catch (err) {
-        console.error('SNS signature validation failed:', err);
-        return new Response('Invalid signature', { status: 400 });
-    }
+    const event = String(evt.event ?? evt.type ?? '');
+    const payload = (evt.payload as Record<string, unknown>) ?? evt;
 
-    const type = envelope.Type;
+    const direction = String(payload.direction ?? '');
+    const isInbound = event === 'message.received' || direction === 'INBOUND';
 
-    if (type === 'SubscriptionConfirmation') {
-        const subscribeUrl = String(envelope.SubscribeURL || '');
-        if (!subscribeUrl.startsWith('https://sns.')) {
-            return new Response('Suspicious SubscribeURL', { status: 400 });
+    // ── Outbound delivery status → correlate to MessageDelivery ──
+    if (!isInbound) {
+        const status = STATUS_MAP[String(payload.status ?? '').toUpperCase()];
+        const providerMessageId = String(payload.message_id ?? payload.id ?? '');
+        if (status && providerMessageId) {
+            await prisma.messageDelivery
+                .updateMany({ where: { providerMessageId }, data: { status } })
+                .catch((e) => console.error('Delivery correlation failed:', e));
         }
-        try {
-            await fetch(subscribeUrl);
-            console.log('SNS subscription confirmed for SMS webhook');
-        } catch (err) {
-            console.error('Failed to confirm SNS subscription:', err);
-            return new Response('Confirmation failed', { status: 500 });
-        }
-        return new Response('Subscribed', { status: 200 });
+        return new Response('OK', { status: 200 });
     }
 
-    if (type !== 'Notification') {
-        return new Response('Ignored', { status: 200 });
-    }
+    // ── Inbound reply → route into a conversation ──
+    const fromPhone = String(payload.from ?? payload.phone_number ?? '');
+    const body = typeof payload.text === 'string' ? payload.text : String(payload.body ?? '');
+    const providerId = String(payload.message_id ?? payload.id ?? id);
 
-    // EUM inbound SMS payload rides in the SNS Message field
-    let inbound: {
-        originationNumber?: string;
-        destinationNumber?: string;
-        messageBody?: string;
-        inboundMessageId?: string;
-    };
-    try {
-        inbound = JSON.parse(String(envelope.Message || '{}'));
-    } catch {
-        console.warn('SNS notification Message was not JSON; ignoring');
-        return new Response('Ignored', { status: 200 });
-    }
+    if (!fromPhone) return new Response('Ignored', { status: 200 });
 
-    const fromPhone = inbound.originationNumber;
-    const body = inbound.messageBody;
-    if (!fromPhone || typeof body !== 'string') {
-        return new Response('Ignored', { status: 200 });
-    }
-
-    // Idempotency across SNS retries
-    const providerId = inbound.inboundMessageId || String(envelope.MessageId || '');
+    // Idempotency across webhook retries
     if (providerId) {
         const existing = await prisma.inboundMessage.findUnique({ where: { providerId } });
         if (existing) return new Response('Already processed', { status: 200 });
@@ -84,10 +96,10 @@ export async function POST(req: Request) {
     try {
         await routeInboundSms({
             fromPhone,
-            toNumber: inbound.destinationNumber || '',
+            toNumber: String(payload.to ?? payload.destination ?? ''),
             body,
             providerId,
-            rawPayload: inbound as Record<string, string>,
+            rawPayload: payload as unknown as Prisma.InputJsonValue,
         });
     } catch (e) {
         console.error('Failed to route inbound SMS:', e);

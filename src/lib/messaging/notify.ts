@@ -2,6 +2,7 @@ import 'server-only';
 import prisma from '@/lib/prisma';
 import { sendEmail, maskedFrom, replyAddress, MESSAGES_FROM_ADDRESS } from '@/lib/messaging/email';
 import { sendSms, smsEnabled } from '@/lib/messaging/sms';
+import { SMS_TEMPLATES } from '@/lib/messaging/sms-templates';
 import { DirectMessageEmail } from '@/emails/DirectMessageEmail';
 import { NotificationEmail } from '@/emails/NotificationEmail';
 import * as React from 'react';
@@ -125,13 +126,12 @@ export async function notifyMessageRecipients(messageId: string) {
                 },
             });
 
-            // Keep within ~2 segments; full text is always at /messages
-            const preview =
-                message.content.length > 240 ? `${message.content.slice(0, 237)}…` : message.content;
-            const result = await sendSms(
-                user.phone,
-                `${senderName} via The B Life: ${preview} — reply to respond, or visit ${SITE_URL}/messages`
-            );
+            // Sent is template-only: the message text stays private (in-app + email);
+            // SMS is a notification that links to the conversation.
+            const result = await sendSms(user.phone, {
+                template: SMS_TEMPLATES.newMessage,
+                variables: { var_1: senderName, var_2: `${SITE_URL}/messages/${message.conversationId}` },
+            });
 
             await prisma.messageDelivery.update({
                 where: { id: delivery.id },
@@ -202,8 +202,10 @@ export async function sendToMember(
         user.phoneVerifiedAt &&
         user.smsConsentAt
     ) {
-        const body = ctaUrl ? `${text} ${ctaUrl}` : text;
-        const result = await sendSms(user.phone, `The B Life: ${body}`);
+        const result = await sendSms(user.phone, {
+            template: SMS_TEMPLATES.notification,
+            variables: { var_1: text, var_2: ctaUrl || SITE_URL },
+        });
         sent.sms = 'id' in result;
         if ('error' in result) console.error(`sendToMember SMS failed for ${userId}:`, result.error);
     }

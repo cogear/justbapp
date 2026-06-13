@@ -5,6 +5,7 @@ import { stackServerApp } from '@/lib/stack';
 import { revalidatePath } from 'next/cache';
 import { createHash, randomInt } from 'crypto';
 import { sendSms, smsEnabled, normalizePhone } from '@/lib/messaging/sms';
+import { SMS_TEMPLATES } from '@/lib/messaging/sms-templates';
 
 const OTP_TTL_MS = 15 * 60 * 1000;
 const OTP_RESEND_COOLDOWN_MS = 60 * 1000;
@@ -87,10 +88,11 @@ export async function sendPhoneOtp(phoneInput: string) {
             },
         });
 
-        const result = await sendSms(
-            phone,
-            `The B Life: your verification code is ${code}. It expires in 15 minutes. Msg & data rates may apply.`
-        );
+        // The approved Sent template supplies the wording; we pass only the code.
+        const result = await sendSms(phone, {
+            template: SMS_TEMPLATES.otp,
+            variables: { var_1: code },
+        });
         if ('error' in result) {
             return { error: 'Could not send the code — please check the number and try again' };
         }
