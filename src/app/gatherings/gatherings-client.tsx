@@ -98,6 +98,7 @@ export function GatheringsClient({ initialGroups }: { initialGroups: Group[] }) 
 
     // detail: schedule a one-off time (single/flexible)
     const [scheduleAt, setScheduleAt] = useState('');
+    const [view, setView] = useState<'list' | 'calendar'>('list');
 
     const isOrganizer = detail?.role === 'owner' || detail?.role === 'co_organizer';
 
@@ -447,42 +448,65 @@ export function GatheringsClient({ initialGroups }: { initialGroups: Group[] }) 
 
                         {isOrganizer && <InvitePanel groupId={detail.group.id} />}
 
-                        {upcoming.length === 0 && past.length === 0 && (
+                        {(upcoming.length > 0 || past.length > 0) && (
+                            <div className="flex items-center justify-between gap-2">
+                                <div className="flex gap-1">
+                                    <Button size="sm" variant={view === 'list' ? 'default' : 'outline'} onClick={() => setView('list')}>
+                                        List
+                                    </Button>
+                                    <Button size="sm" variant={view === 'calendar' ? 'default' : 'outline'} onClick={() => setView('calendar')}>
+                                        Calendar
+                                    </Button>
+                                </div>
+                                <a
+                                    href={`/api/gatherings/groups/${detail.group.id}/ics`}
+                                    className="text-xs text-primary hover:underline"
+                                >
+                                    Add to calendar
+                                </a>
+                            </div>
+                        )}
+
+                        {upcoming.length === 0 && past.length === 0 ? (
                             <p className="text-muted-foreground text-sm">No dates yet.</p>
-                        )}
+                        ) : view === 'calendar' ? (
+                            <CalendarView occurrences={[...upcoming, ...past]} />
+                        ) : (
+                            <>
+                                {upcoming.length > 0 && (
+                                    <Section title="Upcoming">
+                                        {upcoming.map((md) => (
+                                            <Occurrence
+                                                key={md.meetup.id}
+                                                md={md}
+                                                canEdit={!!isOrganizer}
+                                                canManage={!!isOrganizer}
+                                                disabled={isPending}
+                                                onRsvp={handleRsvp}
+                                                onSetLocation={handleSetLocation}
+                                                onDelete={handleDelete}
+                                            />
+                                        ))}
+                                    </Section>
+                                )}
 
-                        {upcoming.length > 0 && (
-                            <Section title="Upcoming">
-                                {upcoming.map((md) => (
-                                    <Occurrence
-                                        key={md.meetup.id}
-                                        md={md}
-                                        canEdit={!!isOrganizer}
-                                        canManage={!!isOrganizer}
-                                        disabled={isPending}
-                                        onRsvp={handleRsvp}
-                                        onSetLocation={handleSetLocation}
-                                        onDelete={handleDelete}
-                                    />
-                                ))}
-                            </Section>
-                        )}
-
-                        {past.length > 0 && (
-                            <Section title="Past">
-                                {past.map((md) => (
-                                    <Occurrence
-                                        key={md.meetup.id}
-                                        md={md}
-                                        canEdit={false}
-                                        canManage={!!isOrganizer}
-                                        disabled={isPending}
-                                        onRsvp={handleRsvp}
-                                        onSetLocation={handleSetLocation}
-                                        onDelete={handleDelete}
-                                    />
-                                ))}
-                            </Section>
+                                {past.length > 0 && (
+                                    <Section title="Past">
+                                        {past.map((md) => (
+                                            <Occurrence
+                                                key={md.meetup.id}
+                                                md={md}
+                                                canEdit={false}
+                                                canManage={!!isOrganizer}
+                                                disabled={isPending}
+                                                onRsvp={handleRsvp}
+                                                onSetLocation={handleSetLocation}
+                                                onDelete={handleDelete}
+                                            />
+                                        ))}
+                                    </Section>
+                                )}
+                            </>
                         )}
                     </CardContent>
                 </Card>
@@ -542,6 +566,85 @@ function InvitePanel({ groupId }: { groupId: string }) {
                 <Button size="sm" variant="ghost" onClick={() => setOpen(false)}>
                     Cancel
                 </Button>
+            </div>
+        </div>
+    );
+}
+
+function CalendarView({ occurrences }: { occurrences: OccurrenceDetail[] }) {
+    const [cursor, setCursor] = useState(() => {
+        const d = new Date();
+        return new Date(d.getFullYear(), d.getMonth(), 1);
+    });
+
+    const year = cursor.getFullYear();
+    const month = cursor.getMonth();
+    const monthLabel = cursor.toLocaleString(undefined, { month: 'long', year: 'numeric' });
+    const firstWeekday = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    const byDay = new Map<number, OccurrenceDetail[]>();
+    for (const o of occurrences) {
+        const d = new Date(o.meetup.startsAt);
+        if (d.getFullYear() === year && d.getMonth() === month) {
+            const arr = byDay.get(d.getDate()) ?? [];
+            arr.push(o);
+            byDay.set(d.getDate(), arr);
+        }
+    }
+
+    const cells: (number | null)[] = [
+        ...Array<null>(firstWeekday).fill(null),
+        ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
+    ];
+    const today = new Date();
+    const isToday = (day: number) =>
+        today.getFullYear() === year && today.getMonth() === month && today.getDate() === day;
+    const shift = (delta: number) => setCursor(new Date(year, month + delta, 1));
+
+    return (
+        <div className="space-y-3">
+            <div className="flex items-center justify-between">
+                <Button size="sm" variant="ghost" onClick={() => shift(-1)} aria-label="Previous month">‹</Button>
+                <span className="text-sm font-medium">{monthLabel}</span>
+                <Button size="sm" variant="ghost" onClick={() => shift(1)} aria-label="Next month">›</Button>
+            </div>
+            <div className="grid grid-cols-7 gap-1 text-center">
+                {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
+                    <div key={i} className="text-[10px] uppercase tracking-wide text-muted-foreground py-1">
+                        {d}
+                    </div>
+                ))}
+                {cells.map((day, i) => {
+                    if (day === null) return <div key={`b${i}`} />;
+                    const items = byDay.get(day) ?? [];
+                    return (
+                        <div
+                            key={day}
+                            className={`min-h-14 rounded-md border p-1 text-left ${items.length ? 'border-primary/40 bg-primary/5' : 'border-border/40'}`}
+                        >
+                            <div className={`text-[11px] ${isToday(day) ? 'font-bold text-primary' : 'text-muted-foreground'}`}>
+                                {day}
+                            </div>
+                            {items.slice(0, 2).map((o) => (
+                                <div key={o.meetup.id} className="mt-0.5 flex items-center gap-1">
+                                    <span
+                                        className={`inline-block w-1.5 h-1.5 rounded-full shrink-0 ${o.myRsvp === 'yes' ? 'bg-primary' : 'bg-muted-foreground/40'}`}
+                                    />
+                                    <span className="text-[10px] text-foreground/80 truncate">
+                                        {new Date(o.meetup.startsAt).toLocaleTimeString(undefined, {
+                                            hour: 'numeric',
+                                            minute: '2-digit',
+                                        })}
+                                    </span>
+                                </div>
+                            ))}
+                            {items.length > 2 && (
+                                <div className="text-[9px] text-muted-foreground">+{items.length - 2}</div>
+                            )}
+                        </div>
+                    );
+                })}
             </div>
         </div>
     );
