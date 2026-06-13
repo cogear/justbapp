@@ -1,27 +1,9 @@
 'use server';
 
 import prisma from '@/lib/prisma';
+import { getOrCreateUser } from '@/lib/auth';
 import { stackServerApp } from '@/lib/stack';
 import { revalidatePath } from 'next/cache';
-
-async function getOrCreateUser() {
-    const stackUser = await stackServerApp.getUser();
-    if (!stackUser) return null;
-
-    let user = await prisma.user.findUnique({
-        where: { email: stackUser.primaryEmail || '' },
-    });
-
-    if (!user) {
-        user = await prisma.user.create({
-            data: {
-                email: stackUser.primaryEmail || '',
-            },
-        });
-    }
-
-    return user;
-}
 
 export async function createPost(content: string, spaceId: string) {
     if (!content || !content.trim()) {

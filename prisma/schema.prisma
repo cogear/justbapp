@@ -11,38 +11,38 @@ datasource db {
 }
 
 model User {
-  id                     String                 @id @default(uuid())
-  email                  String                 @unique
-  displayName            String?
-  isPhantom              Boolean                @default(false)
-  createdAt              DateTime               @default(now())
-  updatedAt              DateTime               @updatedAt
-  psychographicProfile   String?
-  memoryVector           Unsupported("vector")?
-  zipCode                String?
-  isNewsletterSubscriber Boolean                @default(false)
-  newsletterVerificationToken String?           @unique
-  emailActive            Boolean                @default(true)
-  phone                  String?                @unique
-  phoneVerifiedAt        DateTime?
-  phoneOtpHash           String?
-  phoneOtpExpiresAt      DateTime?
-  smsConsentAt           DateTime?
-  smsActive              Boolean                @default(true)
-  dailyPulses            DailyPulse[]
-  journalEntries         JournalEntry[]
-  visualProfiles         VisualProfile[]
-  spaceMemberships       SpaceMember[]
-  posts                  Post[]
-  comments               Comment[]
-  postLikes              PostLike[]
-  lessonProgress         LessonProgress[]
-  notificationPreference NotificationPreference?
-  conversationParticipants ConversationParticipant[]
-  sentMessages           Message[]
-  messageDeliveries      MessageDelivery[]
-  sentInvitations        Invitation[]           @relation("InvitationInviter")
-  claimedInvitations     Invitation[]           @relation("InvitationAccepted")
+  id                          String                    @id @default(uuid())
+  email                       String                    @unique
+  displayName                 String?
+  isPhantom                   Boolean                   @default(false)
+  createdAt                   DateTime                  @default(now())
+  updatedAt                   DateTime                  @updatedAt
+  psychographicProfile        String?
+  memoryVector                Unsupported("vector")?
+  zipCode                     String?
+  isNewsletterSubscriber      Boolean                   @default(false)
+  newsletterVerificationToken String?                   @unique
+  emailActive                 Boolean                   @default(true)
+  phone                       String?                   @unique
+  phoneVerifiedAt             DateTime?
+  phoneOtpHash                String?
+  phoneOtpExpiresAt           DateTime?
+  smsConsentAt                DateTime?
+  smsActive                   Boolean                   @default(true)
+  dailyPulses                 DailyPulse[]
+  journalEntries              JournalEntry[]
+  visualProfiles              VisualProfile[]
+  spaceMemberships            SpaceMember[]
+  posts                       Post[]
+  comments                    Comment[]
+  postLikes                   PostLike[]
+  lessonProgress              LessonProgress[]
+  notificationPreference      NotificationPreference?
+  conversationParticipants    ConversationParticipant[]
+  sentMessages                Message[]
+  messageDeliveries           MessageDelivery[]
+  sentInvitations             Invitation[]              @relation("InvitationInviter")
+  claimedInvitations          Invitation[]              @relation("InvitationAccepted")
 }
 
 model VisualProfile {
@@ -213,30 +213,30 @@ model Space {
 }
 
 model SpaceMember {
-  id        String    @id @default(uuid())
-  spaceId   String
-  userId    String
-  role      SpaceRole @default(MEMBER)
-  joinedAt  DateTime  @default(now())
+  id       String    @id @default(uuid())
+  spaceId  String
+  userId   String
+  role     SpaceRole @default(MEMBER)
+  joinedAt DateTime  @default(now())
 
-  space     Space     @relation(fields: [spaceId], references: [id])
-  user      User      @relation(fields: [userId], references: [id])
+  space Space @relation(fields: [spaceId], references: [id])
+  user  User  @relation(fields: [userId], references: [id])
 
   @@unique([spaceId, userId])
 }
 
 model Post {
-  id        String    @id @default(uuid())
+  id        String   @id @default(uuid())
   content   String
   spaceId   String
   authorId  String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  space     Space     @relation(fields: [spaceId], references: [id])
-  author    User      @relation(fields: [authorId], references: [id])
-  comments  Comment[]
-  likes     PostLike[]
+  space    Space      @relation(fields: [spaceId], references: [id])
+  author   User       @relation(fields: [authorId], references: [id])
+  comments Comment[]
+  likes    PostLike[]
 }
 
 model PostLike {
@@ -245,24 +245,24 @@ model PostLike {
   userId    String
   createdAt DateTime @default(now())
 
-  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([postId, userId])
 }
 
 model Comment {
-  id        String    @id @default(uuid())
+  id        String   @id @default(uuid())
   content   String
   postId    String?
   lessonId  String?
   authorId  String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  post      Post?     @relation(fields: [postId], references: [id])
-  lesson    Lesson?   @relation(fields: [lessonId], references: [id])
-  author    User      @relation(fields: [authorId], references: [id])
+  post   Post?   @relation(fields: [postId], references: [id])
+  lesson Lesson? @relation(fields: [lessonId], references: [id])
+  author User    @relation(fields: [authorId], references: [id])
 
   @@index([postId])
   @@index([lessonId])
@@ -276,8 +276,8 @@ model Course {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  space       Space    @relation(fields: [spaceId], references: [id])
-  modules     Module[]
+  space   Space    @relation(fields: [spaceId], references: [id])
+  modules Module[]
 }
 
 model Module {
@@ -288,8 +288,8 @@ model Module {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  course    Course   @relation(fields: [courseId], references: [id])
-  lessons   Lesson[]
+  course  Course   @relation(fields: [courseId], references: [id])
+  lessons Lesson[]
 }
 
 model Lesson {
@@ -303,21 +303,21 @@ model Lesson {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  module    Module   @relation(fields: [moduleId], references: [id])
-  progress  LessonProgress[]
-  comments  Comment[]
+  module   Module           @relation(fields: [moduleId], references: [id])
+  progress LessonProgress[]
+  comments Comment[]
 }
 
 model LessonProgress {
-  id          String   @id @default(uuid())
+  id          String    @id @default(uuid())
   userId      String
   lessonId    String
-  completed   Boolean  @default(false)
+  completed   Boolean   @default(false)
   completedAt DateTime?
-  updatedAt   DateTime @updatedAt
+  updatedAt   DateTime  @updatedAt
 
-  user        User     @relation(fields: [userId], references: [id])
-  lesson      Lesson   @relation(fields: [lessonId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+  lesson Lesson @relation(fields: [lessonId], references: [id])
 
   @@unique([userId, lessonId])
 }
@@ -363,7 +363,7 @@ model NotificationPreference {
   announceEmail Boolean @default(true)
   announceSms   Boolean @default(false)
 
-  user          User    @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 }
 
 model Conversation {
@@ -372,8 +372,8 @@ model Conversation {
   createdAt     DateTime @default(now())
   lastMessageAt DateTime @default(now())
 
-  participants  ConversationParticipant[]
-  messages      Message[]
+  participants ConversationParticipant[]
+  messages     Message[]
 }
 
 model ConversationParticipant {
@@ -383,8 +383,8 @@ model ConversationParticipant {
   lastReadAt     DateTime?
   replyToken     String    @unique @default(cuid()) // t-<token>@reply.theblife.com
 
-  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-  user           User         @relation(fields: [userId], references: [id])
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id])
 
   @@unique([conversationId, userId])
   @@index([userId])
@@ -399,10 +399,10 @@ model Message {
   sourceChannel  MessageChannel @default(APP)
   createdAt      DateTime       @default(now())
 
-  author         User           @relation(fields: [authorId], references: [id])
-  conversation   Conversation?  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-  space          Space?         @relation(fields: [spaceId], references: [id])
-  deliveries     MessageDelivery[]
+  author       User              @relation(fields: [authorId], references: [id])
+  conversation Conversation?     @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  space        Space?            @relation(fields: [spaceId], references: [id])
+  deliveries   MessageDelivery[]
 
   @@index([conversationId, createdAt])
   @@index([spaceId, createdAt])
@@ -419,8 +419,8 @@ model MessageDelivery {
   createdAt         DateTime       @default(now())
   updatedAt         DateTime       @updatedAt
 
-  message           Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
-  recipient         User    @relation(fields: [recipientId], references: [id])
+  message   Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  recipient User    @relation(fields: [recipientId], references: [id])
 
   @@index([recipientId, channel, createdAt]) // powers SMS reply-routing heuristic
 }
@@ -455,9 +455,9 @@ model Invitation {
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
 
-  inviter        User  @relation("InvitationInviter", fields: [inviterId], references: [id])
-  acceptedUser   User? @relation("InvitationAccepted", fields: [acceptedUserId], references: [id])
-  space          Space @relation(fields: [spaceId], references: [id])
+  inviter      User  @relation("InvitationInviter", fields: [inviterId], references: [id])
+  acceptedUser User? @relation("InvitationAccepted", fields: [acceptedUserId], references: [id])
+  space        Space @relation(fields: [spaceId], references: [id])
 
   @@index([inviterId, createdAt]) // rate limiting
   @@index([contactEmail, spaceId])
@@ -470,4 +470,128 @@ model ContactSuppression {
   channel    MessageChannel
   reason     String // STOP | DECLINED | BOUNCED | COMPLAINT | MANUAL
   createdAt  DateTime       @default(now())
+}
+
+// ─── Gatherings — recurring group engine ────────────────────────────────────────
+// Bounded context. Tables carry a `gatherings_` prefix (via @@map) and live in the
+// public schema. user-id fields are OPAQUE host ids (the DB User.id) and have
+// DELIBERATELY no relation/FK to User — do not "fix" this; it is what makes the
+// engine extractable behind a different auth. See src/lib/gatherings/ARCHITECTURE.md.
+
+model GatheringsGroup {
+  id             String   @id @default(uuid())
+  name           String
+  kind           String   @default("generic") // GroupKind: dinner|sport|boardgames|coffee|generic
+  visibility     String   @default("invite_only")
+  ownerUserId    String /// opaque host User.id — no relation/FK
+  timezone       String // IANA tz, e.g. America/New_York
+  scheduleType   String   @default("single") // single | recurring_static | recurring_flexible
+  defaultCadence Json
+  createdAt      DateTime @default(now())
+
+  members GatheringsMember[]
+  meetups GatheringsMeetup[]
+
+  @@map("gatherings_groups")
+}
+
+model GatheringsMember {
+  id       String   @id @default(uuid())
+  groupId  String
+  userId   String /// opaque host User.id — no relation/FK
+  role     String   @default("member") // owner|co_organizer|member
+  status   String   @default("invited") // invited|active|left
+  joinedAt DateTime @default(now())
+
+  group GatheringsGroup @relation(fields: [groupId], references: [id])
+
+  @@unique([groupId, userId])
+  @@map("gatherings_members")
+}
+
+model GatheringsMeetup {
+  id              String    @id @default(uuid())
+  groupId         String
+  startsAt        DateTime
+  locationText    String?
+  locationPlaceId String?
+  rsvpCutoffAt    DateTime?
+  status          String    @default("scheduled") // scheduled|deciding|confirmed|done|cancelled
+
+  group     GatheringsGroup      @relation(fields: [groupId], references: [id])
+  rsvps     GatheringsRsvp[]
+  reminders GatheringsReminder[]
+  decision  GatheringsDecision?
+  photos    GatheringsPhoto[]
+
+  @@unique([groupId, startsAt]) // idempotent meetup generation
+  @@map("gatherings_meetups")
+}
+
+model GatheringsRsvp {
+  id        String   @id @default(uuid())
+  meetupId  String
+  userId    String /// opaque host User.id — no relation/FK
+  state     String   @default("none") // yes|no|maybe|none
+  updatedAt DateTime @updatedAt
+
+  meetup GatheringsMeetup @relation(fields: [meetupId], references: [id])
+
+  @@unique([meetupId, userId]) // one rsvp row per user per meetup
+  @@map("gatherings_rsvps")
+}
+
+model GatheringsReminder {
+  id       String   @id @default(uuid())
+  meetupId String
+  userId   String /// opaque host User.id — no relation/FK
+  kind     String // pre_meetup | rsvp_cutoff
+  sentAt   DateTime @default(now())
+
+  meetup GatheringsMeetup @relation(fields: [meetupId], references: [id])
+
+  @@unique([meetupId, userId, kind]) // send-once idempotency
+  @@map("gatherings_reminders")
+}
+
+model GatheringsDecision {
+  id               String   @id @default(uuid())
+  meetupId         String   @unique // one decision per meetup (v1)
+  type             String // venue_vote | host_pick | none
+  options          Json // [{ id, label, meta? }]
+  status           String   @default("open") // open | resolved | cancelled
+  closesAt         DateTime
+  resolvedOptionId String?
+  createdAt        DateTime @default(now())
+
+  meetup GatheringsMeetup @relation(fields: [meetupId], references: [id])
+  votes  GatheringsVote[]
+
+  @@map("gatherings_decisions")
+}
+
+model GatheringsVote {
+  id         String   @id @default(uuid())
+  decisionId String
+  userId     String /// opaque host User.id — no relation/FK
+  optionId   String
+  updatedAt  DateTime @updatedAt
+
+  decision GatheringsDecision @relation(fields: [decisionId], references: [id])
+
+  @@unique([decisionId, userId]) // one vote per user
+  @@map("gatherings_votes")
+}
+
+model GatheringsPhoto {
+  id            String   @id @default(uuid())
+  meetupId      String
+  addedByUserId String /// opaque host User.id — no relation/FK
+  url           String // a reference; the host owns the actual upload (S3)
+  caption       String?
+  createdAt     DateTime @default(now())
+
+  meetup GatheringsMeetup @relation(fields: [meetupId], references: [id])
+
+  @@map("gatherings_photos")
 }
