@@ -106,6 +106,77 @@ export async function inviteMember(groupId: string, userId: string): Promise<cor
   return toMember(row);
 }
 
+// ─── invite tokens (opaque; the host owns the contact email/phone) ──────────────
+
+export interface Invite {
+  id: string;
+  token: string;
+  groupId: string;
+  invitedByUserId: string;
+  status: string;
+  expiresAt: Date;
+  acceptedUserId: string | null;
+}
+
+function toInvite(row: {
+  id: string;
+  token: string;
+  groupId: string;
+  invitedByUserId: string;
+  status: string;
+  expiresAt: Date;
+  acceptedUserId: string | null;
+}): Invite {
+  return {
+    id: row.id,
+    token: row.token,
+    groupId: row.groupId,
+    invitedByUserId: row.invitedByUserId,
+    status: row.status,
+    expiresAt: row.expiresAt,
+    acceptedUserId: row.acceptedUserId,
+  };
+}
+
+export async function createInvite(
+  groupId: string,
+  invitedByUserId: string,
+  expiresAt: Date,
+): Promise<Invite> {
+  const row = await prisma.gatheringsInvite.create({
+    data: { groupId, invitedByUserId, expiresAt },
+  });
+  return toInvite(row);
+}
+
+export async function getInviteByToken(token: string): Promise<Invite | null> {
+  const row = await prisma.gatheringsInvite.findUnique({ where: { token } });
+  return row ? toInvite(row) : null;
+}
+
+export async function markInviteAccepted(id: string, acceptedUserId: string): Promise<void> {
+  await prisma.gatheringsInvite.update({
+    where: { id },
+    data: { status: 'accepted', acceptedUserId },
+  });
+}
+
+/** Seat a user as an active member (used on invite-accept). Keeps an existing role. */
+export async function addActiveMember(groupId: string, userId: string): Promise<core.Member> {
+  const row = await prisma.gatheringsMember.upsert({
+    where: { groupId_userId: { groupId, userId } },
+    create: { groupId, userId, role: 'member', status: 'active' },
+    update: { status: 'active' },
+  });
+  return toMember(row);
+}
+
+export async function countRecentInvitesBy(invitedByUserId: string, since: Date): Promise<number> {
+  return prisma.gatheringsInvite.count({
+    where: { invitedByUserId, createdAt: { gt: since } },
+  });
+}
+
 /** Create one meetup. Idempotent on (groupId, startsAt) via the unique constraint. */
 export async function createMeetup(
   groupId: string,

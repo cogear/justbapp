@@ -241,6 +241,68 @@ export async function inviteMember(groupId: string, actingUserId: string, invite
   return repo.inviteMember(groupId, inviteeUserId);
 }
 
+// ─── invite-by-link (host bridges email/phone ↔ opaque ids; engine stays identity-free) ──
+
+export interface InviteInfo {
+  token: string;
+  groupId: string;
+  groupName: string;
+  /** Opaque host User.id of the inviter — the host resolves a display name. */
+  invitedByUserId: string;
+  status: string;
+  expired: boolean;
+}
+
+const INVITE_TTL_DAYS = 14;
+
+/** Mint an invite token for a group. Requires organizer rights. */
+export async function createInvite(
+  groupId: string,
+  actingUserId: string,
+): Promise<{ token: string; groupName: string }> {
+  await assertOrganizer(groupId, actingUserId);
+  const group = await repo.getGroup(groupId);
+  if (!group) throw new Error('gathering not found');
+  const expiresAt = new Date(Date.now() + INVITE_TTL_DAYS * 86_400_000);
+  const inv = await repo.createInvite(groupId, actingUserId, expiresAt);
+  return { token: inv.token, groupName: group.name };
+}
+
+/** Read an invite for the accept page. No host identity is resolved here. */
+export async function getInvite(token: string): Promise<InviteInfo | null> {
+  const inv = await repo.getInviteByToken(token);
+  if (!inv) return null;
+  const group = await repo.getGroup(inv.groupId);
+  return {
+    token: inv.token,
+    groupId: inv.groupId,
+    groupName: group?.name ?? 'a gathering',
+    invitedByUserId: inv.invitedByUserId,
+    status: inv.status,
+    expired: inv.expiresAt.getTime() < Date.now(),
+  };
+}
+
+/** Accept an invite — the token itself authorizes seating the user as active. */
+export async function acceptInvite(token: string, userId: string): Promise<{ groupId: string }> {
+  const inv = await repo.getInviteByToken(token);
+  if (!inv) throw new Error('invitation not found');
+  if (inv.status === 'accepted') {
+    if (inv.acceptedUserId === userId) return { groupId: inv.groupId }; // idempotent for the claimer
+    throw new Error('this invitation has already been used');
+  }
+  if (inv.status !== 'pending') throw new Error('this invitation is no longer valid');
+  if (inv.expiresAt.getTime() < Date.now()) throw new Error('this invitation has expired');
+  await repo.addActiveMember(inv.groupId, userId);
+  await repo.markInviteAccepted(inv.id, userId);
+  return { groupId: inv.groupId };
+}
+
+/** How many invites this user created since `since` (host-side rate limiting). */
+export async function countRecentInvitesBy(userId: string, since: Date): Promise<number> {
+  return repo.countRecentInvitesBy(userId, since);
+}
+
 /** Create a one-off meetup by hand. Requires organizer rights. */
 export async function createMeetupManual(
   groupId: string,

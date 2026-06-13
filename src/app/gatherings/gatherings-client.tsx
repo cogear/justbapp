@@ -14,6 +14,7 @@ import {
     rsvpAction,
     setLocationAction,
 } from './actions';
+import { inviteToGatheringAction } from './invite-actions';
 import { LocationPicker } from './location-picker';
 import type {
     Cadence,
@@ -444,6 +445,8 @@ export function GatheringsClient({ initialGroups }: { initialGroups: Group[] }) 
                             </div>
                         )}
 
+                        {isOrganizer && <InvitePanel groupId={detail.group.id} />}
+
                         {upcoming.length === 0 && past.length === 0 && (
                             <p className="text-muted-foreground text-sm">No dates yet.</p>
                         )}
@@ -484,6 +487,62 @@ export function GatheringsClient({ initialGroups }: { initialGroups: Group[] }) 
                     </CardContent>
                 </Card>
             )}
+        </div>
+    );
+}
+
+function InvitePanel({ groupId }: { groupId: string }) {
+    const [open, setOpen] = useState(false);
+    const [contact, setContact] = useState('');
+    const [note, setNote] = useState('');
+    const [sending, setSending] = useState(false);
+
+    const send = async () => {
+        if (!contact.trim() || sending) return;
+        setSending(true);
+        const res = await inviteToGatheringAction(groupId, contact, note || undefined);
+        setSending(false);
+        if ('error' in res && res.error) {
+            toast.error(res.error);
+            return;
+        }
+        toast.success('Invitation sent');
+        setContact('');
+        setNote('');
+        setOpen(false);
+    };
+
+    if (!open) {
+        return (
+            <Button variant="secondary" size="sm" onClick={() => setOpen(true)}>
+                Invite someone
+            </Button>
+        );
+    }
+
+    return (
+        <div className="rounded-lg border border-border p-3 space-y-2 w-full max-w-md">
+            <input
+                value={contact}
+                onChange={(e) => setContact(e.target.value)}
+                placeholder="Their email or phone number"
+                className="w-full bg-background border border-border rounded-lg p-2 text-sm focus:ring-2 focus:ring-primary focus:outline-none"
+            />
+            <input
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                placeholder="A short note (optional)"
+                maxLength={140}
+                className="w-full bg-background border border-border rounded-lg p-2 text-sm"
+            />
+            <div className="flex items-center gap-2">
+                <Button size="sm" onClick={send} disabled={sending || !contact.trim()}>
+                    {sending ? 'Sending…' : 'Send invite'}
+                </Button>
+                <Button size="sm" variant="ghost" onClick={() => setOpen(false)}>
+                    Cancel
+                </Button>
+            </div>
         </div>
     );
 }
