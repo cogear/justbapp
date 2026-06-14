@@ -10,7 +10,7 @@ remote template approval.
 | Thing | Value |
 |---|---|
 | **Brand** (own, verified) | `The B Life` — brandId `4b20019e-c804-02a1-a215-11abf8837221`, TCR `B7N5Q17`, `Eau Gallie Solutions LLC`, `PRIVATE_PROFIT`, website theblife.com, **VERIFIED** |
-| **Campaign** | The B Life — `LOW_VOLUME` (ACCOUNT_NOTIFICATION + 2FA). **NOT yet created — blocked on Telnyx balance** (needs ≥$6; was $5). Re-run the campaignBuilder POST once funded. |
+| **Campaign** | The B Life — campaignId `4b30019e-c808-99bc-8f46-124e214fd128`, `LOW_VOLUME` (ACCOUNT_NOTIFICATION + 2FA) — **submitted, pending TCR review** |
 | **Messaging profile** | "The B Life" — `40019ec7-54f6-4046-b430-d4dd67a3c7af`, webhook → `https://theblife.com/api/webhooks/sms` |
 | **Number** | `+1 321‑335‑1274` — purchased, on the profile, **not yet assigned to the campaign** (blocked until the campaign exists + is approved) |
 
@@ -20,9 +20,9 @@ remote template approval.
 
 ## Remaining steps
 
-0. **Add funds to Telnyx** (Portal → Billing) — needs ≥$6 to register the campaign; suggest ~$20 to cover the campaign + number + headroom. *(This is the current blocker.)*
+*(Funds added — balance $25. Campaign submitted to TCR; now waiting on approval.)*
 
-## Once funded + the campaign is APPROVED
+## Once the campaign is APPROVED
 
 Telnyx returns a "campaign still pending" error until TCR approves it (LOW_VOLUME
 under an already-verified brand is usually fast — hours to a few days).
