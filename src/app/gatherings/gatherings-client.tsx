@@ -11,13 +11,18 @@ import {
     generateUpcomingAction,
     getGroupDetailAction,
     getMyGatheringsAction,
+    proposeOptionsAction,
     rsvpAction,
     setLocationAction,
+    voteAction,
 } from './actions';
 import { inviteToGatheringAction } from './invite-actions';
 import { LocationPicker } from './location-picker';
+import { decideStepForKind } from '@/lib/gatherings/core';
 import type {
     Cadence,
+    Decision,
+    DecisionOption,
     Group,
     GroupKind,
     Headcount,
@@ -25,12 +30,17 @@ import type {
     Meetup,
     RsvpState,
     ScheduleType,
+    Tally,
 } from '@/lib/gatherings/core';
+
+type DecisionDetail = { decision: Decision; tally: Tally[] };
 
 interface OccurrenceDetail {
     meetup: Meetup;
     headcount: Headcount;
     myRsvp: RsvpState;
+    decision: DecisionDetail | null;
+    myVote: string | null;
 }
 interface Detail {
     group: Group;
@@ -234,6 +244,33 @@ export function GatheringsClient({ initialGroups }: { initialGroups: Group[] }) 
             if (selectedId) await loadDetail(selectedId);
         });
     };
+
+    const handleStartPoll = (meetupId: string, options: DecisionOption[]) => {
+        startTransition(async () => {
+            const res = await proposeOptionsAction(meetupId, options);
+            if ('error' in res) {
+                toast.error(res.error);
+                return;
+            }
+            toast.success('Poll opened');
+            if (selectedId) await loadDetail(selectedId);
+        });
+    };
+
+    const handleVote = (decisionId: string, optionId: string) => {
+        startTransition(async () => {
+            const res = await voteAction(decisionId, optionId);
+            if ('error' in res) {
+                toast.error(res.error);
+                return;
+            }
+            toast.success('Voted');
+            if (selectedId) await loadDetail(selectedId);
+        });
+    };
+
+    // Only venue-vote kinds (dinner/coffee) get the "where next?" poll.
+    const canPoll = !!detail && decideStepForKind(detail.group.kind) === 'venue_vote';
 
     const upcoming = detail?.upcoming ?? [];
     const past = detail?.past ?? [];
@@ -481,10 +518,13 @@ export function GatheringsClient({ initialGroups }: { initialGroups: Group[] }) 
                                                 md={md}
                                                 canEdit={!!isOrganizer}
                                                 canManage={!!isOrganizer}
+                                                canPoll={canPoll}
                                                 disabled={isPending}
                                                 onRsvp={handleRsvp}
                                                 onSetLocation={handleSetLocation}
                                                 onDelete={handleDelete}
+                                                onStartPoll={handleStartPoll}
+                                                onVote={handleVote}
                                             />
                                         ))}
                                     </Section>
@@ -498,10 +538,13 @@ export function GatheringsClient({ initialGroups }: { initialGroups: Group[] }) 
                                                 md={md}
                                                 canEdit={false}
                                                 canManage={!!isOrganizer}
+                                                canPoll={canPoll}
                                                 disabled={isPending}
                                                 onRsvp={handleRsvp}
                                                 onSetLocation={handleSetLocation}
                                                 onDelete={handleDelete}
+                                                onStartPoll={handleStartPoll}
+                                                onVote={handleVote}
                                             />
                                         ))}
                                     </Section>
@@ -659,22 +702,143 @@ function Section({ title, children }: { title: string; children: React.ReactNode
     );
 }
 
+function VenuePoll({
+    md,
+    canManage,
+    disabled,
+    onStartPoll,
+    onVote,
+}: {
+    md: OccurrenceDetail;
+    canManage: boolean;
+    disabled: boolean;
+    onStartPoll: (meetupId: string, options: DecisionOption[]) => void;
+    onVote: (decisionId: string, optionId: string) => void;
+}) {
+    const [creating, setCreating] = useState(false);
+    const [options, setOptions] = useState<string[]>(['', '']);
+    const dv = md.decision;
+
+    // Resolved → show the winning spot.
+    if (dv && dv.decision.status === 'resolved') {
+        const win = dv.decision.options.find((o) => o.id === dv.decision.resolvedOptionId);
+        return (
+            <div className="border-t border-border pt-3 text-sm">
+                <span className="text-muted-foreground">Where: </span>
+                <span className="text-foreground font-medium">
+                    {win?.label ?? md.meetup.locationText ?? 'decided'}
+                </span>
+            </div>
+        );
+    }
+
+    // Open → everyone votes.
+    if (dv && dv.decision.status === 'open') {
+        const countFor = (id: string) => dv.tally.find((t) => t.optionId === id)?.count ?? 0;
+        return (
+            <div className="border-t border-border pt-3 space-y-2">
+                <p className="text-xs uppercase tracking-widest text-muted-foreground">
+                    Where should we meet?
+                </p>
+                {dv.decision.options.map((o) => (
+                    <button
+                        key={o.id}
+                        disabled={disabled}
+                        onClick={() => onVote(dv.decision.id, o.id)}
+                        className={`w-full flex items-center justify-between rounded-lg border px-3 py-2 text-sm transition-colors disabled:opacity-50 ${md.myVote === o.id ? 'border-primary bg-primary/10 text-foreground' : 'border-border hover:bg-secondary/50'}`}
+                    >
+                        <span className="flex items-center gap-2">
+                            <span className={`inline-block w-2 h-2 rounded-full ${md.myVote === o.id ? 'bg-primary' : 'bg-muted-foreground/30'}`} />
+                            {o.label}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                            {countFor(o.id)} {countFor(o.id) === 1 ? 'vote' : 'votes'}
+                        </span>
+                    </button>
+                ))}
+            </div>
+        );
+    }
+
+    // No decision yet → an organizer can open one.
+    if (!canManage) return null;
+    if (!creating) {
+        return (
+            <div className="border-t border-border pt-3">
+                <Button size="sm" variant="secondary" onClick={() => setCreating(true)}>
+                    Start a “where next?” poll
+                </Button>
+            </div>
+        );
+    }
+
+    const submit = () => {
+        const opts = options.map((s) => s.trim()).filter(Boolean);
+        if (opts.length < 2) {
+            toast.error('Add at least two options');
+            return;
+        }
+        onStartPoll(
+            md.meetup.id,
+            opts.map((label) => ({ id: crypto.randomUUID(), label })),
+        );
+        setCreating(false);
+        setOptions(['', '']);
+    };
+
+    return (
+        <div className="border-t border-border pt-3 space-y-2">
+            <p className="text-xs uppercase tracking-widest text-muted-foreground">Propose places to meet</p>
+            {options.map((v, i) => (
+                <input
+                    key={i}
+                    value={v}
+                    onChange={(e) =>
+                        setOptions((prev) => prev.map((x, j) => (j === i ? e.target.value : x)))
+                    }
+                    placeholder={`Option ${i + 1}`}
+                    className="w-full bg-background border border-border rounded-lg p-2 text-sm"
+                />
+            ))}
+            <div className="flex items-center gap-2">
+                {options.length < 4 && (
+                    <Button size="sm" variant="ghost" onClick={() => setOptions((p) => [...p, ''])}>
+                        + Add option
+                    </Button>
+                )}
+                <Button size="sm" onClick={submit} disabled={disabled}>
+                    Open poll
+                </Button>
+                <Button size="sm" variant="ghost" onClick={() => setCreating(false)}>
+                    Cancel
+                </Button>
+            </div>
+        </div>
+    );
+}
+
 function Occurrence({
     md,
     canEdit,
     canManage,
+    canPoll,
     disabled,
     onRsvp,
     onSetLocation,
     onDelete,
+    onStartPoll,
+    onVote,
 }: {
     md: OccurrenceDetail;
     canEdit: boolean;
     canManage: boolean;
+    canPoll: boolean;
     disabled: boolean;
     onRsvp: (meetupId: string, state: RsvpState) => void;
     onSetLocation: (meetupId: string, locationText: string, placeId?: string | null) => void;
     onDelete: (meetupId: string) => void;
+    onStartPoll: (meetupId: string, options: DecisionOption[]) => void;
+    onVote: (decisionId: string, optionId: string) => void;
 }) {
     const [confirming, setConfirming] = useState(false);
     const mapHref = md.meetup.locationPlaceId
@@ -740,6 +904,16 @@ function Occurrence({
                     {md.headcount.yes} in · {md.headcount.maybe} maybe · {md.headcount.no} out
                 </span>
             </div>
+
+            {canPoll && (
+                <VenuePoll
+                    md={md}
+                    canManage={canEdit}
+                    disabled={disabled}
+                    onStartPoll={onStartPoll}
+                    onVote={onVote}
+                />
+            )}
 
             {canEdit && (
                 <div className="border-t border-border pt-3">

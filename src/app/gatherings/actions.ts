@@ -233,6 +233,8 @@ export async function getGroupDetailAction(groupId: string) {
       headcount: view.headcount,
       decision: view.decision,
       myRsvp: view.rsvps.find((r) => r.userId === user.id)?.state ?? ('none' as const),
+      // resolve the viewer's vote server-side so opaque user ids never reach the client
+      myVote: view.decision?.votes.find((v) => v.userId === user.id)?.optionId ?? null,
     });
   }
 
