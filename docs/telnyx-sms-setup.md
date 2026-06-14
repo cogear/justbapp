@@ -9,12 +9,20 @@ remote template approval.
 
 | Thing | Value |
 |---|---|
-| **Brand** (reused, verified) | `Eau Gallie Solutions LLC` — brandId `4b20019c-42ec-71f4-66ca-4816e40a73be`, TCR `B3YDEQB`, `PRIVATE_PROFIT`, VERIFIED |
-| **Campaign** (new) | The B Life — campaignId `4b30019e-c7dd-2f35-4787-cfb9266ebae8`, `LOW_VOLUME` (ACCOUNT_NOTIFICATION + 2FA) — **pending TCR review** |
+| **Brand** (own, verified) | `The B Life` — brandId `4b20019e-c804-02a1-a215-11abf8837221`, TCR `B7N5Q17`, `Eau Gallie Solutions LLC`, `PRIVATE_PROFIT`, website theblife.com, **VERIFIED** |
+| **Campaign** | The B Life — `LOW_VOLUME` (ACCOUNT_NOTIFICATION + 2FA). **NOT yet created — blocked on Telnyx balance** (needs ≥$6; was $5). Re-run the campaignBuilder POST once funded. |
 | **Messaging profile** | "The B Life" — `40019ec7-54f6-4046-b430-d4dd67a3c7af`, webhook → `https://theblife.com/api/webhooks/sms` |
-| **Number** | `+1 321‑335‑1274` — purchased, on the profile, **not yet assigned to the campaign** (assignment is blocked until the campaign is approved) |
+| **Number** | `+1 321‑335‑1274` — purchased, on the profile, **not yet assigned to the campaign** (blocked until the campaign exists + is approved) |
 
-## Remaining steps (once the campaign is APPROVED)
+> The original BookedNow-brand reuse was abandoned (bookednow.ai was sold). The
+> BookedNow-brand campaign created earlier was deactivated. A clean **The B Life**
+> brand now exists under the same LLC.
+
+## Remaining steps
+
+0. **Add funds to Telnyx** (Portal → Billing) — needs ≥$6 to register the campaign; suggest ~$20 to cover the campaign + number + headroom. *(This is the current blocker.)*
+
+## Once funded + the campaign is APPROVED
 
 Telnyx returns a "campaign still pending" error until TCR approves it (LOW_VOLUME
 under an already-verified brand is usually fast — hours to a few days).
