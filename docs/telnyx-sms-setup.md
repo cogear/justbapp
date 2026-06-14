@@ -10,7 +10,7 @@ remote template approval.
 | Thing | Value |
 |---|---|
 | **Brand** (own, verified) | `The B Life` — brandId `4b20019e-c804-02a1-a215-11abf8837221`, TCR `B7N5Q17`, `Eau Gallie Solutions LLC`, `PRIVATE_PROFIT`, website theblife.com, **VERIFIED** |
-| **Campaign** | The B Life — campaignId `4b30019e-c808-99bc-8f46-124e214fd128`, `LOW_VOLUME` (ACCOUNT_NOTIFICATION + 2FA) — **submitted, pending TCR review** |
+| **Campaign** | The B Life — campaignId `4b30019e-c808-99bc-8f46-124e214fd128`, TCR `CTMX9D6`, `LOW_VOLUME` — **ACTIVE, all carriers APPROVED** |
 | **Messaging profile** | "The B Life" — `40019ec7-54f6-4046-b430-d4dd67a3c7af`, webhook → `https://theblife.com/api/webhooks/sms` |
 | **Number** | `+1 321‑335‑1274` — purchased, on the profile, **not yet assigned to the campaign** (blocked until the campaign exists + is approved) |
 
@@ -20,14 +20,11 @@ remote template approval.
 
 ## Remaining steps
 
-*(Funds added — balance $25. Campaign submitted to TCR; now waiting on approval.)*
+*(Campaign is APPROVED by all carriers — TCR `CTMX9D6`, ACTIVE. Two things left:
+the number→campaign assignment is lagging Telnyx's approval sync (retry until it
+takes — clears within minutes/hours), then set the env vars.)*
 
-## Once the campaign is APPROVED
-
-Telnyx returns a "campaign still pending" error until TCR approves it (LOW_VOLUME
-under an already-verified brand is usually fast — hours to a few days).
-
-1. **Assign the number to the campaign:**
+1. **Assign the number to the campaign** (retry until it stops returning 10036):
    `POST https://api.telnyx.com/v2/10dlc/phone_number_campaigns`
    `{ "phoneNumber": "+13213351274", "campaignId": "4b30019e-c7dd-2f35-4787-cfb9266ebae8" }`
    (Claude can run this once approval lands.)
