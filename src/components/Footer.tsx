@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import React from 'react';
+import { BUSINESS, BUSINESS_ADDRESS_ONE_LINE } from '@/lib/business';
 
 export function Footer() {
     return (
@@ -17,7 +18,10 @@ export function Footer() {
                     </p>
                 </div>
 
-                <nav className="flex items-center gap-8 text-[10px] font-medium tracking-[0.2em] uppercase text-muted-foreground">
+                <nav className="flex flex-wrap justify-center items-center gap-x-8 gap-y-3 text-[10px] font-medium tracking-[0.2em] uppercase text-muted-foreground">
+                    <Link href="/about" className="transition-colors hover:text-foreground">
+                        About
+                    </Link>
                     <Link href="/privacy" className="transition-colors hover:text-foreground">
                         Privacy Policy
                     </Link>
@@ -30,8 +34,11 @@ export function Footer() {
                     <Link href="/blog" className="transition-colors hover:text-foreground">
                         Blog
                     </Link>
+                    <Link href="/sms" className="transition-colors hover:text-foreground">
+                        Text Updates
+                    </Link>
                     <a
-                        href="mailto:hello@theblife.com"
+                        href={`mailto:${BUSINESS.email}`}
                         className="transition-colors hover:text-foreground"
                     >
                         Contact
@@ -42,6 +49,26 @@ export function Footer() {
                     &copy; {new Date().getFullYear()} just be.
                 </div>
             </div>
+
+            {/* Business identity — required for carrier (10DLC) brand validation.
+                Must match the brand registered with TCR. See src/lib/business.ts */}
+            <address className="b-nav-content mt-10 pt-8 border-t border-border/30 not-italic text-center md:text-left">
+                <p className="text-xs text-muted-foreground/80 leading-relaxed">
+                    <span className="font-medium text-muted-foreground">{BUSINESS.brandName}</span>
+                    {' '}is operated by {BUSINESS.legalName}.
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground/70 leading-relaxed">
+                    {BUSINESS_ADDRESS_ONE_LINE}
+                    {' · '}
+                    <a href={`tel:${BUSINESS.phone}`} className="hover:text-foreground transition-colors">
+                        {BUSINESS.phoneDisplay}
+                    </a>
+                    {' · '}
+                    <a href={`mailto:${BUSINESS.email}`} className="hover:text-foreground transition-colors">
+                        {BUSINESS.email}
+                    </a>
+                </p>
+            </address>
         </footer>
     );
 }
