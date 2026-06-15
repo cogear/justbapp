@@ -4,6 +4,7 @@ import { stackServerApp } from "@/lib/stack";
 import { getDailyEssence } from "@/lib/api/blog";
 import { AmbientScene } from "@/components/community/ambient-scene";
 import { Reveal } from "@/components/reveal";
+import { BUSINESS, BUSINESS_ADDRESS_ONE_LINE } from "@/lib/business";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -172,6 +173,39 @@ export default async function Home() {
             </Link>
           </Reveal>
         )}
+
+        {/* About + contact — brand identity for visitors (and for carrier 10DLC
+            brand validation). Identity details mirror the TCR brand record. */}
+        <Reveal className="mt-24 pt-16 border-t border-border/40">
+          <div className="max-w-3xl mx-auto text-center space-y-6">
+            <h2 className="text-3xl font-georgia text-foreground">About {BUSINESS.brandName}</h2>
+            <p className="text-lg text-foreground/80 leading-relaxed font-georgia">
+              {BUSINESS.displayName} is a wellness and intentional-living community founded by
+              David Crowell, author of the book <em>The b. Life</em>. We publish daily essays,
+              two AI-literacy courses, and the seven b. life principles — and we host a member
+              community where people slow down, connect, and live with more intention. {BUSINESS.brandName} is
+              operated by {BUSINESS.legalName}.
+            </p>
+            <address className="not-italic text-base text-muted-foreground leading-relaxed">
+              {BUSINESS_ADDRESS_ONE_LINE}<br />
+              <a href={`tel:${BUSINESS.phone}`} className="hover:text-foreground transition-colors">
+                {BUSINESS.phoneDisplay}
+              </a>
+              {' · '}
+              <a href={`mailto:${BUSINESS.email}`} className="hover:text-foreground transition-colors">
+                {BUSINESS.email}
+              </a>
+            </address>
+            <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 pt-2 text-base">
+              <Link href="/about" className="font-georgia text-primary hover:underline underline-offset-4">
+                More about us →
+              </Link>
+              <Link href="/sms" className="font-georgia text-primary hover:underline underline-offset-4">
+                Get text updates →
+              </Link>
+            </div>
+          </div>
+        </Reveal>
       </div>
     </main>
   );

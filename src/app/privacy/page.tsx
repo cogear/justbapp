@@ -1,5 +1,7 @@
 import React from 'react';
+import Link from 'next/link';
 import { Metadata } from 'next';
+import { BUSINESS, BUSINESS_ADDRESS_ONE_LINE } from '@/lib/business';
 
 export const metadata: Metadata = {
     title: 'b. | Privacy Policy',
@@ -60,17 +62,51 @@ export default function PrivacyPage() {
                     </section>
 
                     <section className="space-y-6">
-                        <h2 className="text-2xl font-georgia text-foreground">4. Security</h2>
+                        <h2 className="text-2xl font-georgia text-foreground">4. Text Messaging (SMS)</h2>
                         <p className="text-muted-foreground leading-relaxed font-light text-lg">
-                            We employ modern industry standards to protect your data. Your "Lens" is private to you and the AI models that help us refine your experience.
+                            If you provide your mobile phone number and opt in, we use it to send the text
+                            messages you request — account verification codes, direct-message alerts, event
+                            reminders, and occasional announcements. You choose which categories you receive,
+                            and you can reply STOP at any time to unsubscribe or HELP for help. Message
+                            frequency varies, and message and data rates may apply. You can review the full
+                            program details on our{' '}
+                            <Link href="/sms" className="text-primary hover:underline underline-offset-4">
+                                text messaging opt-in
+                            </Link>{' '}page.
+                        </p>
+                        <p className="text-muted-foreground leading-relaxed font-light text-lg">
+                            <strong className="text-foreground font-medium">
+                                We do not sell or share your mobile phone number or text-messaging opt-in
+                                information with any third parties or affiliates for their marketing or
+                                promotional purposes.
+                            </strong>{' '}
+                            Mobile information is shared only with the messaging providers that help us deliver
+                            these texts, solely to operate the messaging program.
                         </p>
                     </section>
 
                     <section className="space-y-6">
-                        <h2 className="text-2xl font-georgia text-foreground">5. Contact</h2>
-                        <p className="text-muted-foreground leading-relaxed font-light text-lg italic">
-                            Should you have questions or wish for your sanctuary to be removed from our records, please contact us at hello@theblife.com.
+                        <h2 className="text-2xl font-georgia text-foreground">5. Security</h2>
+                        <p className="text-muted-foreground leading-relaxed font-light text-lg">
+                            We employ modern industry standards to protect your data. Your &ldquo;Lens&rdquo; is private to you and the AI models that help us refine your experience.
                         </p>
+                    </section>
+
+                    <section className="space-y-6">
+                        <h2 className="text-2xl font-georgia text-foreground">6. Contact</h2>
+                        <p className="text-muted-foreground leading-relaxed font-light text-lg">
+                            Should you have questions or wish for your sanctuary to be removed from our records,
+                            you can reach us at:
+                        </p>
+                        <address className="not-italic text-muted-foreground leading-relaxed font-light text-lg space-y-1">
+                            <p className="text-foreground font-medium">{BUSINESS.legalName} ({BUSINESS.brandName})</p>
+                            <p>{BUSINESS_ADDRESS_ONE_LINE}</p>
+                            <p>
+                                <a href={`tel:${BUSINESS.phone}`} className="text-primary hover:underline underline-offset-4">{BUSINESS.phoneDisplay}</a>
+                                {' · '}
+                                <a href={`mailto:${BUSINESS.email}`} className="text-primary hover:underline underline-offset-4">{BUSINESS.email}</a>
+                            </p>
+                        </address>
                     </section>
                 </div>
             </div>

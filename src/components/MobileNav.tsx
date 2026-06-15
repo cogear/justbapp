@@ -9,6 +9,7 @@ export function MobileNav() {
 
     const links = [
         { href: '/community', label: 'b.community' },
+        { href: '/gatherings', label: 'b.gatherings' },
         { href: '/blog', label: 'b.blog' },
         { href: '/principles', label: 'b.principles' },
         { href: '/book', label: 'b.book' },

@@ -40,7 +40,7 @@ export default async function MessageSettingsPage() {
                     }}
                     phone={user?.phone ?? null}
                     phoneVerified={Boolean(user?.phoneVerifiedAt)}
-                    smsAvailable={Boolean(process.env.SMS_ORIGINATION_NUMBER)}
+                    smsAvailable={Boolean(process.env.TELNYX_API_KEY && process.env.TELNYX_SMS_FROM)}
                 />
             </div>
         </main>

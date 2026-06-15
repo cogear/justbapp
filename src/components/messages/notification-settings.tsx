@@ -174,9 +174,12 @@ export function NotificationSettings({
                                     </button>
                                 </div>
                                 <p className="text-[11px] text-muted-foreground leading-relaxed">
-                                    By verifying your number you agree to receive text notifications you
-                                    enable above. Msg &amp; data rates may apply, frequency varies. Reply
-                                    STOP to opt out, HELP for help.
+                                    By verifying your number you agree to receive the text notifications you
+                                    enable above from The B Life. Msg &amp; data rates may apply, frequency
+                                    varies. Reply STOP to opt out, HELP for help. See our{' '}
+                                    <a href="/sms" className="underline underline-offset-2 hover:text-foreground">
+                                        opt-in details
+                                    </a>.
                                 </p>
                             </>
                         ) : (

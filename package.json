@@ -8,11 +8,13 @@
     "start": "next start",
     "lint": "eslint",
     "email": "email dev",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "seed:courses": "tsx scripts/seed-courses.ts"
   },
   "dependencies": {
-    "@aws-sdk/client-pinpoint-sms-voice-v2": "^3.1066.0",
     "@aws-sdk/client-s3": "^3.943.0",
+    "@googlemaps/js-api-loader": "^2.1.0",
     "@modelcontextprotocol/sdk": "^1.27.1",
     "@mozilla/readability": "^0.6.0",
     "@prisma/client": "^5.22.0",
@@ -25,6 +27,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
     "dotenv": "^17.2.3",
     "email-reply-parser": "^2.3.5",
     "framer-motion": "^12.23.25",
@@ -41,7 +44,6 @@
     "react-markdown": "^10.1.0",
     "resend": "^6.6.0",
     "rss-parser": "^3.13.0",
-    "sns-validator": "^0.3.5",
     "sonner": "^2.0.7",
     "svix": "^1.84.1",
     "tailwind-merge": "^3.4.0",
@@ -55,6 +57,7 @@
     "@react-email/render": "^2.0.0",
     "@react-email/tailwind": "^2.0.2",
     "@tailwindcss/postcss": "^4",
+    "@types/google.maps": "^3.65.0",
     "@types/jsdom": "^27.0.0",
     "@types/mime-types": "^3.0.1",
     "@types/node": "^20",
@@ -68,6 +71,7 @@
     "prisma": "^5.22.0",
     "react-email": "^5.1.0",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.8"
   }
 }
