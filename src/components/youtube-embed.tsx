@@ -24,8 +24,35 @@ function getYouTubeId(input: string): string | null {
     return null;
 }
 
+function isDirectVideoUrl(input: string): boolean {
+    try {
+        const url = new URL(input.trim());
+        if (url.protocol !== 'https:') return false;
+        return /\.(mp4|m4v|webm|mov)$/i.test(url.pathname);
+    } catch {
+        return false;
+    }
+}
+
 export function YouTubeEmbed({ url, title }: { url: string; title?: string }) {
     const id = getYouTubeId(url);
+
+    // Direct video file (e.g. S3 render) — play natively until it moves to YouTube.
+    if (!id && isDirectVideoUrl(url)) {
+        return (
+            <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-border shadow bg-black">
+                <video
+                    src={url.trim()}
+                    title={title ?? 'Lesson video'}
+                    controls
+                    playsInline
+                    preload="metadata"
+                    className="absolute inset-0 h-full w-full"
+                />
+            </div>
+        );
+    }
+
     if (!id) return null;
 
     return (
