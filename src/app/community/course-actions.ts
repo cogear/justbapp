@@ -3,6 +3,16 @@
 import prisma from '@/lib/prisma';
 import { stackServerApp } from '@/lib/stack';
 import { extractSummary } from '@/lib/extract-summary';
+import { isVideoLocked } from '@/lib/lesson-access';
+
+/** Fails closed: any auth error is treated as signed-out. */
+async function isSignedIn(): Promise<boolean> {
+    try {
+        return !!(await stackServerApp.getUser());
+    } catch {
+        return false;
+    }
+}
 
 export async function getCourseData(spaceId: string) {
     const course = await prisma.course.findFirst({
@@ -88,20 +98,30 @@ export async function getCourseLandingData(spaceId: string) {
 }
 
 export async function getModuleLessons(moduleId: string) {
-    const mod = await prisma.module.findUnique({
-        where: { id: moduleId },
-        include: {
-            lessons: {
-                orderBy: { order: 'asc' },
-                select: { id: true, title: true, content: true, order: true },
-            },
-            course: {
-                select: {
-                    space: { select: { slug: true } },
+    const [mod, signedIn] = await Promise.all([
+        prisma.module.findUnique({
+            where: { id: moduleId },
+            include: {
+                lessons: {
+                    orderBy: { order: 'asc' },
+                    select: {
+                        id: true,
+                        title: true,
+                        content: true,
+                        order: true,
+                        videoUrl: true,
+                        freePreview: true,
+                    },
+                },
+                course: {
+                    select: {
+                        space: { select: { slug: true } },
+                    },
                 },
             },
-        },
-    });
+        }),
+        isSignedIn(),
+    ]);
 
     if (!mod) return null;
 
@@ -116,21 +136,51 @@ export async function getModuleLessons(moduleId: string) {
             title: l.title,
             summary: extractSummary(l.content),
             order: l.order,
+            hasVideo: !!l.videoUrl,
+            locked: isVideoLocked({
+                hasVideo: !!l.videoUrl,
+                freePreview: l.freePreview,
+                signedIn,
+            }),
         })),
     };
 }
 
-export async function getLessonContent(lessonId: string) {
+export type LessonContentResult = {
+    id: string;
+    title: string;
+    content: string | null;
+    /** null whenever `locked` is true — a gated video's URL never crosses the wire. */
+    videoUrl: string | null;
+    /** True if a video exists at all, so the client can show a gate rather than nothing. */
+    hasVideo: boolean;
+    locked: boolean;
+};
+
+export async function getLessonContent(lessonId: string): Promise<LessonContentResult | null> {
     const lesson = await prisma.lesson.findUnique({
         where: { id: lessonId },
-        select: { id: true, title: true, content: true, videoUrl: true },
+        select: { id: true, title: true, content: true, videoUrl: true, freePreview: true },
     });
-    if (lesson) {
-        prisma.lesson
-            .update({ where: { id: lessonId }, data: { viewCount: { increment: 1 } } })
-            .catch(err => console.error('Failed to increment lesson viewCount:', err));
-    }
-    return lesson;
+    if (!lesson) return null;
+
+    // Counts article reads, which are public — a gated view is still a view.
+    prisma.lesson
+        .update({ where: { id: lessonId }, data: { viewCount: { increment: 1 } } })
+        .catch(err => console.error('Failed to increment lesson viewCount:', err));
+
+    const hasVideo = !!lesson.videoUrl;
+    const signedIn = hasVideo && !lesson.freePreview ? await isSignedIn() : false;
+    const locked = isVideoLocked({ hasVideo, freePreview: lesson.freePreview, signedIn });
+
+    return {
+        id: lesson.id,
+        title: lesson.title,
+        content: lesson.content,
+        videoUrl: locked ? null : lesson.videoUrl,
+        hasVideo,
+        locked,
+    };
 }
 
 export async function markLessonComplete(lessonId: string) {

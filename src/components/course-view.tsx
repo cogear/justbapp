@@ -1,14 +1,15 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { CheckCircle, BookOpen, ArrowLeft, ArrowRight, FileText } from 'lucide-react';
+import { useSearchParams, usePathname } from 'next/navigation';
+import { CheckCircle, BookOpen, ArrowLeft, ArrowRight, FileText, Lock, Video } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { getCourseData, getLessonContent, getModuleLessons, markLessonComplete } from '@/app/community/course-actions';
 import { getLessonComments } from '@/app/community/actions';
 import { courseLandingContent } from '@/lib/course-landing-content';
 import { CommentThread } from '@/components/comment-thread';
 import { YouTubeEmbed } from '@/components/youtube-embed';
+import { VideoGate } from '@/components/video-gate';
 import { toast } from 'sonner';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -18,6 +19,8 @@ interface LessonCard {
     title: string;
     summary: string;
     order: number;
+    hasVideo?: boolean;
+    locked?: boolean;
 }
 
 interface LessonComment {
@@ -38,12 +41,14 @@ interface ModuleView {
 
 export function CourseView({ spaceId, initialLessonId }: { spaceId: string; initialLessonId?: string }) {
     const searchParams = useSearchParams();
+    const pathname = usePathname();
     const lessonParam = searchParams.get('lesson');
     const moduleParam = searchParams.get('module');
 
     const [lessonContent, setLessonContent] = useState<string | null>(null);
     const [lessonTitle, setLessonTitle] = useState<string>('');
     const [lessonVideoUrl, setLessonVideoUrl] = useState<string | null>(null);
+    const [videoLocked, setVideoLocked] = useState(false);
     const [moduleData, setModuleData] = useState<ModuleView | null>(null);
     const [courseTitle, setCourseTitle] = useState<string>('');
     const [courseDescription, setCourseDescription] = useState<string>('');
@@ -81,12 +86,14 @@ export function CourseView({ spaceId, initialLessonId }: { spaceId: string; init
             setModuleData(null);
             setLessonContent(null);
             setLessonVideoUrl(null);
+            setVideoLocked(false);
             setComments([]);
             getLessonContent(lessonParam).then(lesson => {
                 if (lesson) {
                     setLessonContent(lesson.content);
                     setLessonTitle(lesson.title);
                     setLessonVideoUrl(lesson.videoUrl);
+                    setVideoLocked(lesson.locked);
                 }
             });
             getLessonComments(lessonParam).then(data => {
@@ -149,9 +156,18 @@ export function CourseView({ spaceId, initialLessonId }: { spaceId: string; init
         const lessonHref = (id: string) =>
             `/community/${spaceSlug}?module=${moduleParam}&lesson=${id}`;
 
+        // Where auth should drop the reader back — this exact lesson, params intact.
+        const query = searchParams.toString();
+        const returnTo = query ? `${pathname}?${query}` : pathname;
+
         return (
             <div className="max-w-2xl mx-auto px-6 pt-24 pb-20 animate-in fade-in duration-700">
-                {lessonVideoUrl && (
+                {videoLocked && (
+                    <div className="mb-10 rounded-[2rem] overflow-hidden shadow-sm">
+                        <VideoGate returnTo={returnTo} />
+                    </div>
+                )}
+                {!videoLocked && lessonVideoUrl && (
                     <div className="mb-10 rounded-[2rem] overflow-hidden shadow-sm">
                         <YouTubeEmbed url={lessonVideoUrl} title={lessonTitle} />
                     </div>
@@ -282,10 +298,24 @@ export function CourseView({ spaceId, initialLessonId }: { spaceId: string; init
                                         </p>
                                     )}
                                 </div>
-                                <FileText
-                                    size={16}
-                                    className="text-muted-foreground/40 ml-auto mt-1 shrink-0 group-hover:text-primary transition-colors"
-                                />
+                                {lesson.locked ? (
+                                    <Lock
+                                        size={16}
+                                        aria-label="Sign in to watch the video"
+                                        className="text-muted-foreground/40 ml-auto mt-1 shrink-0 group-hover:text-primary transition-colors"
+                                    />
+                                ) : lesson.hasVideo ? (
+                                    <Video
+                                        size={16}
+                                        aria-label="Includes video"
+                                        className="text-muted-foreground/40 ml-auto mt-1 shrink-0 group-hover:text-primary transition-colors"
+                                    />
+                                ) : (
+                                    <FileText
+                                        size={16}
+                                        className="text-muted-foreground/40 ml-auto mt-1 shrink-0 group-hover:text-primary transition-colors"
+                                    />
+                                )}
                             </Link>
                         </li>
                     ))}

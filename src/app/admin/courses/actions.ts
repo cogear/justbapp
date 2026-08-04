@@ -2,8 +2,11 @@
 
 import prisma from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
+import { isAdmin } from '@/lib/admin';
 
 export async function getCoursesWithLessons() {
+    if (!(await isAdmin())) return [];
+
     const courses = await prisma.course.findMany({
         orderBy: { title: 'asc' },
         include: {
@@ -19,6 +22,7 @@ export async function getCoursesWithLessons() {
                             order: true,
                             videoUrl: true,
                             viewCount: true,
+                            freePreview: true,
                         },
                     },
                 },
@@ -40,6 +44,8 @@ export async function getCoursesWithLessons() {
 }
 
 export async function setLessonVideoUrl(lessonId: string, videoUrl: string) {
+    if (!(await isAdmin())) return { success: false, error: 'Not authorized' };
+
     const trimmed = videoUrl.trim();
     try {
         await prisma.lesson.update({
@@ -50,6 +56,23 @@ export async function setLessonVideoUrl(lessonId: string, videoUrl: string) {
         return { success: true };
     } catch (error) {
         console.error('Failed to update videoUrl:', error);
+        return { success: false, error: 'Failed to save' };
+    }
+}
+
+/** Opens a lesson's video to signed-out visitors, or gates it again. */
+export async function setLessonFreePreview(lessonId: string, freePreview: boolean) {
+    if (!(await isAdmin())) return { success: false, error: 'Not authorized' };
+
+    try {
+        await prisma.lesson.update({
+            where: { id: lessonId },
+            data: { freePreview },
+        });
+        revalidatePath('/admin/courses');
+        return { success: true };
+    } catch (error) {
+        console.error('Failed to update freePreview:', error);
         return { success: false, error: 'Failed to save' };
     }
 }

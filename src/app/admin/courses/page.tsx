@@ -15,6 +15,11 @@ export default async function AdminCoursesPage() {
             (s, m) => s + m.lessons.filter(l => !!l.videoUrl).length, 0
         ), 0
     );
+    const videosOpen = courses.reduce(
+        (sum, c) => sum + c.modules.reduce(
+            (s, m) => s + m.lessons.filter(l => !!l.videoUrl && l.freePreview).length, 0
+        ), 0
+    );
     const totalViews = courses.reduce(
         (sum, c) => sum + c.modules.reduce(
             (s, m) => s + m.lessons.reduce((ls, l) => ls + l.viewCount, 0), 0
@@ -36,7 +41,7 @@ export default async function AdminCoursesPage() {
                     <div>
                         <h1 className="text-3xl font-georgia mb-1">Course Videos</h1>
                         <p className="text-sm text-muted-foreground">
-                            Attach a YouTube URL to any article. {lessonsWithVideo} of {totalLessons} have a video. {totalViews.toLocaleString()} total views.
+                            Attach a YouTube URL to any article. {lessonsWithVideo} of {totalLessons} have a video; {videosOpen} open to everyone, the rest need a free account. {totalViews.toLocaleString()} total views.
                         </p>
                     </div>
                 </div>
@@ -99,6 +104,7 @@ export default async function AdminCoursesPage() {
                                                             lessonId={lesson.id}
                                                             title={lesson.title}
                                                             initialVideoUrl={lesson.videoUrl}
+                                                            initialFreePreview={lesson.freePreview}
                                                             courseSlug={course.spaceSlug}
                                                             moduleId={mod.id}
                                                             viewCount={lesson.viewCount}

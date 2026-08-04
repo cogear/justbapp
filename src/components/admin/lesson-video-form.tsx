@@ -1,26 +1,43 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { ExternalLink, Save, Check, Eye } from 'lucide-react';
-import { setLessonVideoUrl } from '@/app/admin/courses/actions';
+import { ExternalLink, Save, Check, Eye, Lock, Unlock } from 'lucide-react';
+import { setLessonVideoUrl, setLessonFreePreview } from '@/app/admin/courses/actions';
 import { toast } from 'sonner';
 
 interface Props {
     lessonId: string;
     title: string;
     initialVideoUrl: string | null;
+    initialFreePreview: boolean;
     courseSlug: string;
     moduleId: string;
     viewCount: number;
 }
 
-export function LessonVideoForm({ lessonId, title, initialVideoUrl, courseSlug, moduleId, viewCount }: Props) {
+export function LessonVideoForm({ lessonId, title, initialVideoUrl, initialFreePreview, courseSlug, moduleId, viewCount }: Props) {
     const [value, setValue] = useState(initialVideoUrl ?? '');
     const [saved, setSaved] = useState<string | null>(initialVideoUrl);
     const [isPending, startTransition] = useTransition();
+    const [free, setFree] = useState(initialFreePreview);
+    const [isTogglePending, startToggle] = useTransition();
 
     const dirty = (value.trim() || null) !== saved;
     const hasVideo = !!saved;
+
+    const toggleFree = () => {
+        const next = !free;
+        setFree(next); // optimistic
+        startToggle(async () => {
+            const result = await setLessonFreePreview(lessonId, next);
+            if (result.success) {
+                toast.success(next ? 'Video open to everyone' : 'Video requires an account');
+            } else {
+                setFree(!next); // roll back
+                toast.error(result.error ?? 'Failed to save');
+            }
+        });
+    };
 
     const handleSave = () => {
         startTransition(async () => {
@@ -74,6 +91,24 @@ export function LessonVideoForm({ lessonId, title, initialVideoUrl, courseSlug, 
                     <ExternalLink size={14} />
                 </a>
             )}
+            <button
+                type="button"
+                onClick={toggleFree}
+                disabled={isTogglePending || !hasVideo}
+                aria-pressed={free}
+                title={
+                    !hasVideo
+                        ? 'No video to gate'
+                        : free
+                          ? 'Open — anyone can watch'
+                          : 'Gated — account required to watch'
+                }
+                className={`p-1.5 rounded-md shrink-0 transition-colors hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed ${
+                    free ? 'text-b-sage' : 'text-muted-foreground'
+                }`}
+            >
+                {free ? <Unlock size={14} /> : <Lock size={14} />}
+            </button>
             <button
                 type="button"
                 onClick={handleSave}
