@@ -32,7 +32,29 @@ function arg(name: string): string | undefined {
     return i !== -1 ? process.argv[i + 1] : undefined;
 }
 const has = (name: string) => process.argv.includes(`--${name}`);
+// A single targeted edit writes straight away — it names one lesson and prints the
+// old URL so it's trivially revertible. Bulk (--file) still requires --apply,
+// because that's the one that can go wrong at scale.
 const APPLY = has('apply');
+const DRY = has('dry-run');
+
+/** Flags that consume the next argv entry, so it isn't mistaken for a positional. */
+const VALUE_FLAGS = new Set(['lesson', 'url', 'file', 'find']);
+
+/** Bare arguments, so `set-lesson-video <id|title> <url>` works without flags. */
+function positionals(): string[] {
+    const out: string[] = [];
+    const argv = process.argv.slice(2);
+    for (let i = 0; i < argv.length; i++) {
+        const a = argv[i];
+        if (a.startsWith('--')) {
+            if (VALUE_FLAGS.has(a.slice(2))) i++;
+            continue;
+        }
+        out.push(a);
+    }
+    return out;
+}
 
 type LessonRow = {
     id: string;
@@ -74,7 +96,7 @@ async function resolveLesson(needle: string): Promise<LessonRow> {
     return matches[0];
 }
 
-async function setOne(needle: string, rawUrl: string) {
+async function setOne(needle: string, rawUrl: string, apply: boolean) {
     const lesson = await resolveLesson(needle);
     const url = rawUrl.trim();
 
@@ -92,11 +114,15 @@ async function setOne(needle: string, rawUrl: string) {
         return;
     }
 
-    console.log(`  ${APPLY ? 'set       ' : 'would set '} ${label(lesson)}`);
+    console.log(`  ${apply ? 'set       ' : 'would set '} ${label(lesson)}`);
     console.log(`               ${lesson.videoUrl ?? '(none)'} → ${next ?? '(none)'}`);
 
-    if (APPLY) {
+    if (apply) {
         await prisma.lesson.update({ where: { id: lesson.id }, data: { videoUrl: next } });
+        if (lesson.videoUrl) {
+            // Printed so the previous URL is recoverable from scrollback.
+            console.log(`               to revert: npm run set-lesson-video -- ${lesson.id} "${lesson.videoUrl}"`);
+        }
     }
 }
 
@@ -138,27 +164,31 @@ async function main() {
                 throw new Error(`Row ${i} ("${row.lesson}"): not a playable URL: "${row.url}"`);
             }
         }
-        for (const row of parsed) await setOne(row.lesson, row.url);
-        console.log(`\n${APPLY ? 'Applied' : 'Would apply'} ${parsed.length} row(s).`);
-        if (!APPLY) console.log('Dry run. Re-run with --apply to write.');
+        const apply = APPLY && !DRY;
+        for (const row of parsed) await setOne(row.lesson, row.url, apply);
+        console.log(`\n${apply ? 'Applied' : 'Would apply'} ${parsed.length} row(s).`);
+        if (!apply) console.log('Dry run. Re-run with --apply to write.');
         return;
     }
 
-    const lesson = arg('lesson');
-    const url = arg('url');
+    const bare = positionals();
+    const lesson = arg('lesson') ?? bare[0];
+    const url = arg('url') ?? bare[1];
     if (lesson === undefined || url === undefined) {
         console.log('Usage:');
+        console.log('  <id|title> <url>                     set one — writes immediately');
+        console.log('  --lesson <id|title> --url <url>      same, with flags ("" clears the video)');
+        console.log('  --dry-run                            preview instead of writing');
         console.log('  --list-missing                       lessons with no video');
         console.log('  --find <text>                        search lessons by title');
-        console.log('  --lesson <id|title> --url <url>      set one (--url "" clears)');
         console.log('  --file <path.json>                   bulk: [{ "lesson": "...", "url": "..." }]');
-        console.log('  --apply                              write (default is a dry run)');
+        console.log('                                       bulk needs --apply to write');
         process.exitCode = 1;
         return;
     }
 
-    await setOne(lesson, url);
-    if (!APPLY) console.log('\nDry run. Re-run with --apply to write.');
+    await setOne(lesson, url, !DRY);
+    if (DRY) console.log('\nDry run. Re-run without --dry-run to write.');
 }
 
 main()
