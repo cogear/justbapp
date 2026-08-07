@@ -19,18 +19,23 @@ export type PortalSlot = {
     delay: number;
 };
 
-// Hand-tuned slots: spaced so cards can't collide even after ±3% jitter.
+// Hand-tuned slots: two loose columns, pitched for cards WITH 5:2 image
+// headers (lg ≈ 26rem tall, md ≈ 20rem). Same-column neighbors sit two slots
+// apart, so consecutive same-side deltas clear a full card plus breathing
+// room even after jitter. Retuned 2026-08-07 when the portal grew to nine
+// spaces and cards gained imagery — the old table was pitched for short
+// text-only cards and overlapped.
 const SLOTS: { x: number; y: number; size: PortalSize }[] = [
-    { x: 8, y: 2, size: 'lg' },
-    { x: 56, y: 10, size: 'md' },
-    { x: 14, y: 30, size: 'md' },
-    { x: 54, y: 40, size: 'lg' },
-    { x: 6, y: 58, size: 'sm' },
-    { x: 48, y: 70, size: 'md' },
-    { x: 16, y: 82, size: 'md' },
-    { x: 58, y: 92, size: 'sm' },
-    { x: 10, y: 106, size: 'md' },
-    { x: 52, y: 116, size: 'md' },
+    { x: 8, y: 0, size: 'lg' },
+    { x: 56, y: 26, size: 'md' },
+    { x: 12, y: 52, size: 'md' },
+    { x: 54, y: 76, size: 'lg' },
+    { x: 8, y: 104, size: 'sm' },
+    { x: 50, y: 126, size: 'md' },
+    { x: 14, y: 148, size: 'md' },
+    { x: 58, y: 172, size: 'sm' },
+    { x: 10, y: 194, size: 'md' },
+    { x: 54, y: 216, size: 'md' },
 ];
 
 const DRIFTS = ['drift-a', 'drift-b', 'drift-c'] as const;
@@ -66,8 +71,8 @@ export function portalSlot(slug: string, index: number): PortalSlot {
     const rand = mulberry32(fnv1a(slug));
 
     return {
-        x: base.x + (rand() * 6 - 3), // ±3%
-        y: base.y + (rand() * 6 - 3),
+        x: base.x + (rand() * 4 - 2), // ±2% — organic drift without collision risk
+        y: base.y + (rand() * 2 - 1), // vertical jitter kept tight; spacing lives in the slot table
         size: base.size,
         drift: DRIFTS[Math.floor(rand() * DRIFTS.length)],
         delay: Math.min(index, 6) * 150,
@@ -76,7 +81,7 @@ export function portalSlot(slug: string, index: number): PortalSlot {
 
 /** Container bottom padding (percent-ish height budget) for N cards. */
 export function portalHeightRem(count: number): number {
-    // Each slot row is ~14rem of vertical rhythm; minimum comfortable field.
+    // Container must clear the last slot's top plus a full card height.
     const used = SLOTS[Math.min(count, SLOTS.length) - 1]?.y ?? 0;
-    return Math.max(42, (used / 100) * 56 + 24);
+    return Math.max(42, (used / 100) * 56 + 30);
 }
