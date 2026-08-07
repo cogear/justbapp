@@ -1,7 +1,8 @@
 import type { MetadataRoute } from 'next';
 import { readdir, stat } from 'fs/promises';
 import path from 'path';
-import prisma from '@/lib/prisma';
+import { getAllCoursePaths } from '@/lib/courses/queries';
+import { coursePath, lessonPath, modulePath } from '@/lib/courses/paths';
 import { absoluteUrl } from '@/lib/seo';
 
 /**
@@ -69,24 +70,52 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: page.priority,
     }));
 
-    // Only public courses that actually have content. The `courses.some(...)`
-    // clause keeps demo or half-seeded spaces out on its own.
-    const spaces = await prisma.space.findMany({
-        where: {
-            type: 'COURSE',
-            accessLevel: 'OPEN',
-            courses: { some: { modules: { some: { lessons: { some: {} } } } } },
-        },
-        select: { slug: true, updatedAt: true },
-        orderBy: { createdAt: 'asc' },
-    });
+    // One query for the whole course tree — public courses with content only.
+    // The has-lessons clause keeps demo or half-seeded spaces out on its own,
+    // without needing a hardcoded exclusion list.
+    const paths = await getAllCoursePaths();
 
-    const coursePages: MetadataRoute.Sitemap = spaces.map(space => ({
-        url: absoluteUrl(`/community/${space.slug}`),
-        lastModified: space.updatedAt,
+    // A space appears once per module, so dedupe to one landing entry each.
+    const seenSpaces = new Map<string, Date>();
+    for (const p of paths) {
+        if (!seenSpaces.has(p.spaceSlug)) seenSpaces.set(p.spaceSlug, p.spaceUpdatedAt);
+    }
+
+    const landingPages: MetadataRoute.Sitemap = [...seenSpaces].map(([slug, updatedAt]) => ({
+        url: absoluteUrl(coursePath(slug)),
+        lastModified: updatedAt,
         changeFrequency: 'weekly',
         priority: 0.8,
     }));
 
-    return [...staticPages, ...coursePages, ...(await productPages())];
+    // Every entry carries its own row's updatedAt rather than a shared build
+    // timestamp — a lastmod that is obviously wrong teaches Google to ignore
+    // all of them.
+    const modulePages: MetadataRoute.Sitemap = paths.map(p => ({
+        url: absoluteUrl(modulePath(p.spaceSlug, p.moduleSlug)),
+        lastModified: p.moduleUpdatedAt,
+        changeFrequency: 'monthly',
+        priority: 0.6,
+    }));
+
+    const lessonPages: MetadataRoute.Sitemap = paths.flatMap(p =>
+        p.lessons.map(lesson => ({
+            url: absoluteUrl(lessonPath(p.spaceSlug, p.moduleSlug, lesson.slug)),
+            lastModified: lesson.updatedAt,
+            changeFrequency: 'monthly' as const,
+            priority: 0.5,
+        }))
+    );
+
+    // ~610 URLs. The limits are 50,000 URLs and 50MB uncompressed per file, so
+    // there is no need for a sitemap index here. Past ~10,000 lessons, switch to
+    // Next's generateSitemaps() in this file — it shards to /sitemap/[id].xml
+    // and emits the index automatically. Nothing in this shape blocks that.
+    return [
+        ...staticPages,
+        ...landingPages,
+        ...modulePages,
+        ...lessonPages,
+        ...(await productPages()),
+    ];
 }

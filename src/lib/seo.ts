@@ -14,8 +14,10 @@ export const SITE_URL = 'https://theblife.com';
 export const SITE_NAME = 'b. Just Be';
 export const SITE_AUTHOR = 'David Crowell';
 
+/** A genuine 1200x630 crop. hero-community.jpg is 2048x1152 (16:9) and was
+ *  previously declared as 1200x630, which is neither its size nor its ratio. */
 export const DEFAULT_OG_IMAGE = {
-    url: '/images/hero-community.jpg',
+    url: '/images/og/default.jpg',
     width: 1200,
     height: 630,
     alt: 'b. — a community for intentional living',

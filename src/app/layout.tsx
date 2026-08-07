@@ -8,6 +8,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { JsonLd } from "@/components/seo/json-ld";
+import { DEFAULT_OG_IMAGE } from "@/lib/seo";
 import { authorSchema, graph, organizationSchema, websiteSchema } from "@/lib/seo/schema";
 
 const geistSans = Geist({
@@ -42,13 +43,13 @@ export const metadata: Metadata = {
     siteName: "b. Just Be",
     title: "b. | Just Be - Intentional Living in the Modern World",
     description: "A digital sanctuary for intentional living. Explore wellness principles, AI-informed perspectives, and community courses.",
-    images: [{ url: "/images/hero-community.jpg", width: 1200, height: 630, alt: "b. — a community for intentional living" }],
+    images: [DEFAULT_OG_IMAGE],
   },
   twitter: {
     card: "summary_large_image",
     title: "b. | Just Be",
     description: "A digital sanctuary for intentional living in the modern world.",
-    images: ["/images/hero-community.jpg"],
+    images: [DEFAULT_OG_IMAGE.url],
   },
   robots: {
     index: true,
