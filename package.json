@@ -10,7 +10,8 @@
     "email": "email dev",
     "test": "vitest run",
     "test:watch": "vitest",
-    "seed:courses": "tsx scripts/seed-courses.ts"
+    "seed:courses": "tsx scripts/seed-courses.ts",
+    "backfill:slugs": "tsx scripts/backfill-course-slugs.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.943.0",

@@ -54,11 +54,12 @@ async function main() {
                         create: [
                             {
                                 title: 'Module 1: The Beginning',
+                                slug: 'the-beginning',
                                 order: 1,
                                 lessons: {
                                     create: [
-                                        { title: 'Welcome', order: 1, content: 'Welcome to the course' },
-                                        { title: 'Philosophy', order: 2, content: 'Deep dive' }
+                                        { title: 'Welcome', slug: 'welcome', order: 1, content: 'Welcome to the course' },
+                                        { title: 'Philosophy', slug: 'philosophy', order: 2, content: 'Deep dive' }
                                     ]
                                 }
                             }

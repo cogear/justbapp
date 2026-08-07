@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { readdir, readFile } from 'fs/promises';
 import { join } from 'path';
+import { slugify } from '../src/lib/slugify';
 
 const prisma = new PrismaClient();
 
@@ -153,25 +154,30 @@ async function seedCourse(courseDef: typeof COURSES[number]) {
         const moduleOrder = i + 1;
         const moduleTitle = (courseDef as { moduleTitles?: Record<string, string> }).moduleTitles?.[folder.name] ?? folderToTitle(folder.name);
 
-        // Find or create Module
-        let mod = await prisma.module.findFirst({
-            where: { courseId: course.id, title: moduleTitle },
+        // Find or create Module, keyed on SLUG rather than title. Keying on the
+        // title meant that editing a heading created a duplicate row and left
+        // the old one stranded at a live URL; keying on the slug means a
+        // heading edit updates the existing row and the URL stays put.
+        const moduleSlug = slugify(moduleTitle);
+        let mod = await prisma.module.findUnique({
+            where: { courseId_slug: { courseId: course.id, slug: moduleSlug } },
         });
         if (!mod) {
             mod = await prisma.module.create({
                 data: {
                     courseId: course.id,
                     title: moduleTitle,
+                    slug: moduleSlug,
                     order: moduleOrder,
                 },
             });
         } else {
             await prisma.module.update({
                 where: { id: mod.id },
-                data: { order: moduleOrder },
+                data: { title: moduleTitle, order: moduleOrder },
             });
         }
-        console.log(`  Module ${moduleOrder}: ${moduleTitle}`);
+        console.log(`  Module ${moduleOrder}: ${moduleTitle}  (${moduleSlug})`);
 
         // Read markdown files in this subfolder
         const folderPath = join(rootDir, folder.name);
@@ -179,23 +185,42 @@ async function seedCourse(courseDef: typeof COURSES[number]) {
             .filter(f => f.endsWith('.md'))
             .sort((a, b) => extractLessonOrder(a) - extractLessonOrder(b) || a.localeCompare(b));
 
+        // Two source files whose H1s slugify identically would silently
+        // overwrite each other. Fail loudly and name both files instead — this
+        // is how one lesson quietly went missing before (532 files, 531 rows).
+        const claimedSlugs = new Map<string, string>();
+
         for (let j = 0; j < files.length; j++) {
             const file = files[j];
             const filePath = join(folderPath, file);
             const content = await readFile(filePath, 'utf-8');
             const title = extractTitle(content);
+            const lessonSlug = slugify(title);
             const lessonOrder = j + 1;
 
-            // Find or create Lesson. videoUrl is owned by the admin UI, so we
-            // leave it alone here — never touch it on update, default to null on create.
-            const existing = await prisma.lesson.findFirst({
-                where: { moduleId: mod.id, title },
+            const claimedBy = claimedSlugs.get(lessonSlug);
+            if (claimedBy) {
+                throw new Error(
+                    `Duplicate lesson slug "${lessonSlug}" in ${courseDef.folderName}/${folder.name}:\n` +
+                    `  ${claimedBy}\n  ${file}\n` +
+                    `Both produce the title "${title}". Rename or remove one — otherwise ` +
+                    `the second would overwrite the first and one lesson would be lost.`
+                );
+            }
+            claimedSlugs.set(lessonSlug, file);
+
+            // Find or create Lesson, keyed on slug (see the module note above).
+            // videoUrl is owned by the admin UI, so we leave it alone here —
+            // never touch it on update, default to null on create.
+            const existing = await prisma.lesson.findUnique({
+                where: { moduleId_slug: { moduleId: mod.id, slug: lessonSlug } },
             });
             if (!existing) {
                 await prisma.lesson.create({
                     data: {
                         moduleId: mod.id,
                         title,
+                        slug: lessonSlug,
                         content,
                         order: lessonOrder,
                     },
@@ -203,7 +228,7 @@ async function seedCourse(courseDef: typeof COURSES[number]) {
             } else {
                 await prisma.lesson.update({
                     where: { id: existing.id },
-                    data: { content, order: lessonOrder },
+                    data: { title, content, order: lessonOrder },
                 });
             }
             totalLessons++;
