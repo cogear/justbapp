@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
     title: "Community - Courses & Discussions",
-    description: "Join The b. Life community. Access free courses on AI for Humans and Living with AI, plus community discussions on intentional living.",
+    description: "Join The b. Life community. Six free courses — AI for Humans, Living with AI, The Quiet Crafts, Third Places, Private Invite Meetups, and The Comfortable Life — plus community discussions on intentional living.",
     alternates: { canonical: "https://theblife.com/community" },
 };
 

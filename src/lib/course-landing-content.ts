@@ -119,4 +119,100 @@ export const courseLandingContent: Record<string, CourseLandingContent> = {
             8: { src: '/images/principles/gratitude.png', alt: 'Gratitude and small joys' },
         },
     },
+    'the-quiet-crafts': {
+        heroHeadline: 'Your hands already know how to calm you.',
+        heroSubtitle:
+            'Knitting, mending, folding, tending, kneading, repairing — the quiet practices that settle a loud mind. Not hobbies, not productivity. Just work your body knows how to do.',
+        ctaLabel: 'Begin with your hands',
+        intro: {
+            paragraphs: [
+                'Watch anyone waiting for hard news and look at their hands. A pen turned over, a ring pushed around a finger, a napkin folded smaller and smaller. When the mind gets loud, the body reaches for something to hold. This course takes that instinct seriously.',
+                'Each module is a different practice — yarn, thread, paper, plants, the kitchen, repair — taught plainly enough to start this week. Nothing here is a side hustle. Nothing needs to be good enough to sell, or even to show. The making is the point; the object is just what is left over afterward.',
+            ],
+        },
+        moduleOverviews: {
+            1: 'Three lessons to start: why handwork calms the nervous system, how to choose your first practice, and why the first hour is supposed to be bad.',
+            2: 'The quiet science and older wisdom of why making settles us — repetition, flow, boredom, and the difference between rest and distraction.',
+            3: 'Knitting from absolute zero: needles, yarn, the two stitches that make everything, and a first dishcloth that does not need to be good.',
+            4: 'Crochet, one hook and one loop at a time — chains, rows, rounds, the granny square, and the blanket that takes a year on purpose.',
+            5: 'Needle and thread: hems, buttons, visible mending, sashiko, and the mending basket that replaces the donation bag.',
+            6: 'Paper as a calm material — folding, binding, collage, letters written by hand, and journaling that is not confession.',
+            7: 'Growing things at any scale: one houseplant done well, windowsill herbs, propagation, seeds, patience, and failure.',
+            8: 'The kitchen as practice — bread and the long rise, kneading, chopping, the simmer, tea as ceremony, and the dishes afterward.',
+            9: 'Repair and restore: kintsugi, sharpening, bicycles, books, and what keeping a thing for thirty years teaches.',
+            10: 'The closing argument: making things you will never sell, skill without ambition, and ten years of Tuesdays.',
+        },
+    },
+    'third-places': {
+        heroHeadline: 'Somewhere that is not home and not work.',
+        heroSubtitle:
+            'The counters, benches, libraries, and corner tables where nobody invited you, nobody owns you, and nobody minds when you leave. How to find one — and how to become a regular.',
+        ctaLabel: 'Find your third place',
+        intro: {
+            paragraphs: [
+                'Most of us run one loop: home, work, home. Two rooms and the road between them. The third room — the café counter, the library table, the bench by the courts — quietly disappeared from most lives, and we feel the missing air without knowing its name.',
+                'This course is built on Ray Oldenburg\u2019s idea of the third place, and it keeps his defining rule strict: no host, no invitation, nothing owed. You walk in because the door is open. You become a regular by showing up. That is the whole application.',
+            ],
+        },
+        moduleOverviews: {
+            1: 'What a third place is, why yours went missing, and how to find one this week.',
+            2: 'Oldenburg\u2019s eight characteristics — the doctrinal spine of the whole idea, from neutral ground to a home away from home.',
+            3: 'How third places disappeared: cars, zoning, rent, television, and what the loneliness numbers actually say.',
+            4: 'Cafés, counters and bars — finding a place with chairs that stay, ordering the same thing, sitting alone without a laptop.',
+            5: 'Libraries and public rooms: the last free spaces, and how to use them like a regular.',
+            6: 'Outdoors and open ground — parks, benches, dog parks, farmers markets, and the year-round weather problem.',
+            7: 'Places built around doing: gyms, run clubs, barbershops, yarn shops, makerspaces — where the activity is the excuse.',
+            8: 'Becoming a regular: frequency over intensity, calibrated small talk, weak ties, and reading a room\u2019s unwritten rules.',
+            9: 'When there are not any — auditing your ten-minute radius, suburbs, night shifts, no-money options, and starting one where none exists.',
+            10: 'The online question: what Discord gets right, what a screen cannot replace, and using online to find offline.',
+        },
+    },
+    'private-invite-meetups': {
+        heroHeadline: 'The gathering only happens if you make it.',
+        heroSubtitle:
+            'Dinner tables, Sunday walks, game nights, standing breakfasts — the gatherings someone has to author. Hosting as a learnable craft, with the obligation that makes it work.',
+        ctaLabel: 'Start with one invitation',
+        intro: {
+            paragraphs: [
+                'Every good night you have ever had with people you love was made by somebody. Somebody picked a date, sent a slightly awkward message, moved the laundry off the couch, and stayed up washing glasses. Left to itself, nothing gathers.',
+                'This course treats hosting as a craft anyone can learn — not a personality type. Small over impressive, frequency over ambition, soup out of the pot it was cooked in. The house does not have to be clean. The invitation just has to be sent.',
+            ],
+        },
+        moduleOverviews: {
+            1: 'Three lessons to start: why gatherings need an author, why hosting feels harder than it is, and inviting three people this month.',
+            2: 'Why host at all — what changes when there is a door, the obligation that makes it work, and the standing invitation.',
+            3: 'The invitation itself: asking without pressure, specific over open-ended, who to invite, flakes, and following up without nagging.',
+            4: 'Dinner parties without performance — one dish done well, the first fifteen minutes, and ending the night.',
+            5: 'Walks and the outdoors: why walking makes talking easier, and gatherings for people who do not want anyone in their house.',
+            6: 'Games and sport as social scaffolding — board game night, pickleball, backyard volleyball, and managing the competitive.',
+            7: 'Small and low effort: coffee for two, the standing breakfast, reading in the same room, gatherings under an hour.',
+            8: 'Hosting skills, properly taught — the threshold, introductions, rescuing the awkward middle, closing on time.',
+            9: 'Reciprocity without scorekeeping: who hosts next, bringing something, money, and turning a gathering into a rhythm.',
+            10: 'When it goes wrong — the party nobody came to, conflict at the table, and letting a gathering end for good.',
+        },
+    },
+    'the-comfortable-life': {
+        heroHeadline: 'Every culture solved comfort differently. Borrow the best of it.',
+        heroSubtitle:
+            'Hygge, koselig, gezelligheid, Gem\u00fctlichkeit, wabi-sabi and the wider map — a world tour of comfort traditions, turned into a practice for your own rooms. Even the hot ones.',
+        ctaLabel: 'Begin the tour',
+        intro: {
+            paragraphs: [
+                'You have had the feeling: one lamp on, someone you like nearby, nothing scheduled, nobody checking the time. English never gave that feeling a proper name — other languages did, and each name carries a small philosophy of how to build it on purpose.',
+                'This course tours those traditions one at a time, takes what travels, and finishes somewhere most comfort writing never goes: a hot climate, where the evening is your winter and the screened porch is your hearth. Comfort here is a practice, not a purchase.',
+            ],
+        },
+        moduleOverviews: {
+            1: 'Three lessons to start: the words English does not have, comfort as achievement rather than indulgence, and one cozy hour this week.',
+            2: 'Hygge — Denmark: candles, the corner that is yours, cake without apology, and reclaiming the word from the candle aisle.',
+            3: 'Koselig — Norway: the outdoor cousin. No bad weather, only bad clothes; the winter walk and the warm return.',
+            4: 'Gezelligheid — the Netherlands: comfort as conviviality. The brown caf\u00e9, borrel, and rooms that are social before they are soft.',
+            5: 'Gem\u00fctlichkeit — Germany and Austria: the regulars\u2019 table, Kaffee und Kuchen, Feierabend, and why comfort needs boundaries.',
+            6: 'Wabi-sabi and the Japanese room: the chipped cup, the golden seam, the space between things, and comfort as attention.',
+            7: 'The wider map — cwtch, fika, lagom, sisu, keyif, sobremesa, dolce far niente, ubuntu. Every culture solved this differently.',
+            8: 'Building your own: light, texture, the chair that is yours, warm food, the cup as ritual, and a personal comfort doctrine.',
+            9: 'Comfort in a hard climate — written for Florida. Heat as the enemy of cozy, the evening as your winter, rainy season as hygge season.',
+            10: 'Defending your comfort: hustle culture, consumerism, the difference between cozy and numb, and a comfortable life on purpose.',
+        },
+    },
 };

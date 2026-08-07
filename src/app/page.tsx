@@ -98,7 +98,7 @@ export default async function Home() {
                 </div>
                 <h2 className="text-3xl font-georgia text-foreground">Learn AI, your way.</h2>
                 <p className="text-muted-foreground leading-relaxed text-lg">
-                  AI is a tool worth understanding. Our two courses are written for real people — not engineers — so you can use AI with clarity, confidence, and good judgment.
+                  Six courses written for real people — two on using AI with clarity and good judgment, and four on the quieter arts: making with your hands, finding your places, gathering your people, and building comfort on purpose.
                 </p>
                 <div className="flex flex-col gap-3 pt-2">
                   <Link
@@ -112,6 +112,30 @@ export default async function Home() {
                     className="font-georgia text-lg text-primary hover:underline underline-offset-4"
                   >
                     Living with AI · 71 articles →
+                  </Link>
+                  <Link
+                    href="/community/the-quiet-crafts"
+                    className="font-georgia text-lg text-primary hover:underline underline-offset-4"
+                  >
+                    The Quiet Crafts · 88 articles →
+                  </Link>
+                  <Link
+                    href="/community/third-places"
+                    className="font-georgia text-lg text-primary hover:underline underline-offset-4"
+                  >
+                    Third Places · 88 articles →
+                  </Link>
+                  <Link
+                    href="/community/private-invite-meetups"
+                    className="font-georgia text-lg text-primary hover:underline underline-offset-4"
+                  >
+                    Private Invite Meetups · 88 articles →
+                  </Link>
+                  <Link
+                    href="/community/the-comfortable-life"
+                    className="font-georgia text-lg text-primary hover:underline underline-offset-4"
+                  >
+                    The Comfortable Life · 88 articles →
                   </Link>
                 </div>
               </div>

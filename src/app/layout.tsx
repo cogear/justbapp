@@ -114,10 +114,14 @@ export default function RootLayout({
                 {
                   "@type": "ItemList",
                   "name": "Courses",
-                  "description": "Educational courses on AI literacy and intentional living",
+                  "description": "Educational courses on AI literacy and intentional living — plus hands-on calm, third places, gathering, and comfort",
                   "itemListElement": [
                     { "@type": "Course", "name": "AI for Humans", "url": "https://theblife.com/community/ai-for-humans", "description": "A human-centered guide to understanding and working with AI", "provider": { "@id": "https://theblife.com/#organization" } },
                     { "@type": "Course", "name": "Living with AI", "url": "https://theblife.com/community/living-with-ai", "description": "Intentional living in an AI-forward world", "provider": { "@id": "https://theblife.com/#organization" } },
+                    { "@type": "Course", "name": "The Quiet Crafts", "url": "https://theblife.com/community/the-quiet-crafts", "description": "Hands-on calming practice — repetition, patience, and the quiet of work your body knows how to do", "provider": { "@id": "https://theblife.com/#organization" } },
+                    { "@type": "Course", "name": "Third Places", "url": "https://theblife.com/community/third-places", "description": "Finding and becoming a regular in the unhosted rooms between home and work", "provider": { "@id": "https://theblife.com/#organization" } },
+                    { "@type": "Course", "name": "Private Invite Meetups", "url": "https://theblife.com/community/private-invite-meetups", "description": "Hosting as a learnable craft — the gatherings that only happen if you make them", "provider": { "@id": "https://theblife.com/#organization" } },
+                    { "@type": "Course", "name": "The Comfortable Life", "url": "https://theblife.com/community/the-comfortable-life", "description": "Hygge and its cousins — how cultures around the world build comfort, and how to build yours", "provider": { "@id": "https://theblife.com/#organization" } },
                   ],
                 },
                 {
