@@ -3,9 +3,13 @@ import { Suspense } from 'react';
 import { AmbientBackdrop } from '@/components/community/ambient-backdrop';
 import { CommunityBreadcrumb } from '@/components/community/community-breadcrumb';
 
-export const dynamic = 'force-dynamic';
-
-// NOTE: no `metadata` export here. Layout metadata — especially a canonical — is
+// NOTE: deliberately no `export const dynamic = 'force-dynamic'` here. Route
+// segment config on a *layout* cascades to every nested segment, so it would
+// silently disable generateStaticParams + revalidate on the module and lesson
+// routes — no error, no warning, just 592 pages hitting the database per
+// request. The layout's own query is cheap and cached.
+//
+// NOTE: no `metadata` export here either. Layout metadata — especially a canonical — is
 // inherited by every nested segment, which would make each course, module, and
 // lesson page declare itself a duplicate of /community. The community index's
 // own metadata lives in ./page.tsx.
@@ -22,7 +26,7 @@ async function getSpaces() {
                     id: true,
                     modules: {
                         orderBy: { order: 'asc' },
-                        select: { id: true, title: true, order: true },
+                        select: { id: true, slug: true, title: true, order: true },
                     },
                 },
             },
@@ -43,7 +47,7 @@ export default async function CommunityLayout({
         name: s.name,
         slug: s.slug,
         type: s.type,
-        modules: s.courses.flatMap((c) => c.modules.map((m) => ({ id: m.id, title: m.title }))),
+        modules: s.courses.flatMap((c) => c.modules.map((m) => ({ slug: m.slug, title: m.title }))),
     }));
 
     return (

@@ -4,17 +4,19 @@ import { useState, useTransition } from 'react';
 import { ExternalLink, Save, Check, Eye } from 'lucide-react';
 import { setLessonVideoUrl } from '@/app/admin/courses/actions';
 import { toast } from 'sonner';
+import { lessonPath } from '@/lib/courses/paths';
 
 interface Props {
     lessonId: string;
     title: string;
     initialVideoUrl: string | null;
     courseSlug: string;
-    moduleId: string;
+    moduleSlug: string;
+    lessonSlug: string;
     viewCount: number;
 }
 
-export function LessonVideoForm({ lessonId, title, initialVideoUrl, courseSlug, moduleId, viewCount }: Props) {
+export function LessonVideoForm({ lessonId, title, initialVideoUrl, courseSlug, moduleSlug, lessonSlug, viewCount }: Props) {
     const [value, setValue] = useState(initialVideoUrl ?? '');
     const [saved, setSaved] = useState<string | null>(initialVideoUrl);
     const [isPending, startTransition] = useTransition();
@@ -40,7 +42,7 @@ export function LessonVideoForm({ lessonId, title, initialVideoUrl, courseSlug, 
             <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: hasVideo ? 'var(--color-b-sage, #8DA399)' : 'transparent', border: hasVideo ? 'none' : '1px solid var(--border)' }} />
             <div className="flex-1 min-w-0 flex items-center gap-3">
                 <a
-                    href={`/community/${courseSlug}?module=${moduleId}&lesson=${lessonId}`}
+                    href={lessonPath(courseSlug, moduleSlug, lessonSlug)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-sm font-medium truncate hover:text-primary transition-colors"

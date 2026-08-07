@@ -100,7 +100,8 @@ export default async function AdminCoursesPage() {
                                                             title={lesson.title}
                                                             initialVideoUrl={lesson.videoUrl}
                                                             courseSlug={course.spaceSlug}
-                                                            moduleId={mod.id}
+                                                            moduleSlug={mod.slug}
+                                                            lessonSlug={lesson.slug}
                                                             viewCount={lesson.viewCount}
                                                         />
                                                     ))}

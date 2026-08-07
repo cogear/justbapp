@@ -3,8 +3,22 @@ import Image from 'next/image';
 import { getCourseLandingData } from '@/app/community/course-actions';
 import { courseLandingContent } from '@/lib/course-landing-content';
 import { CourseJourney, type JourneyModule } from '@/components/community/course-journey';
+import { modulePath } from '@/lib/courses/paths';
+import { JsonLd } from '@/components/seo/json-ld';
+import { breadcrumbSchema, courseSchema, graph } from '@/lib/seo/schema';
+import { toDescription } from '@/lib/seo';
 
-export async function CourseLanding({ spaceId, spaceSlug }: { spaceId: string; spaceSlug: string }) {
+export async function CourseLanding({
+    spaceId,
+    spaceSlug,
+    spaceName,
+    spaceImageUrl,
+}: {
+    spaceId: string;
+    spaceSlug: string;
+    spaceName: string;
+    spaceImageUrl?: string | null;
+}) {
     const data = await getCourseLandingData(spaceId);
     if (!data) return null;
 
@@ -17,6 +31,7 @@ export async function CourseLanding({ spaceId, spaceSlug }: { spaceId: string; s
 
     const journeyModules: JourneyModule[] = data.modules.map((mod) => ({
         id: mod.id,
+        slug: mod.slug,
         title: mod.title,
         order: mod.order,
         lessonCount: mod.lessonCount,
@@ -24,8 +39,33 @@ export async function CourseLanding({ spaceId, spaceSlug }: { spaceId: string; s
         image: copy?.moduleImages?.[mod.order],
     }));
 
+    const schema = graph(
+        breadcrumbSchema([
+            { name: 'Home', path: '/' },
+            { name: 'Community', path: '/community' },
+            { name: spaceName },
+        ]),
+        courseSchema({
+            spaceSlug,
+            name: spaceName,
+            description: toDescription(subtitle ?? data.description),
+            image: spaceImageUrl || `/images/community/cards/${spaceSlug}.png`,
+            modules: data.modules.map((mod) => ({
+                spaceSlug,
+                slug: mod.slug,
+                title: mod.title,
+                description: toDescription(
+                    copy?.moduleOverviews?.[mod.order] ?? mod.firstLessonSummary,
+                    `${mod.title} — ${mod.lessonCount} articles.`
+                ),
+                lessonCount: mod.lessonCount,
+            })),
+        })
+    );
+
     return (
         <div className="px-6 pt-24 pb-24">
+            <JsonLd data={schema} />
             {/* ── Hero: why you want this ── */}
             <section className="max-w-4xl mx-auto text-center mb-16">
                 <p className="text-[11px] uppercase tracking-[0.3em] text-muted-foreground/60 mb-6 animate-in fade-in duration-1000">
@@ -44,7 +84,7 @@ export async function CourseLanding({ spaceId, spaceSlug }: { spaceId: string; s
                 {firstModule && (
                     <div className="animate-in fade-in duration-1000 delay-300" style={{ animationFillMode: 'backwards' }}>
                         <Link
-                            href={`/community/${spaceSlug}?module=${firstModule.id}`}
+                            href={modulePath(spaceSlug, firstModule.slug)}
                             className="inline-block px-8 py-3.5 rounded-full bg-primary text-primary-foreground font-medium hover:bg-primary/90 hover:shadow-lg transition-all duration-500"
                         >
                             {ctaLabel}

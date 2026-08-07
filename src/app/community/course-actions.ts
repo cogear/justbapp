@@ -80,6 +80,7 @@ export async function getCourseLandingData(spaceId: string) {
         modules: course.modules.map(mod => ({
             id: mod.id,
             title: mod.title,
+            slug: mod.slug,
             order: mod.order,
             lessonCount: mod._count.lessons,
             firstLessonSummary: extractSummary(mod.lessons[0]?.content ?? null),
@@ -121,16 +122,29 @@ export async function getModuleLessons(moduleId: string) {
 }
 
 export async function getLessonContent(lessonId: string) {
-    const lesson = await prisma.lesson.findUnique({
+    // No viewCount increment here — see recordLessonView. Counting a view as a
+    // side effect of a read meant every call site, including any future
+    // server-rendered one, silently inflated the number.
+    return prisma.lesson.findUnique({
         where: { id: lessonId },
         select: { id: true, title: true, content: true, videoUrl: true },
     });
-    if (lesson) {
-        prisma.lesson
-            .update({ where: { id: lessonId }, data: { viewCount: { increment: 1 } } })
-            .catch(err => console.error('Failed to increment lesson viewCount:', err));
-    }
-    return lesson;
+}
+
+/**
+ * Fire-and-forget view counter, called once per session from the lesson page's
+ * client island.
+ *
+ * Lesson pages are statically generated and revalidated hourly, so a
+ * server-side increment would fire roughly once an hour per lesson — and once
+ * the 532 lesson URLs are crawlable, it would mostly be measuring Googlebot.
+ * Counting client-side trades no-JS visitors (an admin-facing metric, so
+ * acceptable) for a number that reflects actual readers.
+ */
+export async function recordLessonView(lessonId: string) {
+    await prisma.lesson
+        .update({ where: { id: lessonId }, data: { viewCount: { increment: 1 } } })
+        .catch(err => console.error('Failed to increment lesson viewCount:', err));
 }
 
 export async function markLessonComplete(lessonId: string) {

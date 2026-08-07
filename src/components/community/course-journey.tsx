@@ -3,10 +3,12 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, useReducedMotion } from 'framer-motion';
+import { modulePath } from '@/lib/courses/paths';
 
 export type JourneyModule = {
     id: string;
     title: string;
+    slug: string;
     order: number;
     lessonCount: number;
     summary?: string | null;
@@ -68,7 +70,7 @@ export function CourseJourney({
                             />
 
                             <Link
-                                href={`/community/${spaceSlug}?module=${mod.id}`}
+                                href={modulePath(spaceSlug, mod.slug)}
                                 className={`group block rounded-[2.5rem] bg-secondary/10 backdrop-blur-md border border-border/40 shadow-sm hover:shadow-xl hover:bg-secondary/20 transition-all duration-700 p-7 md:p-8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
                                     isFirst ? 'ring-1 ring-b-clay/50' : ''
                                 }`}
