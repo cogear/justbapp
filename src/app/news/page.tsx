@@ -4,12 +4,14 @@ import { getTopStories } from '@/lib/news/service';
 import { NewsFeed } from '@/components/news/NewsFeed';
 import { ClusterSelector } from '@/components/news/ClusterSelector';
 import type { Metadata } from 'next';
+import { noindexMetadata } from '@/lib/seo';
 
-export const metadata: Metadata = {
-    title: "News - Personalized AI & Wellness Stories",
-    description: "Stay informed with personalized news on AI, technology, wellness, and intentional living. Stories curated through your unique perspective.",
-    alternates: { canonical: "https://theblife.com/news" },
-};
+// Redirects anonymous visitors to /sign-in, so it can never render for a
+// crawler — noindex rather than advertising a URL that always 302s.
+export const metadata: Metadata = noindexMetadata(
+    "News - Personalized AI & Wellness Stories",
+    "Stay informed with personalized news on AI, technology, wellness, and intentional living. Stories curated through your unique perspective."
+);
 import { redirect } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';

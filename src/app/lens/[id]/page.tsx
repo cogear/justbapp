@@ -4,6 +4,10 @@ import ReactMarkdown from 'react-markdown';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { ArrowLeft, ExternalLink } from 'lucide-react';
+import type { Metadata } from "next";
+import { noindexMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = noindexMetadata("Lens");
 
 export default async function PublicLensPage({
     params,

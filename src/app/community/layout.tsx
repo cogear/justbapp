@@ -1,16 +1,14 @@
 import prisma from '@/lib/prisma';
 import { Suspense } from 'react';
-import type { Metadata } from 'next';
 import { AmbientBackdrop } from '@/components/community/ambient-backdrop';
 import { CommunityBreadcrumb } from '@/components/community/community-breadcrumb';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata: Metadata = {
-    title: "Community - Courses & Discussions",
-    description: "Join The b. Life community. Six free courses — AI for Humans, Living with AI, The Quiet Crafts, Third Places, Private Invite Meetups, and The Comfortable Life — plus community discussions on intentional living.",
-    alternates: { canonical: "https://theblife.com/community" },
-};
+// NOTE: no `metadata` export here. Layout metadata — especially a canonical — is
+// inherited by every nested segment, which would make each course, module, and
+// lesson page declare itself a duplicate of /community. The community index's
+// own metadata lives in ./page.tsx.
 
 async function getSpaces() {
     return prisma.space.findMany({

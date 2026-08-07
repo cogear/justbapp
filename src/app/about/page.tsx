@@ -2,13 +2,14 @@ import React from 'react';
 import Link from 'next/link';
 import { Metadata } from 'next';
 import { BUSINESS, BUSINESS_ADDRESS_ONE_LINE } from '@/lib/business';
+import { buildMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildMetadata({
     title: 'About',
     description:
         'The b. Life is a wellness and intentional-living community founded by David Crowell, author of the book The b. Life. Operated by Eau Gallie Solutions LLC, Melbourne, FL.',
-    alternates: { canonical: 'https://theblife.com/about' },
-};
+    path: '/about',
+});
 
 export default function AboutPage() {
     return (

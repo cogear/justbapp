@@ -3,6 +3,10 @@ import prisma from '@/lib/prisma';
 import { getEvents } from './actions';
 import GetOutClient from './client';
 import { redirect } from 'next/navigation';
+import type { Metadata } from "next";
+import { noindexMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = noindexMetadata("Get Out");
 
 export const dynamic = 'force-dynamic';
 

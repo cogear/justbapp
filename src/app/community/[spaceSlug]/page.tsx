@@ -4,6 +4,7 @@ import { SpaceFeed } from "@/components/space-feed"
 import { CourseView } from "@/components/course-view"
 import { CourseLanding } from "@/components/course-landing"
 import type { Metadata } from "next"
+import { buildMetadata } from "@/lib/seo"
 
 export const dynamic = 'force-dynamic';
 
@@ -12,15 +13,27 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     const space = await prisma.space.findUnique({ where: { slug: spaceSlug } });
     if (!space) return {};
 
-    return {
+    const description = space.description || `Explore ${space.name} on The b. Life community.`;
+
+    // FEED spaces are thin member-generated discussion threads and posting
+    // requires auth — keep them out of the index, but `follow` so links out to
+    // the courses and member pages they reference still carry equity.
+    if (space.type !== 'COURSE') {
+        return buildMetadata({
+            title: space.name,
+            description,
+            path: `/community/${space.slug}`,
+            noindex: true,
+            follow: true,
+        });
+    }
+
+    return buildMetadata({
         title: space.name,
-        description: space.description || `Explore ${space.name} on The b. Life community.`,
-        alternates: { canonical: `https://theblife.com/community/${space.slug}` },
-        openGraph: {
-            title: `${space.name} | b. Just Be`,
-            description: space.description || `Explore ${space.name} on The b. Life community.`,
-        },
-    };
+        description,
+        path: `/community/${space.slug}`,
+        image: { url: space.imageUrl || `/images/community/cards/${space.slug}.png` },
+    });
 }
 
 interface PageProps {

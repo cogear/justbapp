@@ -3,6 +3,10 @@ import { resend } from '@/lib/resend';
 import { WelcomeEmail } from '@/emails/WelcomeEmail';
 import Link from 'next/link';
 import { ConfirmTracker } from './ConfirmTracker';
+import type { Metadata } from "next";
+import { noindexMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = noindexMetadata("Verify Subscription");
 
 export const dynamic = 'force-dynamic';
 

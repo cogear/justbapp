@@ -4,12 +4,13 @@ import { NewsletterSignup } from '@/components/NewsletterSignup';
 import { Mail } from 'lucide-react';
 import { stackServerApp } from '@/lib/stack';
 import type { Metadata } from 'next';
+import { buildMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-    title: "The Daily Anchor — b.",
+export const metadata: Metadata = buildMetadata({
+    title: "The Daily Anchor",
     description: "Each morning, one unhurried moment in your inbox — the day's Daily Anchor, a quote and a grounded reflection. Free, and nothing else.",
-    alternates: { canonical: "https://theblife.com/subscribe" },
-};
+    path: "/subscribe",
+});
 
 export default async function SubscribePage() {
     const user = await stackServerApp.getUser();

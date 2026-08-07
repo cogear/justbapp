@@ -4,6 +4,10 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Users } from 'lucide-react';
 import { AcceptInviteButton } from '@/components/messages/accept-invite-button';
+import type { Metadata } from "next";
+import { noindexMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = noindexMetadata("Invitation");
 
 export const dynamic = 'force-dynamic';
 

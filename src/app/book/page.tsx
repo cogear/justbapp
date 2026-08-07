@@ -4,19 +4,39 @@ import { AmbientScene } from '@/components/community/ambient-scene';
 import { ThreeDBook } from '@/components/ThreeDBook';
 import { Reveal } from '@/components/reveal';
 import type { Metadata } from 'next';
+import { JsonLd } from '@/components/seo/json-ld';
+import { buildMetadata, absoluteUrl } from '@/lib/seo';
+import { AUTHOR_ID, ORG_ID, graph } from '@/lib/seo/schema';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildMetadata({
     title: "The b. Life Book",
     description: "A guide to intentional living through seven core principles by David Crowell. Discover how to slow down, find quality over status, and embrace gratitude in everyday life.",
-    openGraph: {
-        title: "The b. Life Book | b. Just Be",
-        description: "A guide to intentional living through seven core principles.",
-        images: [{ url: "/images/b-book-cover-new.jpg" }],
-    },
-    alternates: { canonical: "https://theblife.com/book" },
-};
+    path: "/book",
+    image: { url: "/images/b-book-cover-new.jpg" },
+});
 
 const AMAZON_URL = 'https://amzn.to/3YdE345';
+
+/** Moved off the root layout, where it was emitted on every page of the site. */
+const bookSchema = {
+    '@type': 'Book',
+    '@id': absoluteUrl('/book') + '#book',
+    name: 'The b. Life',
+    url: absoluteUrl('/book'),
+    description: 'A guide to intentional living through seven core principles',
+    author: { '@id': AUTHOR_ID },
+    publisher: { '@id': ORG_ID },
+    inLanguage: 'en-US',
+    image: absoluteUrl('/images/b-book-cover-new.jpg'),
+    workExample: [
+        {
+            '@type': 'Book',
+            bookFormat: 'https://schema.org/Paperback',
+            inLanguage: 'en-US',
+            potentialAction: { '@type': 'ReadAction', target: AMAZON_URL },
+        },
+    ],
+};
 
 /** The pulsing clay/sage halo used behind spotlight moments. */
 function Halo() {
@@ -35,6 +55,7 @@ function Halo() {
 export default function BookPage() {
     return (
         <main className="flex min-h-screen flex-col items-center bg-background text-foreground transition-colors duration-500">
+            <JsonLd data={graph(bookSchema)} />
 
             {/* Hero — the book standing in the living meadow */}
             <section className="w-full relative flex flex-col md:flex-row items-center justify-center min-h-[85vh] px-6 py-20 overflow-hidden">
