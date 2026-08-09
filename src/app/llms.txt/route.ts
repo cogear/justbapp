@@ -67,6 +67,8 @@ export async function GET() {
         '',
         '## Courses (free, no account required to read)',
         '',
+        `All courses: ${absoluteUrl('/courses')}`,
+        '',
     ];
 
     let totalLessons = 0;
@@ -95,7 +97,8 @@ export async function GET() {
         '## Other pages',
         '',
         `- ${absoluteUrl('/')} — home`,
-        `- ${absoluteUrl('/community')} — all courses and community spaces`,
+        `- ${absoluteUrl('/courses')} — all courses`,
+        `- ${absoluteUrl('/community')} — community discussion spaces`,
         `- ${absoluteUrl('/blog')} — daily essays`,
         `- ${absoluteUrl('/events')} — local events`,
         `- ${absoluteUrl('/subscribe')} — The Daily Anchor newsletter`,

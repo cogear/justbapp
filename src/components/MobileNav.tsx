@@ -8,6 +8,7 @@ export function MobileNav() {
     const [isOpen, setIsOpen] = useState(false);
 
     const links = [
+        { href: '/courses', label: 'b.courses' },
         { href: '/community', label: 'b.community' },
         { href: '/gatherings', label: 'b.gatherings' },
         { href: '/blog', label: 'b.blog' },

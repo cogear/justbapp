@@ -25,7 +25,8 @@ type ChangeFrequency = NonNullable<MetadataRoute.Sitemap[number]['changeFrequenc
 const STATIC_PAGES: { path: string; changeFrequency: ChangeFrequency; priority: number }[] = [
     { path: '/', changeFrequency: 'weekly', priority: 1.0 },
     { path: '/principles', changeFrequency: 'monthly', priority: 0.9 },
-    { path: '/community', changeFrequency: 'weekly', priority: 0.9 },
+    { path: '/courses', changeFrequency: 'weekly', priority: 0.9 },
+    { path: '/community', changeFrequency: 'weekly', priority: 0.7 },
     { path: '/book', changeFrequency: 'monthly', priority: 0.8 },
     { path: '/blog', changeFrequency: 'daily', priority: 0.8 },
     { path: '/blog/archive', changeFrequency: 'weekly', priority: 0.5 },

@@ -143,6 +143,12 @@ export default async function Home() {
                   >
                     The Comfortable Life · 88 articles →
                   </Link>
+                  <Link
+                    href="/courses"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors pt-1"
+                  >
+                    browse all courses →
+                  </Link>
                 </div>
               </div>
             </div>
