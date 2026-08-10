@@ -5,6 +5,10 @@ import { VisualProfiler } from '@/components/visual-profiler/VisualProfiler';
 import { CLUSTERS } from '@/lib/personality/clustering';
 
 import Link from 'next/link';
+import type { Metadata } from "next";
+import { noindexMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = noindexMetadata("Visual Profile");
 
 export const dynamic = 'force-dynamic';
 

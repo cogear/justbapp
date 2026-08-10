@@ -16,6 +16,7 @@ export async function getCoursesWithLessons() {
                         select: {
                             id: true,
                             title: true,
+                            slug: true,
                             order: true,
                             videoUrl: true,
                             viewCount: true,
@@ -33,6 +34,7 @@ export async function getCoursesWithLessons() {
         modules: c.modules.map(m => ({
             id: m.id,
             title: m.title,
+            slug: m.slug,
             order: m.order,
             lessons: m.lessons,
         })),

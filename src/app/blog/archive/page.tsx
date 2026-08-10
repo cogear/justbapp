@@ -5,11 +5,13 @@ import { Calendar, ChevronRight } from 'lucide-react';
 import { fetchBlogs } from '@/lib/api/blog';
 import { BlogPagination } from '@/components/blog/BlogPagination';
 import { BlogSearch } from '@/components/blog/BlogSearch';
+import { buildMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-    title: 'b. | Blog Archive',
+export const metadata: Metadata = buildMetadata({
+    title: 'Blog Archive',
     description: 'Explore past insights and reflections.',
-};
+    path: '/blog/archive',
+});
 
 export default async function BlogArchivePage({
     searchParams,

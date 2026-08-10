@@ -4,12 +4,19 @@ import { Metadata } from 'next';
 import { stackServerApp } from '@/lib/stack';
 import { SmsOptInForm } from '@/components/messages/sms-opt-in-form';
 import { BUSINESS } from '@/lib/business';
+import { buildMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = {
-    title: 'Text Message Updates',
+    ...buildMetadata({
+        title: 'Text Message Updates',
+        description:
+            'Opt in to receive text messages from The B Life — account verification codes, message alerts, event reminders, and announcements.',
+        path: '/sms',
+    }),
+    // Carriers re-vet this page against the 10DLC campaign, so keep the full
+    // opt-in disclosure in the raw description rather than a trimmed snippet.
     description:
         'Opt in to receive text messages from The B Life — account verification codes, message alerts, event reminders, and announcements. Message frequency varies. Message and data rates may apply. Reply STOP to cancel, HELP for help.',
-    alternates: { canonical: 'https://theblife.com/sms' },
 };
 
 // Public page — must NOT require sign-in (carriers review the opt-in form here).

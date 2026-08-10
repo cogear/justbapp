@@ -1,10 +1,12 @@
 import React from 'react';
 import { Metadata } from 'next';
+import { buildMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-    title: 'b. | Terms of Service',
+export const metadata: Metadata = buildMetadata({
+    title: 'Terms of Service',
     description: 'The terms that govern your use of b.',
-};
+    path: '/terms',
+});
 
 export default function TermsPage() {
     return (

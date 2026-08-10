@@ -1,34 +1,37 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { Home } from 'lucide-react';
+import { coursePath, modulePath } from '@/lib/courses/paths';
 
 type BreadcrumbSpace = {
     name: string;
     slug: string;
     type: 'FEED' | 'COURSE';
-    modules: { id: string; title: string }[];
+    modules: { slug: string; title: string }[];
 };
 
 /**
  * Floating wayfinding pill — the only navigation chrome inside a space.
  * Hidden on the portal itself (/community is home).
+ *
+ * Derived from the pathname rather than search params: modules and lessons are
+ * path segments now. Dropping `useSearchParams` also removes what was forcing
+ * this subtree to render client-side only.
  */
 export function CommunityBreadcrumb({ spaces }: { spaces: BreadcrumbSpace[] }) {
     const pathname = usePathname();
-    const searchParams = useSearchParams();
 
-    const slug = pathname.split('/')[2];
-    if (!slug) return null; // on the portal
+    // /community/[space]/[module]/[lesson]
+    const [, , spaceSlug, moduleSlug, lessonSlug] = pathname.split('/');
+    if (!spaceSlug) return null; // on the portal
 
-    const space = spaces.find((s) => s.slug === slug);
+    const space = spaces.find((s) => s.slug === spaceSlug);
     if (!space) return null;
 
-    const moduleId = searchParams.get('module');
-    const lessonId = searchParams.get('lesson');
-    const moduleTitle = moduleId
-        ? space.modules.find((m) => m.id === moduleId)?.title
+    const moduleTitle = moduleSlug
+        ? space.modules.find((m) => m.slug === moduleSlug)?.title
         : null;
 
     return (
@@ -47,7 +50,7 @@ export function CommunityBreadcrumb({ spaces }: { spaces: BreadcrumbSpace[] }) {
                 <span className="text-border select-none">·</span>
                 {moduleTitle ? (
                     <Link
-                        href={`/community/${space.slug}`}
+                        href={coursePath(space.slug)}
                         className="text-muted-foreground hover:text-primary transition-colors font-georgia whitespace-nowrap"
                     >
                         {space.name}
@@ -55,12 +58,12 @@ export function CommunityBreadcrumb({ spaces }: { spaces: BreadcrumbSpace[] }) {
                 ) : (
                     <span className="text-foreground font-georgia whitespace-nowrap">{space.name}</span>
                 )}
-                {moduleTitle && (
+                {moduleTitle && moduleSlug && (
                     <>
                         <span className="text-border select-none">·</span>
-                        {lessonId ? (
+                        {lessonSlug ? (
                             <Link
-                                href={`/community/${space.slug}?module=${moduleId}`}
+                                href={modulePath(space.slug, moduleSlug)}
                                 className="text-muted-foreground hover:text-primary transition-colors truncate max-w-[10rem] md:max-w-[16rem]"
                             >
                                 {moduleTitle}

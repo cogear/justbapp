@@ -2,11 +2,13 @@ import React from 'react';
 import Link from 'next/link';
 import { Metadata } from 'next';
 import { BUSINESS, BUSINESS_ADDRESS_ONE_LINE } from '@/lib/business';
+import { buildMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-    title: 'b. | Privacy Policy',
+export const metadata: Metadata = buildMetadata({
+    title: 'Privacy Policy',
     description: 'Our commitment to your digital sanctuary.',
-};
+    path: '/privacy',
+});
 
 export default function PrivacyPage() {
     return (

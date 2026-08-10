@@ -1,6 +1,6 @@
 'use client';
 
-import { usePathname, useSearchParams } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { AmbientScene, type AmbientVariant } from './ambient-scene';
 
 export type { AmbientVariant, AmbientMode } from './ambient-scene';
@@ -15,13 +15,14 @@ export function AmbientBackdrop({
     spaceTypes: Record<string, 'FEED' | 'COURSE'>;
 }) {
     const pathname = usePathname();
-    const searchParams = useSearchParams();
 
-    const slug = pathname.split('/')[2];
+    // /community/[space]/[module]/[lesson] — a lesson is the 4th segment.
+    // Previously read from ?lesson=; the variant selection is unchanged.
+    const [, , slug, , lessonSlug] = pathname.split('/');
     const variant: AmbientVariant = !slug
         ? 'portal'
         : spaceTypes[slug] === 'COURSE'
-          ? searchParams.get('lesson')
+          ? lessonSlug
               ? 'lesson'
               : 'course'
           : 'feed';

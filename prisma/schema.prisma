@@ -278,24 +278,43 @@ model Course {
 
   space   Space    @relation(fields: [spaceId], references: [id])
   modules Module[]
+
+  // Every course URL is keyed on the *space* slug, and getCourseData resolves a
+  // space to its course with findFirst. A second course in one space would make
+  // module slugs ambiguous across URLs with no error anywhere — make it a
+  // write-time failure instead.
+  @@unique([spaceId])
 }
 
 model Module {
   id        String   @id @default(uuid())
   courseId  String
   title     String
+  /// URL segment, unique within its course. A published slug is a permanent
+  /// public URL — see scripts/backfill-course-slugs.ts before changing one.
+  slug      String
   order     Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   course  Course   @relation(fields: [courseId], references: [id])
   lessons Lesson[]
+
+  // Scoped to the course because Module has no spaceId. This yields unique URLs
+  // only because there is one Course per Space — enforced by Course.@@unique.
+  @@unique([courseId, slug])
+  // Route lookups filter on slug alone through the space->course join, so the
+  // composite unique (courseId leading) cannot serve them.
+  @@index([slug])
 }
 
 model Lesson {
   id        String   @id @default(uuid())
   moduleId  String
   title     String
+  /// URL segment, unique within its module. A published slug is a permanent
+  /// public URL — see scripts/backfill-course-slugs.ts before changing one.
+  slug      String
   content   String?
   videoUrl  String?
   viewCount Int      @default(0)
@@ -306,6 +325,11 @@ model Lesson {
   module   Module           @relation(fields: [moduleId], references: [id])
   progress LessonProgress[]
   comments Comment[]
+
+  // Module-scoped, not global: the same lesson title legitimately appears in
+  // different modules (e.g. "The Hedonic Treadmill" in living-with-ai).
+  @@unique([moduleId, slug])
+  @@index([slug])
 }
 
 model LessonProgress {

@@ -17,6 +17,9 @@ export async function Header() {
                     </Link>
                     {/* Desktop Navigation - Hidden on mobile */}
                     <nav className="hidden md:flex items-center gap-4 text-sm font-medium text-muted-foreground">
+                        <Link href="/courses" className="transition-colors hover:text-foreground font-georgia">
+                            b.courses
+                        </Link>
                         <Link href="/community" className="transition-colors hover:text-foreground font-georgia">
                             b.community
                         </Link>

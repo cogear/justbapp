@@ -16,28 +16,23 @@ interface ArticlePageProps {
     searchParams: Promise<{ cluster?: string }>;
 }
 
-export async function generateMetadata({ params, searchParams }: ArticlePageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: ArticlePageProps): Promise<Metadata> {
     const { id } = await params;
-    const { cluster } = await searchParams;
 
-    // Attempt to get a default cluster if none provided
-    let activeCluster = cluster || 'Balanced';
-    if (!cluster) {
-        const stackUser = await stackServerApp.getUser();
-        if (stackUser?.primaryEmail) {
-            const user = await prisma.user.findUnique({
-                where: { email: stackUser.primaryEmail || '' },
-                include: { visualProfiles: { orderBy: { createdAt: 'desc' }, take: 1 } }
-            });
-            activeCluster = user?.visualProfiles?.[0]?.cluster || 'Balanced';
-        }
-    }
-
-    const article = await getReframedArticle(id, activeCluster as string);
+    // Always the 'Balanced' reframing, never the viewer's own cluster. Metadata
+    // that varies by who is signed in is non-deterministic for crawlers — you
+    // get whichever variant Googlebot happened to be served.
+    const article = await getReframedArticle(id, 'Balanced');
 
     return {
-        title: article?.title || 'Article | b.',
+        title: article?.title || 'Article',
         description: article?.summary || 'Read the daily essence.',
+        // Canonical collapses the ?cluster= variants, which would otherwise be
+        // five duplicate URLs per article.
+        alternates: { canonical: `/news/${id}` },
+        // These are AI reframings of third-party reporting: kept available to
+        // members, kept out of the index. `follow` so link equity still flows out.
+        robots: { index: false, follow: true, googleBot: { index: false, follow: true } },
     };
 }
 

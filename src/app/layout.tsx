@@ -7,6 +7,9 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { JsonLd } from "@/components/seo/json-ld";
+import { DEFAULT_OG_IMAGE } from "@/lib/seo";
+import { authorSchema, graph, organizationSchema, websiteSchema } from "@/lib/seo/schema";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,22 +43,23 @@ export const metadata: Metadata = {
     siteName: "b. Just Be",
     title: "b. | Just Be - Intentional Living in the Modern World",
     description: "A digital sanctuary for intentional living. Explore wellness principles, AI-informed perspectives, and community courses.",
-    images: [{ url: "/images/hero-community.jpg", width: 1200, height: 630, alt: "b. — a community for intentional living" }],
+    images: [DEFAULT_OG_IMAGE],
   },
   twitter: {
     card: "summary_large_image",
     title: "b. | Just Be",
     description: "A digital sanctuary for intentional living in the modern world.",
-    images: ["/images/hero-community.jpg"],
+    images: [DEFAULT_OG_IMAGE.url],
   },
   robots: {
     index: true,
     follow: true,
     googleBot: { index: true, follow: true, "max-video-preview": -1, "max-image-preview": "large", "max-snippet": -1 },
   },
-  alternates: {
-    canonical: "https://theblife.com",
-  },
+  // NOTE: deliberately no `alternates.canonical` here. App Router inherits
+  // metadata down the layout tree, so a canonical set at the root makes every
+  // page that doesn't override it declare itself a duplicate of the homepage.
+  // Each route sets its own via `buildMetadata({ path })`.
 };
 
 export default function RootLayout({
@@ -66,76 +70,15 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@graph": [
-                {
-                  "@type": "WebSite",
-                  "@id": "https://theblife.com/#website",
-                  "url": "https://theblife.com",
-                  "name": "b. Just Be",
-                  "description": "A digital sanctuary for intentional living in the modern world",
-                  "publisher": { "@id": "https://theblife.com/#organization" },
-                  "potentialAction": {
-                    "@type": "SearchAction",
-                    "target": { "@type": "EntryPoint", "urlTemplate": "https://theblife.com/news?q={search_term_string}" },
-                    "query-input": "required name=search_term_string",
-                  },
-                },
-                {
-                  "@type": "Organization",
-                  "@id": "https://theblife.com/#organization",
-                  "name": "The b. Life",
-                  "legalName": "Eau Gallie Solutions LLC",
-                  "url": "https://theblife.com",
-                  "description": "Intentional living platform combining wellness principles with AI-informed perspectives",
-                  "email": "dave@theblife.com",
-                  "telephone": "+1-720-252-9874",
-                  "address": {
-                    "@type": "PostalAddress",
-                    "streetAddress": "1153 Bell St",
-                    "addressLocality": "Melbourne",
-                    "addressRegion": "FL",
-                    "postalCode": "32935",
-                    "addressCountry": "US",
-                  },
-                  "sameAs": ["https://www.youtube.com/@b.justbe", "https://shop.theblife.com"],
-                },
-                {
-                  "@type": "Book",
-                  "name": "The b. Life",
-                  "author": { "@type": "Person", "name": "David Crowell" },
-                  "url": "https://theblife.com/book",
-                  "description": "A guide to intentional living through seven core principles",
-                },
-                {
-                  "@type": "ItemList",
-                  "name": "Courses",
-                  "description": "Educational courses on AI literacy and intentional living — plus hands-on calm, third places, gathering, and comfort",
-                  "itemListElement": [
-                    { "@type": "Course", "name": "AI for Humans", "url": "https://theblife.com/community/ai-for-humans", "description": "A human-centered guide to understanding and working with AI", "provider": { "@id": "https://theblife.com/#organization" } },
-                    { "@type": "Course", "name": "Living with AI", "url": "https://theblife.com/community/living-with-ai", "description": "Intentional living in an AI-forward world", "provider": { "@id": "https://theblife.com/#organization" } },
-                    { "@type": "Course", "name": "The Quiet Crafts", "url": "https://theblife.com/community/the-quiet-crafts", "description": "Hands-on calming practice — repetition, patience, and the quiet of work your body knows how to do", "provider": { "@id": "https://theblife.com/#organization" } },
-                    { "@type": "Course", "name": "Third Places", "url": "https://theblife.com/community/third-places", "description": "Finding and becoming a regular in the unhosted rooms between home and work", "provider": { "@id": "https://theblife.com/#organization" } },
-                    { "@type": "Course", "name": "Private Invite Meetups", "url": "https://theblife.com/community/private-invite-meetups", "description": "Hosting as a learnable craft — the gatherings that only happen if you make them", "provider": { "@id": "https://theblife.com/#organization" } },
-                    { "@type": "Course", "name": "The Comfortable Life", "url": "https://theblife.com/community/the-comfortable-life", "description": "Hygge and its cousins — how cultures around the world build comfort, and how to build yours", "provider": { "@id": "https://theblife.com/#organization" } },
-                  ],
-                },
-                {
-                  "@type": "FAQPage",
-                  "mainEntity": [
-                    { "@type": "Question", "name": "What is The b. Life?", "acceptedAnswer": { "@type": "Answer", "text": "The b. Life is a digital platform and philosophy centered on intentional living. It offers seven core principles — from acceptance to gratitude — along with AI-informed courses, community discussions, and personalized news to help people live more mindfully in the modern world." } },
-                    { "@type": "Question", "name": "What is AI for Humans?", "acceptedAnswer": { "@type": "Answer", "text": "AI for Humans is a free course that explains artificial intelligence in plain, relatable language. It covers foundation stories, working with AI, creativity, ethics, and more — designed for people who want to understand AI without a technical background." } },
-                    { "@type": "Question", "name": "What are the seven principles of The b. Life?", "acceptedAnswer": { "@type": "Answer", "text": "The seven principles are: Acceptance Not Settling, Comfort as Achievement, Quality Over Status, Slow Down Intentionally, Balance Over Burnout, Community Not Competition, and Gratitude and Small Joys." } },
-                  ],
-                },
-              ],
-            }),
-          }}
-        />
+        {/*
+          Only site-wide identity lives here. Book -> /book, the course list ->
+          /community (built from the DB), and per-route Course/Article/Breadcrumb
+          nodes live on the routes they describe. The old FAQPage node was dropped:
+          Google restricted FAQ rich results to gov/health sites in Aug 2023, and
+          emitting it on every page — where those answers aren't visible — is a
+          structured-data policy violation.
+        */}
+        <JsonLd data={graph(websiteSchema(), organizationSchema(), authorSchema())} />
       </head>
       <body
         suppressHydrationWarning

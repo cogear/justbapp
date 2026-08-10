@@ -1,6 +1,10 @@
 import React, { Suspense } from 'react';
 import { getNextQuestion } from '@/app/pulse/actions';
 import InsightContent from './InsightContent';
+import type { Metadata } from "next";
+import { noindexMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = noindexMetadata("Insight");
 
 export default async function InsightPage() {
     const question = await getNextQuestion();

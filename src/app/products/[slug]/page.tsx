@@ -12,6 +12,8 @@ import { readFile, readdir } from 'fs/promises'
 import path from 'path'
 import { JustBeHumanA } from '@/components/landers/JustBeHumanA'
 import type { ComponentType } from 'react'
+import type { Metadata } from 'next'
+import { buildMetadata } from '@/lib/seo'
 
 // JustBeHumanA is a plain JS module; TypeScript infers its props as
 // `never` for assets/content, which collides with the rendered values.
@@ -64,10 +66,19 @@ export async function generateStaticParams() {
   }
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
   const lander = await loadLander(slug)
-  return { title: lander?.name ?? 'Not found' }
+  // No 'Not found' title here — the page itself calls notFound(), so Next
+  // renders the 404 and this metadata is never used for a missing lander.
+  if (!lander) return {}
+
+  return buildMetadata({
+    title: lander.name,
+    description: lander.content?.hero?.body ?? lander.content?.why?.paragraphs?.[0],
+    path: `/products/${slug}`,
+    image: lander.assets?.[0]?.imageUrl ? { url: lander.assets[0].imageUrl } : undefined,
+  })
 }
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {

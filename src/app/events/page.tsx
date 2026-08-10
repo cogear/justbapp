@@ -3,14 +3,14 @@ import { format } from 'date-fns';
 import Link from 'next/link';
 import { MapPin, Calendar, Clock, Tag, ExternalLink } from 'lucide-react';
 import type { Metadata } from 'next';
+import { geocodeAddress, getDistanceInMiles } from '@/lib/events/geocoding';
+import { buildMetadata } from '@/lib/seo';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildMetadata({
     title: "Events - Local Wellness & Community Gatherings",
     description: "Discover local events for wellness, creativity, and community connection. Find gatherings near you that align with an intentional lifestyle.",
-    alternates: { canonical: "https://theblife.com/events" },
-};
-
-import { geocodeAddress, getDistanceInMiles } from '@/lib/events/geocoding';
+    path: "/events",
+});
 
 export const dynamic = 'force-dynamic';
 

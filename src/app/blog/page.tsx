@@ -2,11 +2,13 @@ import React from 'react';
 import { Metadata } from 'next';
 import * as cheerio from 'cheerio';
 import Link from 'next/link';
+import { buildMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-    title: 'b. | Blog',
+export const metadata: Metadata = buildMetadata({
+    title: 'Blog',
     description: 'Insights and guidance for the modern world.',
-};
+    path: '/blog',
+});
 
 async function getBlogContent(date: Date) {
     const year = date.getUTCFullYear();

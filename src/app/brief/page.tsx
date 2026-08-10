@@ -1,6 +1,10 @@
 import React, { Suspense } from 'react';
 import { getDailySummary, getUserCluster } from './actions';
 import { BriefContent } from './BriefContent';
+import type { Metadata } from "next";
+import { noindexMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = noindexMetadata("Brief");
 
 export default async function BriefPage({ searchParams }: { searchParams: { cluster?: string } }) {
     const params = await searchParams;

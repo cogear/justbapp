@@ -6,12 +6,18 @@ import { AmbientScene } from "@/components/community/ambient-scene";
 import { Reveal } from "@/components/reveal";
 import { BUSINESS, BUSINESS_ADDRESS_ONE_LINE } from "@/lib/business";
 import type { Metadata } from "next";
+import { buildMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "b. | Just Be - Intentional Living in the Modern World",
-  description:
-    "Learn how to use AI with clarity, and live the seven b. life principles. 180+ articles across two courses, plus daily essays and a grounded community.",
-  alternates: { canonical: "https://theblife.com" },
+  ...buildMetadata({
+    title: "Just Be — Intentional Living in the Modern World",
+    description:
+      "Learn how to use AI with clarity, and live the seven b. life principles. Six free courses and 500+ lessons, plus daily essays and a grounded community.",
+    path: "/",
+  }),
+  // `absolute` bypasses the root layout's "%s | b. Just Be" template, which would
+  // otherwise brand the homepage title twice.
+  title: { absolute: "b. | Just Be - Intentional Living in the Modern World" },
 };
 
 export default async function Home() {
@@ -136,6 +142,12 @@ export default async function Home() {
                     className="font-georgia text-lg text-primary hover:underline underline-offset-4"
                   >
                     The Comfortable Life · 88 articles →
+                  </Link>
+                  <Link
+                    href="/courses"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors pt-1"
+                  >
+                    browse all courses →
                   </Link>
                 </div>
               </div>
